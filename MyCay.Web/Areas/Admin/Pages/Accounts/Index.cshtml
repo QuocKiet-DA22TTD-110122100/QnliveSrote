@@ -1,0 +1,209 @@
+@page
+@model MyCay.Web.Areas.Admin.Pages.Accounts.IndexModel
+@{
+    Layout = "/Areas/Admin/Pages/Shared/_LayoutAdmin.cshtml";
+    ViewData["Title"] = "Quản lý tài khoản";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2>Quản lý tài khoản</h2>
+    <div>
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalCreate">Tạo tài khoản</button>
+        <button class="btn btn-outline-success ms-2" onclick="saveAll()">Lưu thay đổi</button>
+    </div>
+}</div>
+
+<div class="mb-3">
+    <input id="searchInput" class="form-control" placeholder="Tìm theo tên hoặc email" oninput="filterTable()" />
+    <div class="form-text">Vai trò hiển thị bằng badge; dùng nút Lưu để ghi thay đổi lên server.</div>
+</div>
+
+<div class="table-responsive shadow-sm">
+    <table class="table table-hover align-middle" id="accountsTable">
+        <thead class="table-dark">
+            <tr>
+                <th style="width:48px">#</th>
+                <th>Họ tên</th>
+                <th>Email</th>
+                <th>Vai trò</th>
+                <th>Loại tài khoản</th>
+                <th>Trạng thái</th>
+                <th style="width:160px">Hành động</th>
+            </tr>
+        </thead>
+        <tbody>
+        @for (int i = 0; i < Model.Accounts.Count; i++)
+        {
+            var a = Model.Accounts[i];
+            var roleClass = a.Role?.ToLowerInvariant().Replace(' ', '-');
+            <tr>
+                <td>@(i+1)</td>
+                <td>@a.FullName</td>
+                <td>@a.Email</td>
+                <td><span class="badge role-@roleClass">@a.Role</span></td>
+                <td>
+                    @if (a.Role == "Nhân viên") { <span class="text-muted">Nhân viên</span> }
+                    else if (a.Role == "Admin") { <strong>Quản trị</strong> }
+                    else { <span class="text-muted">Khách/Khác</span> }
+                </td>
+                <td>@(a.IsActive ? "Kích hoạt" : "Khóa")</td>
+                <td>
+                    <button class="btn btn-sm btn-outline-secondary" onclick="openEdit(@i)">Sửa</button>
+                    <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(@i)">Xóa</button>
+                </td>
+            </tr>
+        }
+        </tbody>
+    </table>
+</div>
+
+<!-- Create Modal -->
+<div class="modal fade" id="modalCreate" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Tạo tài khoản</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="createForm">
+          <div class="mb-3">
+            <label class="form-label">Họ tên</label>
+            <input class="form-control" id="createFullName" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="createEmail" type="email" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Vai trò</label>
+            <select id="createRole" class="form-select"><option>Admin</option><option>Nhân viên</option><option>Khách hàng</option></select>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" onclick="createAccount()">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div class="modal fade" id="modalEdit" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title">Sửa tài khoản</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <form id="editForm">
+          <input type="hidden" id="editIndex" />
+          <div class="mb-3">
+            <label class="form-label">Họ tên</label>
+            <input class="form-control" id="editFullName" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Email</label>
+            <input class="form-control" id="editEmail" type="email" />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Vai trò</label>
+            <select id="editRole" class="form-select"><option>Admin</option><option>Nhân viên</option><option>Khách hàng</option></select>
+          </div>
+          <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="editActive" />
+            <label class="form-check-label">Kích hoạt</label>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Hủy</button>
+        <button type="button" class="btn btn-primary" onclick="saveEdit()">Lưu</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    // Use camelCase JSON for client-side
+    const accounts = @Html.Raw(System.Text.Json.JsonSerializer.Serialize(Model.Accounts, new System.Text.Json.JsonSerializerOptions { PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase }));
+
+    function refreshTable(){
+        const tbody = document.querySelector('#accountsTable tbody');
+        tbody.innerHTML = '';
+        accounts.forEach((a, i) => {
+            const tr = document.createElement('tr');
+            const roleClass = (a.role || '').toLowerCase().replace(/\s+/g,'-');
+            tr.innerHTML = `
+                <td>${i+1}</td>
+                <td>${escapeHtml(a.fullName)}</td>
+                <td>${escapeHtml(a.email)}</td>
+                <td><span class="badge role-${roleClass}">${escapeHtml(a.role)}</span></td>
+                <td>${a.role==='Nhân viên'? 'Nhân viên' : (a.role==='Admin'? '<strong>Quản trị</strong>' : 'Khách/Khác')}</td>
+                <td>${a.isActive? 'Kích hoạt' : 'Khóa'}</td>
+                <td><button class="btn btn-sm btn-outline-secondary" onclick="openEdit(${i})">Sửa</button> <button class="btn btn-sm btn-outline-danger" onclick="confirmDelete(${i})">Xóa</button></td>`;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function escapeHtml(s){ return (s||'').toString().replace(/[&<>\"']/g, c=>({'&':'&amp;','<':'&lt;','>':'&gt;','\"':'&quot;',"'":"&#39;"})[c]); }
+
+    function filterTable() {
+        const q = document.getElementById('searchInput').value.toLowerCase();
+        const rows = document.querySelectorAll('#accountsTable tbody tr');
+        rows.forEach(r => {
+            const txt = r.innerText.toLowerCase();
+            r.style.display = txt.includes(q) ? '' : 'none';
+        });
+    }
+
+    function openEdit(i){
+        const a = accounts[i];
+        document.getElementById('editIndex').value = i;
+        document.getElementById('editFullName').value = a.fullName || '';
+        document.getElementById('editEmail').value = a.email || '';
+        document.getElementById('editRole').value = a.role || '';
+        document.getElementById('editActive').checked = !!a.isActive;
+        new bootstrap.Modal(document.getElementById('modalEdit')).show();
+    }
+
+    function saveEdit(){
+        const i = parseInt(document.getElementById('editIndex').value,10);
+        const fullName = document.getElementById('editFullName').value;
+        const email = document.getElementById('editEmail').value;
+        const role = document.getElementById('editRole').value;
+        const isActive = document.getElementById('editActive').checked;
+        accounts[i] = { fullName, email, role, isActive };
+        refreshTable();
+        bootstrap.Modal.getInstance(document.getElementById('modalEdit')).hide();
+    }
+
+    function createAccount(){
+        const fullName = document.getElementById('createFullName').value;
+        const email = document.getElementById('createEmail').value;
+        const role = document.getElementById('createRole').value;
+        accounts.push({ fullName, email, role, isActive: true });
+        refreshTable();
+        bootstrap.Modal.getInstance(document.getElementById('modalCreate')).hide();
+    }
+
+    function confirmDelete(i){
+        if(confirm('Xóa tài khoản này?')){
+            accounts.splice(i,1);
+            refreshTable();
+        }
+    }
+
+    async function saveAll(){
+        try{
+            const res = await fetch('?handler=Save', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(accounts) });
+            if(res.ok){ alert('Đã lưu.'); }
+            else { alert('Lưu thất bại'); }
+        }catch(e){ alert('Lỗi khi lưu: ' + e.message); }
+    }
+
+    // auto-refresh table on load
+    document.addEventListener('DOMContentLoaded', () => refreshTable());
+</script>
