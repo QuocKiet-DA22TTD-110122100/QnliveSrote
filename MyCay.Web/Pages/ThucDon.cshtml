@@ -1,0 +1,693 @@
+@page
+@model ThucDonModel
+@{
+    ViewData["Title"] = "Thực đơn";
+}
+
+<section class="menu-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="menu-header">
+            <h1 class="page-title">🍜 Thực đơn</h1>
+            <p class="page-subtitle">Khám phá hơn 100 món ăn đa dạng tại Mỳ Cay Sasin</p>
+        </div>
+
+        <!-- Filter & Search -->
+        <div class="menu-filters">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Tìm kiếm món ăn..." />
+            </div>
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="all">Tất cả</button>
+                <button class="tab-btn" data-category="mi-cay">🌶️ Mì Cay</button>
+                <button class="tab-btn" data-category="mi-tuong-den">🥢 Mì Tương Đen</button>
+                <button class="tab-btn" data-category="mi-xao">🍝 Mì Xào</button>
+                <button class="tab-btn" data-category="mon-khac">🍚 Món Khác</button>
+                <button class="tab-btn" data-category="lau">🍲 Lẩu</button>
+                <button class="tab-btn" data-category="khai-vi">🍟 Khai Vị</button>
+                <button class="tab-btn" data-category="combo">🎁 Combo</button>
+                <button class="tab-btn" data-category="giai-khat">🥤 Giải Khát</button>
+            </div>
+        </div>
+
+        <!-- Products Count -->
+        <div class="products-count" style="margin-bottom: 20px; color: var(--gray);">
+            Hiển thị <strong id="visibleCount">@Model.Products.Count</strong> / <strong>@Model.Products.Count</strong> sản phẩm
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            @foreach (var product in Model.Products)
+            {
+                <div class="product-card" data-category="@product.CategorySlug" data-name="@product.Name.ToLower()" data-desc="@(product.Description?.ToLower() ?? "")">
+                    <div class="product-image">
+                        <img src="~/images/products/@product.Image" alt="@product.Name" loading="lazy" 
+                             onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                        @if (product.IsBestSeller)
+                        {
+                            <span class="product-badge">Best Seller</span>
+                        }
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">@product.Name</h3>
+                        <p class="product-desc">@product.Description</p>
+                        <div class="product-footer">
+                            <span class="product-price">@product.Price</span>
+                            <button class="btn-add" onclick="addToCart('@product.Code', '@product.Name.Replace("'", "")','@product.PriceNumber', '@product.Image')">
+                                <span>+</span> Thêm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Load More (optional) -->
+        <div class="load-more" style="text-align: center; margin-top: 40px; display: none;" id="loadMore">
+            <button class="btn btn-outline" onclick="loadMoreProducts()">
+                Xem thêm sản phẩm <i class="fas fa-chevron-down"></i>
+            </button>
+        </div>
+    </div>
+</section>
+
+<!-- Product Options Modal -->
+<div class="product-modal-overlay" id="productModal">
+    <div class="product-modal">
+        <button class="modal-close-btn" onclick="closeProductModal()">×</button>
+        
+        <div class="modal-product-info">
+            <img id="modalProductImage" src="" alt="" />
+            <div class="modal-product-details">
+                <h2 id="modalProductName"></h2>
+                <p id="modalProductDesc"></p>
+                <div class="modal-product-price">
+                    <span id="modalProductPrice"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loại nước dùng (chỉ cho mì cay) -->
+        <div class="modal-option-group" id="brothTypeGroup">
+            <h4>🍜 Chọn loại nước dùng</h4>
+            <div class="option-buttons">
+                <button class="option-btn active" data-value="kimchi" onclick="selectOption(this, 'broth')">
+                    <span class="option-icon">🥬</span>
+                    <span>Kim Chi</span>
+                </button>
+                <button class="option-btn" data-value="soyum" onclick="selectOption(this, 'broth')">
+                    <span class="option-icon">🍲</span>
+                    <span>Soyum</span>
+                </button>
+                <button class="option-btn" data-value="sincay" onclick="selectOption(this, 'broth')">
+                    <span class="option-icon">🔥</span>
+                    <span>Sincay</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Cấp độ cay (chỉ cho mì cay) -->
+        <div class="modal-option-group" id="spicyLevelGroup">
+            <h4>🌶️ Chọn cấp độ cay (1-10)</h4>
+            <div class="spicy-slider">
+                <input type="range" id="spicyLevel" min="1" max="10" value="3" oninput="updateSpicyDisplay(this.value)" />
+                <div class="spicy-display">
+                    <span class="spicy-number" id="spicyNumber">3</span>
+                    <span class="spicy-text" id="spicyText">Cay vừa</span>
+                    <span class="spicy-peppers" id="spicyPeppers">🌶️🌶️🌶️</span>
+                </div>
+            </div>
+            <div class="spicy-labels">
+                <span>1 - Không cay</span>
+                <span>10 - Siêu cay</span>
+            </div>
+        </div>
+
+        <!-- Số lượng -->
+        <div class="modal-option-group">
+            <h4>📦 Số lượng</h4>
+            <div class="quantity-selector">
+                <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
+                <input type="number" id="modalQuantity" value="1" min="1" max="99" readonly />
+                <button class="qty-btn" onclick="changeQuantity(1)">+</button>
+            </div>
+        </div>
+
+        <!-- Tổng tiền và nút thêm -->
+        <div class="modal-footer">
+            <div class="modal-total">
+                <span>Tổng tiền:</span>
+                <span class="total-price" id="modalTotalPrice">0đ</span>
+            </div>
+            <button class="btn-add-to-cart" onclick="confirmAddToCart()">
+                <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+            </button>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Product Modal */
+.product-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+.product-modal-overlay.active {
+    display: flex;
+}
+.product-modal {
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+@@keyframes modalSlideIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+.modal-close-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+.modal-product-info {
+    display: flex;
+    gap: 20px;
+    padding: 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.modal-product-info img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8f8f8;
+}
+.modal-product-details {
+    flex: 1;
+}
+.modal-product-details h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #1f2937;
+}
+.modal-product-details p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+.modal-product-price {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.modal-option-group {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.modal-option-group h4 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+.option-buttons {
+    display: flex;
+    gap: 10px;
+}
+.option-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.option-btn:hover {
+    border-color: #f97316;
+}
+.option-btn.active {
+    border-color: #f97316;
+    background: #fff7ed;
+}
+.option-icon {
+    font-size: 1.5rem;
+}
+.option-btn span:last-child {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+/* Spicy Slider */
+.spicy-slider {
+    margin-bottom: 10px;
+}
+.spicy-slider input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #fef3c7, #f97316, #dc2626);
+    outline: none;
+    -webkit-appearance: none;
+}
+.spicy-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border: 3px solid #f97316;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.spicy-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #fef3c7;
+    border-radius: 12px;
+}
+.spicy-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.spicy-text {
+    font-weight: 600;
+    color: #92400e;
+}
+.spicy-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 8px;
+}
+/* Quantity Selector */
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+.quantity-selector .qty-btn {
+    width: 45px;
+    height: 45px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.quantity-selector .qty-btn:hover {
+    border-color: #f97316;
+    background: #fff7ed;
+}
+.quantity-selector input {
+    width: 80px;
+    height: 45px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+}
+/* Modal Footer */
+.modal-footer {
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #f9fafb;
+    border-radius: 0 0 20px 20px;
+}
+.modal-total {
+    display: flex;
+    flex-direction: column;
+}
+.modal-total span:first-child {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.total-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.btn-add-to-cart {
+    padding: 15px 30px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.btn-add-to-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+</style>
+
+@section Scripts {
+<script>
+    let allCards = document.querySelectorAll('.product-card');
+    
+    // Current product for modal
+    let currentProduct = {
+        code: '',
+        name: '',
+        price: 0,
+        image: '',
+        category: '',
+        broth: 'kimchi',
+        spicyLevel: 3,
+        quantity: 1
+    };
+    
+    // Filter by category
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            
+            const category = this.dataset.category;
+            filterProducts();
+        });
+    });
+
+    // Search with debounce
+    let searchTimeout;
+    document.getElementById('searchInput').addEventListener('input', function() {
+        clearTimeout(searchTimeout);
+        searchTimeout = setTimeout(() => filterProducts(), 300);
+    });
+
+    function filterProducts() {
+        const search = document.getElementById('searchInput').value.toLowerCase();
+        const activeTab = document.querySelector('.tab-btn.active');
+        const category = activeTab ? activeTab.dataset.category : 'all';
+        
+        let visibleCount = 0;
+        
+        allCards.forEach(card => {
+            const name = card.dataset.name;
+            const desc = card.dataset.desc;
+            const cardCategory = card.dataset.category;
+            
+            const matchSearch = !search || name.includes(search) || desc.includes(search);
+            const matchCategory = category === 'all' || cardCategory === category;
+            
+            if (matchSearch && matchCategory) {
+                card.style.display = 'flex';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        document.getElementById('visibleCount').textContent = visibleCount;
+    }
+
+    // Check if product is Mì Cay
+    function isMiCay(code, name) {
+        const nameLower = name.toLowerCase();
+        return nameLower.includes('mì cay') || nameLower.includes('mi cay') || 
+               nameLower.includes('mỳ cay') || nameLower.includes('my cay');
+    }
+
+    // Add to cart - check if Mì Cay to show modal
+    function addToCart(code, name, price, image) {
+        // Get category from card
+        const card = document.querySelector(`.product-card[data-name="${name.toLowerCase()}"]`);
+        const category = card ? card.dataset.category : '';
+        
+        // If it's Mì Cay, show modal for options
+        if (isMiCay(code, name) || category === 'mi-cay') {
+            openProductModal(code, name, price, image, category);
+        } else {
+            // Direct add to cart for non-Mì Cay items
+            addToCartDirect(code, name, price, image, null, null, 1);
+        }
+    }
+
+    // Open product modal
+    function openProductModal(code, name, price, image, category) {
+        currentProduct = {
+            code: code,
+            name: name,
+            price: parseFloat(price),
+            image: image,
+            category: category,
+            broth: 'kimchi',
+            spicyLevel: 3,
+            quantity: 1
+        };
+        
+        // Update modal content
+        document.getElementById('modalProductImage').src = '/images/products/' + image;
+        document.getElementById('modalProductName').textContent = name;
+        document.getElementById('modalProductDesc').textContent = 'Món ăn đặc trưng của Mỳ Cay Sasin';
+        document.getElementById('modalProductPrice').textContent = formatPrice(currentProduct.price);
+        
+        // Reset options
+        document.getElementById('spicyLevel').value = 3;
+        document.getElementById('modalQuantity').value = 1;
+        updateSpicyDisplay(3);
+        
+        // Reset broth selection
+        document.querySelectorAll('#brothTypeGroup .option-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.value === 'kimchi') btn.classList.add('active');
+        });
+        
+        // Show/hide options based on category
+        const isMiCayProduct = isMiCay(code, name) || category === 'mi-cay';
+        document.getElementById('brothTypeGroup').style.display = isMiCayProduct ? 'block' : 'none';
+        document.getElementById('spicyLevelGroup').style.display = isMiCayProduct ? 'block' : 'none';
+        
+        // Update total price
+        updateTotalPrice();
+        
+        // Show modal
+        document.getElementById('productModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close product modal
+    function closeProductModal() {
+        document.getElementById('productModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Select option (broth type)
+    function selectOption(btn, type) {
+        const group = btn.closest('.option-buttons');
+        group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        if (type === 'broth') {
+            currentProduct.broth = btn.dataset.value;
+        }
+    }
+
+    // Update spicy level display
+    function updateSpicyDisplay(value) {
+        const level = parseInt(value);
+        currentProduct.spicyLevel = level;
+        
+        document.getElementById('spicyNumber').textContent = level;
+        
+        // Update text description
+        let text = '';
+        if (level <= 2) text = 'Không cay';
+        else if (level <= 4) text = 'Cay nhẹ';
+        else if (level <= 6) text = 'Cay vừa';
+        else if (level <= 8) text = 'Cay nhiều';
+        else text = 'Siêu cay';
+        document.getElementById('spicyText').textContent = text;
+        
+        // Update pepper icons
+        let peppers = '';
+        for (let i = 0; i < level; i++) {
+            peppers += '🌶️';
+        }
+        document.getElementById('spicyPeppers').textContent = peppers;
+        
+        // Update slider background color
+        const slider = document.getElementById('spicyLevel');
+        const percent = ((level - 1) / 9) * 100;
+        slider.style.background = `linear-gradient(to right, #fef3c7 0%, #f97316 ${percent}%, #dc2626 100%)`;
+    }
+
+    // Change quantity
+    function changeQuantity(delta) {
+        let qty = parseInt(document.getElementById('modalQuantity').value) + delta;
+        if (qty < 1) qty = 1;
+        if (qty > 99) qty = 99;
+        
+        document.getElementById('modalQuantity').value = qty;
+        currentProduct.quantity = qty;
+        updateTotalPrice();
+    }
+
+    // Update total price
+    function updateTotalPrice() {
+        const total = currentProduct.price * currentProduct.quantity;
+        document.getElementById('modalTotalPrice').textContent = formatPrice(total);
+    }
+
+    // Format price
+    function formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+    }
+
+    // Confirm add to cart from modal
+    function confirmAddToCart() {
+        const broth = currentProduct.broth;
+        const spicy = currentProduct.spicyLevel;
+        const qty = currentProduct.quantity;
+        
+        // Get broth name
+        const brothNames = { kimchi: 'Kim Chi', soyum: 'Soyum', sincay: 'Sincay' };
+        const brothName = brothNames[broth] || broth;
+        
+        addToCartDirect(
+            currentProduct.code, 
+            currentProduct.name, 
+            currentProduct.price, 
+            currentProduct.image,
+            brothName,
+            spicy,
+            qty
+        );
+        
+        closeProductModal();
+    }
+
+    // Direct add to cart
+    function addToCartDirect(code, name, price, image, broth, spicyLevel, quantity) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        // Create unique key for Mì Cay with options
+        const itemKey = broth ? `${code}_${broth}_${spicyLevel}` : code;
+        
+        const existing = cart.find(item => {
+            if (broth) {
+                return item.code === code && item.broth === broth && item.spicyLevel === spicyLevel;
+            }
+            return item.code === code && !item.broth;
+        });
+        
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            const cartItem = { 
+                code, 
+                name, 
+                price: parseFloat(price), 
+                image: image,
+                quantity: quantity
+            };
+            
+            // Add options for Mì Cay
+            if (broth) {
+                cartItem.broth = broth;
+                cartItem.spicyLevel = spicyLevel;
+                cartItem.displayName = `${name} (${broth}, Cấp ${spicyLevel})`;
+            }
+            
+            cart.push(cartItem);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        
+        let message = '✓ Đã thêm "' + name + '"';
+        if (broth) {
+            message += ` (${broth}, Cấp ${spicyLevel})`;
+        }
+        message += ' vào giỏ hàng!';
+        showToast(message);
+        
+        // Animate cart badge
+        const badge = document.getElementById('cartCount');
+        if (badge) {
+            badge.style.transform = 'scale(1.3)';
+            setTimeout(() => badge.style.transform = 'scale(1)', 200);
+        }
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const badge = document.getElementById('cartCount');
+        if (badge) badge.textContent = count;
+    }
+
+    function showToast(message) {
+        // Remove existing toast
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Close modal on overlay click
+    document.getElementById('productModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductModal();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeProductModal();
+        }
+    });
+
+    updateCartCount();
+</script>
+}

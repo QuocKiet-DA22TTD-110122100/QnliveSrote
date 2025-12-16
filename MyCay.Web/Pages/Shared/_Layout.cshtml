@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Mỳ Cay Sasin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="nav-container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🌶️</span>
+                <span class="logo-text">Mỳ Cay Sasin</span>
+            </a>
+            <ul class="nav-menu">
+                <li><a href="/" class="nav-link">Trang chủ</a></li>
+                <li><a href="/ThucDon" class="nav-link">Thực đơn</a></li>
+                <li><a href="/GioHang" class="nav-link cart-link">
+                    <i class="fas fa-shopping-cart"></i>
+                    Giỏ hàng
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a></li>
+                <li><a href="/DangNhap" class="nav-link">Đăng nhập</a></li>
+            </ul>
+            
+            <!-- Search Icon -->
+            <div class="nav-search">
+                <button class="search-toggle" id="searchToggle" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <div class="search-dropdown" id="searchDropdown">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="globalSearch" placeholder="Tìm kiếm món ăn..." autocomplete="off" />
+                        <button class="search-close" onclick="toggleSearch()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                    <div class="search-results" id="searchResults">
+                        <!-- Results will appear here -->
+                    </div>
+                </div>
+            </div>
+            
+            <a href="/ThucDon" class="btn-order">
+                <i class="fas fa-utensils"></i>
+                Đặt món ngay
+            </a>
+            <button class="mobile-menu-btn">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+    </header>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <div class="logo">
+                    <span class="logo-icon">🌶️</span>
+                    <span class="logo-text">Mỳ Cay Sasin</span>
+                </div>
+                <p>Hương vị Hàn Quốc chính hiệu tại Việt Nam</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                </div>
+            </div>
+            <div class="footer-links">
+                <h4>Liên kết</h4>
+                <ul>
+                    <li><a href="/">Trang chủ</a></li>
+                    <li><a href="/menu">Thực đơn</a></li>
+                    <li><a href="/about">Về chúng tôi</a></li>
+                    <li><a href="/contact">Liên hệ</a></li>
+                </ul>
+            </div>
+            <div class="footer-contact">
+                <h4>Liên hệ</h4>
+                <p><i class="fas fa-map-marker-alt"></i> 123 Đường ABC, Quận 1, TP.HCM</p>
+                <p><i class="fas fa-phone"></i> 0123 456 789</p>
+                <p><i class="fas fa-envelope"></i> info@mycaysasin.vn</p>
+            </div>
+            <div class="footer-hours">
+                <h4>Giờ mở cửa</h4>
+                <p>Thứ 2 - Chủ nhật</p>
+                <p>10:00 - 22:00</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2024 Mỳ Cay Sasin. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Update cart count on page load
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badges = document.querySelectorAll('#cartCount, #cartCountMobile');
+            badges.forEach(badge => {
+                if (badge) badge.textContent = count;
+            });
+        }
+        updateCartBadge();
+
+        // Global Search
+        let searchProducts = [];
+        let searchTimeout;
+
+        function toggleSearch() {
+            const dropdown = document.getElementById('searchDropdown');
+            const toggle = document.getElementById('searchToggle');
+            const input = document.getElementById('globalSearch');
+            
+            dropdown.classList.toggle('active');
+            toggle.classList.toggle('active');
+            
+            if (dropdown.classList.contains('active')) {
+                input.focus();
+                loadSearchProducts();
+            } else {
+                input.value = '';
+                document.getElementById('searchResults').innerHTML = '';
+            }
+        }
+
+        // Close search when clicking outside
+        document.addEventListener('click', function(e) {
+            const searchArea = document.querySelector('.nav-search');
+            if (!searchArea.contains(e.target)) {
+                document.getElementById('searchDropdown').classList.remove('active');
+                document.getElementById('searchToggle').classList.remove('active');
+            }
+        });
+
+        // Load products for search
+        async function loadSearchProducts() {
+            if (searchProducts.length > 0) return;
+            try {
+                const response = await fetch('/data/products.json');
+                searchProducts = await response.json();
+            } catch (e) {
+                console.error('Error loading products:', e);
+            }
+        }
+
+        // Search input handler
+        document.getElementById('globalSearch')?.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => performSearch(this.value), 300);
+        });
+
+        function performSearch(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (!query || query.length < 2) {
+                resultsContainer.innerHTML = '<div class="search-hint">Nhập ít nhất 2 ký tự để tìm kiếm...</div>';
+                return;
+            }
+
+            const q = query.toLowerCase();
+            const results = searchProducts.filter(p => 
+                p.name.toLowerCase().includes(q) || 
+                (p.description && p.description.toLowerCase().includes(q))
+            ).slice(0, 6);
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-no-result">Không tìm thấy món ăn phù hợp</div>';
+                return;
+            }
+
+            resultsContainer.innerHTML = results.map(p => `
+                <a href="/ThucDon" class="search-result-item" onclick="goToProduct('${p.code}')">
+                    <img src="/images/products/${p.image}" alt="${p.name}" onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                    <div class="search-result-info">
+                        <span class="search-result-name">${highlightText(p.name, query)}</span>
+                        <span class="search-result-price">${p.price}</span>
+                    </div>
+                </a>
+            `).join('') + `
+                <a href="/ThucDon?search=${encodeURIComponent(query)}" class="search-view-all">
+                    Xem tất cả kết quả <i class="fas fa-arrow-right"></i>
+                </a>
+            `;
+        }
+
+        function highlightText(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function goToProduct(code) {
+            toggleSearch();
+            window.location.href = '/ThucDon?product=' + code;
+        }
+
+        // Keyboard shortcut: Ctrl+K to open search
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleSearch();
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('searchDropdown').classList.remove('active');
+                document.getElementById('searchToggle').classList.remove('active');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

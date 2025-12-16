@@ -1,0 +1,371 @@
+@page
+@model IndexModel
+@{
+    ViewData["Title"] = "Trang chủ";
+}
+
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="hero-content">
+        <span class="hero-badge">
+            <span class="badge-icon">🌶️</span>
+            Món cay #1 Việt Nam
+        </span>
+        <h1 class="hero-title">
+            Mỳ Cay
+            <span class="hero-title-accent">sasin</span>
+        </h1>
+        <p class="hero-subtitle">
+            Hương vị Hàn Quốc chính hiệu • Cay từ cấp 0-7 • Giao hàng 30 phút
+        </p>
+        <div class="hero-buttons">
+            <a href="/ThucDon" class="btn btn-primary">
+                <i class="fas fa-shopping-cart"></i>
+                Đặt món ngay
+            </a>
+            <a href="/ThucDon" class="btn btn-secondary">
+                Xem thực đơn
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Khám phá Mỳ Cay Sasin Section -->
+<section class="discover-section">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Khám phá Mỳ Cay Sasin</h2>
+            <p class="section-subtitle">Không gian hiện đại, phục vụ tận tâm, ưu đãi hấp dẫn</p>
+        </div>
+        <div class="discover-grid">
+            <div class="discover-card">
+                <div class="discover-image">
+                    <img src="~/images/products/MenuItem_M00012.webp" alt="Không gian hiện đại">
+                    <div class="discover-overlay">
+                        <h3>Không gian hiện đại</h3>
+                        <p>Thiết kế trẻ trung, năng động</p>
+                    </div>
+                </div>
+            </div>
+            <div class="discover-card">
+                <div class="discover-image">
+                    <img src="~/images/products/MenuItem_MI0008.webp" alt="Phục vụ tận tâm">
+                    <div class="discover-overlay">
+                        <h3>Phục vụ tận tâm</h3>
+                        <p>Đội ngũ nhân viên chuyên nghiệp</p>
+                    </div>
+                </div>
+            </div>
+            <div class="discover-card">
+                <div class="discover-image">
+                    <img src="~/images/products/MenuItem_M00141.webp" alt="Ưu đãi hấp dẫn">
+                    <div class="discover-overlay highlight">
+                        <span class="promo-text">Ưu Đãi Đến</span>
+                        <span class="promo-percent">15%</span>
+                        <p>Nhiều chương trình khuyến mãi</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="features">
+    <div class="container">
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🔥</div>
+                <h3>Cay đúng chuẩn</h3>
+                <p>7 cấp độ cay từ nhẹ đến siêu cay cho mọi khẩu vị</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🍜</div>
+                <h3>Nguyên liệu tươi</h3>
+                <p>Hải sản tươi sống, rau củ nhập hàng ngày</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">🚀</div>
+                <h3>Giao hàng nhanh</h3>
+                <p>Giao hàng trong 30 phút, miễn phí từ 100k</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon">⭐</div>
+                <h3>Chất lượng 5 sao</h3>
+                <p>Hơn 10,000 đánh giá 5 sao từ khách hàng</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Dishes Section -->
+<section class="popular-dishes">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Món ăn nổi bật</h2>
+            <p class="section-subtitle">Những món được yêu thích nhất tại Mỳ Cay Sasin</p>
+        </div>
+        <div class="dishes-grid">
+            <!-- Featured Dish 1 - Mì Thập Cẩm No Nê -->
+            <div class="dish-card featured">
+                <div class="dish-image">
+                    <img src="~/images/products/MenuItem_M00012.webp" alt="Mì Thập Cẩm No Nê">
+                    <div class="dish-overlay">
+                        <span class="dish-tag">Best Seller</span>
+                    </div>
+                </div>
+                <div class="dish-content">
+                    <h3 class="dish-name">Mì Thập Cẩm No Nê</h3>
+                    <p class="dish-desc">Mì cay Sasin, thịt heo, tôm, cá viên, trứng ngâm tương, thanh cua, chả cá Hàn Quốc, kim chi</p>
+                    <div class="dish-footer">
+                        <span class="dish-price">77.000đ</span>
+                        <button class="btn-add-cart">Đặt ngay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Featured Dish 2 - Tokbokki Phô Mai Sasin -->
+            <div class="dish-card featured">
+                <div class="dish-image">
+                    <img src="~/images/products/MenuItem_MI0006.webp" alt="Tokbokki Phô Mai Sasin">
+                    <div class="dish-overlay">
+                        <span class="dish-tag">Hot</span>
+                    </div>
+                </div>
+                <div class="dish-content">
+                    <h3 class="dish-name">Tokbokki Phô Mai Sasin</h3>
+                    <p class="dish-desc">Tokbokki, xúc xích, chả cá Hàn Quốc, bắp cải, nấm, hành baro, phô mai</p>
+                    <div class="dish-footer">
+                        <span class="dish-price">59.000đ</span>
+                        <button class="btn-add-cart">Đặt ngay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dish 3 - Mì Hải Sản -->
+            <div class="dish-card">
+                <div class="dish-image">
+                    <img src="~/images/products/MenuItem_M00018.webp" alt="Mì Hải Sản">
+                </div>
+                <div class="dish-content">
+                    <h3 class="dish-name">Mì Hải Sản</h3>
+                    <p class="dish-desc">Mì cay Sasin, tôm, mực, chả cá Hàn Quốc, cá viên, kim chi, súp lơ</p>
+                    <div class="dish-footer">
+                        <span class="dish-price">62.000đ</span>
+                        <button class="btn-add-cart">Đặt ngay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dish 4 - Mì Trộn Tương Đen Mandu -->
+            <div class="dish-card">
+                <div class="dish-image">
+                    <img src="~/images/products/MenuItem_M00013.webp" alt="Mì Trộn Tương Đen Mandu">
+                </div>
+                <div class="dish-content">
+                    <h3 class="dish-name">Mì Trộn Tương Đen Mandu</h3>
+                    <p class="dish-desc">Mì cay Sasin, mandu, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè</p>
+                    <div class="dish-footer">
+                        <span class="dish-price">55.000đ</span>
+                        <button class="btn-add-cart">Đặt ngay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dish 5 - Mì Bò Mỹ -->
+            <div class="dish-card">
+                <div class="dish-image">
+                    <img src="~/images/products/MenuItem_M00021.webp" alt="Mì Bò Mỹ">
+                </div>
+                <div class="dish-content">
+                    <h3 class="dish-name">Mì Bò Mỹ</h3>
+                    <p class="dish-desc">Mì cay Sasin, thịt bò, xúc xích, cá viên, kim chi, súp lơ, nấm</p>
+                    <div class="dish-footer">
+                        <span class="dish-price">59.000đ</span>
+                        <button class="btn-add-cart">Đặt ngay</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dish 6 - Kimbap Sasin -->
+            <div class="dish-card">
+                <div class="dish-image">
+                    <img src="~/images/products/MenuItem_M00133.webp" alt="Kimbap Sasin">
+                </div>
+                <div class="dish-content">
+                    <h3 class="dish-name">Kimbap Sasin</h3>
+                    <p class="dish-desc">Cơm cuộn rong biển Hàn Quốc - 6 cuộn</p>
+                    <div class="dish-footer">
+                        <span class="dish-price">35.000đ</span>
+                        <button class="btn-add-cart">Đặt ngay</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="section-cta">
+            <a href="/ThucDon" class="btn btn-outline">Xem tất cả thực đơn <i class="fas fa-arrow-right"></i></a>
+        </div>
+    </div>
+</section>
+
+<!-- Menu Categories Section -->
+<section class="menu-categories">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Danh mục thực đơn</h2>
+            <p class="section-subtitle">Khám phá các món ăn đa dạng tại Mỳ Cay Sasin</p>
+        </div>
+        <div class="categories-grid">
+            <a href="/ThucDon" class="category-card" onclick="filterCategory('mi-cay')">
+                <div class="category-image">
+                    <img src="~/images/products/MenuItemGroup_MG00005.webp" alt="Mì Cay">
+                </div>
+                <div class="category-content">
+                    <h3>Mì Cay</h3>
+                    <span class="category-count">10 món</span>
+                </div>
+            </a>
+            <a href="/ThucDon" class="category-card">
+                <div class="category-image">
+                    <img src="~/images/products/MenuItemGroup_MG00006.webp" alt="Mì Tương Đen">
+                </div>
+                <div class="category-content">
+                    <h3>Mì Tương Đen</h3>
+                    <span class="category-count">4 món</span>
+                </div>
+            </a>
+            <a href="/ThucDon" class="category-card">
+                <div class="category-image">
+                    <img src="~/images/products/MenuItemGroup_MG00007.webp" alt="Lẩu Hàn Quốc">
+                </div>
+                <div class="category-content">
+                    <h3>Lẩu Hàn Quốc</h3>
+                    <span class="category-count">6 món</span>
+                </div>
+            </a>
+            <a href="/ThucDon" class="category-card">
+                <div class="category-image">
+                    <img src="~/images/products/MenuItemGroup_MG00010.webp" alt="Khai Vị">
+                </div>
+                <div class="category-content">
+                    <h3>Khai Vị</h3>
+                    <span class="category-count">17 món</span>
+                </div>
+            </a>
+            <a href="/ThucDon" class="category-card">
+                <div class="category-image">
+                    <img src="~/images/products/MenuItemGroup_MG00018.webp" alt="Giải Khát">
+                </div>
+                <div class="category-content">
+                    <h3>Giải Khát</h3>
+                    <span class="category-count">17 món</span>
+                </div>
+            </a>
+            <a href="/ThucDon" class="category-card">
+                <div class="category-image">
+                    <img src="~/images/products/MenuItemGroup_MG00003.webp" alt="Combo">
+                </div>
+                <div class="category-content">
+                    <h3>Combo Tiết Kiệm</h3>
+                    <span class="category-count">6 combo</span>
+                </div>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Spicy Levels Section -->
+<section class="spicy-levels">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Chọn cấp độ cay của bạn</h2>
+            <p class="section-subtitle">Từ nhẹ nhàng đến siêu cay - bạn chọn level nào?</p>
+        </div>
+        <div class="levels-grid">
+            <div class="level-card level-0">
+                <span class="level-number">0</span>
+                <span class="level-name">Không cay</span>
+                <div class="level-peppers">🌶️</div>
+            </div>
+            <div class="level-card level-1">
+                <span class="level-number">1</span>
+                <span class="level-name">Cay nhẹ</span>
+                <div class="level-peppers">🌶️🌶️</div>
+            </div>
+            <div class="level-card level-3">
+                <span class="level-number">3</span>
+                <span class="level-name">Cay vừa</span>
+                <div class="level-peppers">🌶️🌶️🌶️</div>
+            </div>
+            <div class="level-card level-5">
+                <span class="level-number">5</span>
+                <span class="level-name">Cay nhiều</span>
+                <div class="level-peppers">🌶️🌶️🌶️🌶️🌶️</div>
+            </div>
+            <div class="level-card level-7">
+                <span class="level-number">7</span>
+                <span class="level-name">Siêu cay</span>
+                <div class="level-peppers">🔥🔥🔥🔥🔥🔥🔥</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Khách hàng nói gì?</h2>
+        </div>
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Mỳ cay ngon nhất mình từng ăn! Nước dùng đậm đà, hải sản tươi. Sẽ quay lại!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👩</div>
+                    <div class="author-info">
+                        <span class="author-name">Nguyễn Thị Mai</span>
+                        <span class="author-location">Quận 1, TP.HCM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Giao hàng siêu nhanh, đồ ăn còn nóng hổi. Level 5 cay đúng chuẩn Hàn Quốc!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👨</div>
+                    <div class="author-info">
+                        <span class="author-name">Trần Văn Hùng</span>
+                        <span class="author-location">Quận 3, TP.HCM</span>
+                    </div>
+                </div>
+            </div>
+            <div class="testimonial-card">
+                <div class="testimonial-stars">⭐⭐⭐⭐⭐</div>
+                <p class="testimonial-text">"Combo đặc biệt rất hời, đủ cho 2 người ăn. Tokbokki phô mai là must-try!"</p>
+                <div class="testimonial-author">
+                    <div class="author-avatar">👩</div>
+                    <div class="author-info">
+                        <span class="author-name">Lê Thị Hương</span>
+                        <span class="author-location">Quận 7, TP.HCM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Đói bụng rồi? Đặt món ngay!</h2>
+            <p>Giao hàng nhanh trong 30 phút - Miễn phí ship đơn từ 100k</p>
+            <a href="/ThucDon" class="btn btn-primary btn-large">
+                <i class="fas fa-shopping-cart"></i>
+                Đặt món ngay
+            </a>
+        </div>
+    </div>
+</section>

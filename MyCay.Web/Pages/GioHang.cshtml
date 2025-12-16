@@ -1,0 +1,753 @@
+@page
+@model GioHangModel
+@{
+    ViewData["Title"] = "Giỏ hàng";
+}
+
+<section class="cart-page">
+    <div class="container">
+        <div class="cart-header">
+            <h1 class="page-title">🛒 Giỏ hàng của bạn</h1>
+            <p class="page-subtitle" id="cartSummary">Đang tải...</p>
+        </div>
+
+        <div class="cart-content" id="cartContent">
+            <!-- Cart Items -->
+            <div class="cart-items" id="cartItems">
+                <!-- Items will be loaded by JavaScript -->
+            </div>
+
+            <!-- Cart Sidebar -->
+            <div class="cart-sidebar">
+                <!-- Order Summary -->
+                <div class="cart-summary-card">
+                    <h3>📋 Tóm tắt đơn hàng</h3>
+                    
+                    <div class="summary-row">
+                        <span>Tạm tính</span>
+                        <span id="subtotal">0đ</span>
+                    </div>
+                    <div class="summary-row">
+                        <span>Phí giao hàng</span>
+                        <span id="shippingFee">15.000đ</span>
+                    </div>
+                    <div class="summary-row discount" id="discountRow" style="display:none;">
+                        <span>Giảm giá (<span id="promoCodeApplied"></span>)</span>
+                        <span id="discount">-0đ</span>
+                    </div>
+                    <hr />
+                    <div class="summary-row total">
+                        <span>Tổng cộng</span>
+                        <span id="total">0đ</span>
+                    </div>
+
+                    <div class="promo-code">
+                        <input type="text" id="promoInput" placeholder="Nhập mã giảm giá" />
+                        <button onclick="applyPromo()">Áp dụng</button>
+                    </div>
+                    
+                    <div class="promo-suggestions">
+                        <small>Mã gợi ý: </small>
+                        <span class="promo-tag" onclick="usePromo('SASIN10')">SASIN10</span>
+                        <span class="promo-tag" onclick="usePromo('SASIN20')">SASIN20</span>
+                        <span class="promo-tag" onclick="usePromo('FREESHIP')">FREESHIP</span>
+                    </div>
+
+                    <p class="free-ship-note">
+                        🚚 Miễn phí giao hàng cho đơn từ <strong>100.000đ</strong>
+                    </p>
+                </div>
+
+                <!-- Customer Info -->
+                <div class="customer-info-card">
+                    <h3>📍 Thông tin giao hàng</h3>
+                    <div class="form-group">
+                        <label>Họ tên *</label>
+                        <input type="text" id="customerName" placeholder="Nguyễn Văn A" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại *</label>
+                        <input type="tel" id="customerPhone" placeholder="0901234567" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Địa chỉ giao hàng *</label>
+                        <textarea id="customerAddress" placeholder="Số nhà, đường, phường/xã, quận/huyện" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Ghi chú</label>
+                        <textarea id="orderNote" placeholder="Ví dụ: Giao giờ hành chính, không hành..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Payment Methods -->
+                <div class="payment-methods-card">
+                    <h3>💳 Phương thức thanh toán</h3>
+                    <div class="payment-options">
+                        <label class="payment-option selected" data-method="cash">
+                            <input type="radio" name="paymentMethod" value="cash" checked />
+                            <div class="payment-icon">💵</div>
+                            <div class="payment-info">
+                                <span class="payment-name">Tiền mặt (COD)</span>
+                                <span class="payment-desc">Thanh toán khi nhận hàng</span>
+                            </div>
+                            <span class="payment-check">✓</span>
+                        </label>
+                        
+                        <label class="payment-option" data-method="momo">
+                            <input type="radio" name="paymentMethod" value="momo" />
+                            <div class="payment-icon">
+                                <img src="https://upload.wikimedia.org/wikipedia/vi/f/fe/MoMo_Logo.png" alt="MoMo" />
+                            </div>
+                            <div class="payment-info">
+                                <span class="payment-name">Ví MoMo</span>
+                                <span class="payment-desc">Thanh toán qua ví điện tử MoMo</span>
+                            </div>
+                            <span class="payment-check">✓</span>
+                        </label>
+                        
+                        <label class="payment-option" data-method="zalopay">
+                            <input type="radio" name="paymentMethod" value="zalopay" />
+                            <div class="payment-icon">
+                                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-ZaloPay-Square.png" alt="ZaloPay" />
+                            </div>
+                            <div class="payment-info">
+                                <span class="payment-name">ZaloPay</span>
+                                <span class="payment-desc">Thanh toán qua ví ZaloPay</span>
+                            </div>
+                            <span class="payment-check">✓</span>
+                        </label>
+                        
+                        <label class="payment-option" data-method="vnpay">
+                            <input type="radio" name="paymentMethod" value="vnpay" />
+                            <div class="payment-icon">
+                                <img src="https://cdn.haitrieu.com/wp-content/uploads/2022/10/Logo-VNPAY-QR-1.png" alt="VNPay" />
+                            </div>
+                            <div class="payment-info">
+                                <span class="payment-name">VNPay QR</span>
+                                <span class="payment-desc">Quét mã QR thanh toán</span>
+                            </div>
+                            <span class="payment-check">✓</span>
+                        </label>
+                        
+                        <label class="payment-option" data-method="bank">
+                            <input type="radio" name="paymentMethod" value="bank" />
+                            <div class="payment-icon">🏦</div>
+                            <div class="payment-info">
+                                <span class="payment-name">Chuyển khoản ngân hàng</span>
+                                <span class="payment-desc">Chuyển khoản trước khi giao</span>
+                            </div>
+                            <span class="payment-check">✓</span>
+                        </label>
+                    </div>
+                    
+                    <!-- Bank Info (shown when bank transfer selected) -->
+                    <div class="bank-info" id="bankInfo" style="display: none;">
+                        <div class="bank-details">
+                            <p><strong>Ngân hàng:</strong> Vietcombank</p>
+                            <p><strong>Số tài khoản:</strong> 1234567890</p>
+                            <p><strong>Chủ tài khoản:</strong> CONG TY TNHH MY CAY SASIN</p>
+                            <p><strong>Nội dung CK:</strong> <span id="transferContent">Tên + SĐT</span></p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn-checkout" onclick="checkout()">
+                        🛍️ Đặt hàng ngay
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Empty Cart -->
+        <div class="empty-cart" id="emptyCart" style="display:none;">
+            <div class="empty-icon">🛒</div>
+            <h2>Giỏ hàng trống</h2>
+            <p>Bạn chưa có món nào trong giỏ hàng</p>
+            <a href="/ThucDon" class="btn btn-primary">
+                <i class="fas fa-utensils"></i> Xem thực đơn
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Login Required Modal -->
+<div class="login-modal-overlay" id="loginModal">
+    <div class="login-modal">
+        <button class="modal-close" onclick="closeLoginModal()">×</button>
+        <div class="login-modal-icon">🔐</div>
+        <h2>Vui lòng đăng nhập</h2>
+        <p>Bạn cần đăng nhập để đặt hàng. Nếu chưa có tài khoản, hãy đăng ký ngay!</p>
+        <div class="login-modal-buttons">
+            <a href="/DangNhap?returnUrl=/GioHang" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a href="/DangKy?returnUrl=/GioHang" class="btn-register">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+.promo-suggestions {
+    margin-top: 10px;
+    font-size: 0.85rem;
+}
+.promo-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #fef3c7;
+    color: #d97706;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin: 2px;
+    transition: all 0.2s;
+}
+.promo-tag:hover {
+    background: #f97316;
+    color: white;
+}
+
+/* Payment Methods */
+.payment-methods-card {
+    background: var(--white);
+    padding: 25px;
+    border-radius: var(--radius-lg);
+    box-shadow: var(--shadow);
+}
+.payment-methods-card h3 {
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid var(--gray-light);
+}
+.payment-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.payment-option {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    border: 2px solid var(--gray-light);
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+}
+.payment-option:hover {
+    border-color: var(--primary);
+    background: #fff7ed;
+}
+.payment-option.selected {
+    border-color: var(--primary);
+    background: #fff7ed;
+}
+.payment-option input[type="radio"] {
+    display: none;
+}
+.payment-icon {
+    width: 45px;
+    height: 45px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    background: var(--light);
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+.payment-icon img {
+    width: 35px;
+    height: 35px;
+    object-fit: contain;
+}
+.payment-info {
+    flex: 1;
+}
+.payment-name {
+    display: block;
+    font-weight: 600;
+    color: var(--dark);
+    margin-bottom: 3px;
+}
+.payment-desc {
+    display: block;
+    font-size: 0.85rem;
+    color: var(--gray);
+}
+.payment-check {
+    width: 24px;
+    height: 24px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    font-weight: bold;
+}
+.payment-option.selected .payment-check {
+    display: flex;
+}
+.bank-info {
+    background: #f0f9ff;
+    border: 1px solid #bae6fd;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+.bank-details p {
+    margin: 8px 0;
+    font-size: 0.95rem;
+}
+.bank-details strong {
+    color: var(--dark);
+}
+
+/* Item Options (broth, spicy level) */
+.item-options {
+    display: block;
+    font-size: 0.85rem;
+    color: #f97316;
+    background: #fff7ed;
+    padding: 4px 10px;
+    border-radius: 6px;
+    margin: 5px 0;
+    font-weight: 500;
+}
+
+/* Login Required Modal */
+.login-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+}
+.login-modal-overlay.active {
+    display: flex;
+}
+.login-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    animation: modalPop 0.3s ease;
+}
+@@keyframes modalPop {
+    from { transform: scale(0.9); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+.login-modal .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.login-modal .modal-close:hover {
+    background: #ef4444;
+    color: white;
+}
+.login-modal-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+.login-modal h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+.login-modal p {
+    color: #6b7280;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+.login-modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+.login-modal-buttons a {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.btn-login {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+}
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+.btn-register {
+    background: #f3f4f6;
+    color: #374151;
+}
+.btn-register:hover {
+    background: #e5e7eb;
+}
+</style>
+
+@section Scripts {
+<script>
+    const SHIPPING_FEE = 15000;
+    const FREE_SHIP_THRESHOLD = 100000;
+    let currentDiscount = 0;
+    let currentPromoCode = '';
+
+    const promoCodes = {
+        'SASIN10': { type: 'percent', value: 10, min: 100000, desc: 'Giảm 10%' },
+        'SASIN20': { type: 'percent', value: 20, min: 200000, desc: 'Giảm 20%' },
+        'FREESHIP': { type: 'shipping', value: 15000, min: 150000, desc: 'Miễn phí ship' },
+        'NEWUSER': { type: 'fixed', value: 30000, min: 100000, desc: 'Giảm 30k' }
+    };
+
+    function loadCart() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const container = document.getElementById('cartItems');
+        const emptyCart = document.getElementById('emptyCart');
+        const cartContent = document.getElementById('cartContent');
+
+        if (cart.length === 0) {
+            cartContent.style.display = 'none';
+            emptyCart.style.display = 'block';
+            document.getElementById('cartSummary').textContent = 'Giỏ hàng trống';
+            return;
+        }
+
+        cartContent.style.display = 'grid';
+        emptyCart.style.display = 'none';
+        
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cartSummary').textContent = `${totalItems} món trong giỏ hàng`;
+
+        container.innerHTML = cart.map((item, index) => `
+            <div class="cart-item" data-index="${index}">
+                <div class="item-image">
+                    <img src="/images/products/${item.image || 'MenuItem_' + item.code + '.webp'}" alt="${item.name}" 
+                         onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                </div>
+                <div class="item-details">
+                    <h4 class="item-name">${item.name}</h4>
+                    ${item.broth ? `<span class="item-options">🍜 ${item.broth} | 🌶️ Cấp ${item.spicyLevel}</span>` : ''}
+                    <span class="item-price">${formatPrice(item.price)}đ / phần</span>
+                </div>
+                <div class="item-quantity">
+                    <button class="qty-btn" onclick="updateQuantity(${index}, -1)">−</button>
+                    <span class="qty-value">${item.quantity}</span>
+                    <button class="qty-btn" onclick="updateQuantity(${index}, 1)">+</button>
+                </div>
+                <div class="item-total">
+                    ${formatPrice(item.price * item.quantity)}đ
+                </div>
+                <button class="item-remove" onclick="removeItem(${index})" title="Xóa">✕</button>
+            </div>
+        `).join('');
+
+        updateTotals();
+    }
+
+    function updateQuantity(index, delta) {
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        if (cart[index]) {
+            cart[index].quantity += delta;
+            if (cart[index].quantity <= 0) {
+                cart.splice(index, 1);
+            }
+            localStorage.setItem('cart', JSON.stringify(cart));
+            loadCart();
+            updateCartBadge();
+        }
+    }
+
+    function removeItem(index) {
+        if (!confirm('Bạn có chắc muốn xóa món này?')) return;
+        
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        cart.splice(index, 1);
+        localStorage.setItem('cart', JSON.stringify(cart));
+        loadCart();
+        updateCartBadge();
+        showToast('Đã xóa khỏi giỏ hàng');
+    }
+
+    function updateTotals() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        let shipping = subtotal >= FREE_SHIP_THRESHOLD ? 0 : SHIPPING_FEE;
+        
+        // Apply promo
+        let discount = 0;
+        if (currentPromoCode && promoCodes[currentPromoCode]) {
+            const promo = promoCodes[currentPromoCode];
+            if (subtotal >= promo.min) {
+                if (promo.type === 'percent') {
+                    discount = subtotal * promo.value / 100;
+                } else if (promo.type === 'fixed') {
+                    discount = promo.value;
+                } else if (promo.type === 'shipping') {
+                    shipping = 0;
+                    discount = 0;
+                }
+            }
+        }
+        
+        currentDiscount = discount;
+        const total = Math.max(0, subtotal + shipping - discount);
+
+        document.getElementById('subtotal').textContent = formatPrice(subtotal) + 'đ';
+        document.getElementById('shippingFee').textContent = shipping === 0 ? 'Miễn phí 🎉' : formatPrice(shipping) + 'đ';
+        document.getElementById('total').textContent = formatPrice(total) + 'đ';
+
+        if (currentDiscount > 0 || (currentPromoCode && promoCodes[currentPromoCode]?.type === 'shipping')) {
+            document.getElementById('discountRow').style.display = 'flex';
+            document.getElementById('promoCodeApplied').textContent = currentPromoCode;
+            document.getElementById('discount').textContent = currentDiscount > 0 ? '-' + formatPrice(currentDiscount) + 'đ' : 'Miễn ship';
+        } else {
+            document.getElementById('discountRow').style.display = 'none';
+        }
+    }
+
+    function formatPrice(num) {
+        return Math.round(num).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
+    function usePromo(code) {
+        document.getElementById('promoInput').value = code;
+        applyPromo();
+    }
+
+    function applyPromo() {
+        const code = document.getElementById('promoInput').value.toUpperCase().trim();
+        
+        if (!code) {
+            showToast('Vui lòng nhập mã giảm giá!');
+            return;
+        }
+
+        if (!promoCodes[code]) {
+            showToast('❌ Mã giảm giá không hợp lệ!');
+            return;
+        }
+
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const promo = promoCodes[code];
+
+        if (subtotal < promo.min) {
+            showToast(`❌ Đơn hàng tối thiểu ${formatPrice(promo.min)}đ để áp dụng mã này!`);
+            return;
+        }
+
+        currentPromoCode = code;
+        updateTotals();
+        showToast(`✓ Áp dụng mã ${code} thành công! ${promo.desc}`);
+    }
+
+    function isLoggedIn() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user && user.username;
+    }
+
+    function checkout() {
+        // Kiểm tra đăng nhập
+        if (!isLoggedIn()) {
+            showLoginRequiredModal();
+            return;
+        }
+
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        if (cart.length === 0) {
+            showToast('❌ Giỏ hàng trống!');
+            return;
+        }
+
+        const name = document.getElementById('customerName').value.trim();
+        const phone = document.getElementById('customerPhone').value.trim();
+        const address = document.getElementById('customerAddress').value.trim();
+        const note = document.getElementById('orderNote').value.trim();
+        const payment = getSelectedPaymentMethod();
+
+        if (!name) {
+            showToast('❌ Vui lòng nhập họ tên!');
+            document.getElementById('customerName').focus();
+            return;
+        }
+        
+        if (!phone || !/^0\d{9}$/.test(phone)) {
+            showToast('❌ Số điện thoại không hợp lệ!');
+            document.getElementById('customerPhone').focus();
+            return;
+        }
+        
+        if (!address) {
+            showToast('❌ Vui lòng nhập địa chỉ giao hàng!');
+            document.getElementById('customerAddress').focus();
+            return;
+        }
+
+        // Create order
+        const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+        const orderCode = 'DH' + Date.now().toString().slice(-8);
+        const totalText = document.getElementById('total').textContent;
+        
+        // Show different message based on payment method
+        let successMessage = `🎉 Đặt hàng thành công!\nMã đơn: ${orderCode}`;
+        
+        if (payment.code === 'bank') {
+            successMessage += '\n\n📌 Vui lòng chuyển khoản theo thông tin:\nNgân hàng: Vietcombank\nSTK: 1234567890\nNội dung: ' + name + ' ' + phone;
+        } else if (payment.code === 'momo' || payment.code === 'zalopay' || payment.code === 'vnpay') {
+            successMessage += '\n\n📱 Bạn sẽ được chuyển đến trang thanh toán...';
+        }
+        
+        showToast('🎉 Đặt hàng thành công! Mã đơn: ' + orderCode);
+        
+        // Clear cart
+        localStorage.removeItem('cart');
+        updateCartBadge();
+        
+        // Redirect after 2s
+        setTimeout(() => {
+            alert(`Cảm ơn bạn đã đặt hàng!\n\n` +
+                  `📋 Mã đơn hàng: ${orderCode}\n` +
+                  `💰 Tổng tiền: ${totalText}\n` +
+                  `💳 Thanh toán: ${payment.name}\n` +
+                  `📍 Địa chỉ: ${address}\n` +
+                  `${note ? '📝 Ghi chú: ' + note + '\n' : ''}` +
+                  `\nChúng tôi sẽ liên hệ bạn trong ít phút.`);
+            window.location.href = '/';
+        }, 1500);
+    }
+
+    function updateCartBadge() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const badge = document.getElementById('cartCount');
+        if (badge) badge.textContent = count;
+    }
+
+    function showToast(message) {
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+    }
+
+    // Load user info from localStorage if logged in
+    function loadUserInfo() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        if (user.name) {
+            document.getElementById('customerName').value = user.name;
+        }
+    }
+
+    // Payment method selection
+    function initPaymentMethods() {
+        document.querySelectorAll('.payment-option').forEach(option => {
+            option.addEventListener('click', function() {
+                // Remove selected from all
+                document.querySelectorAll('.payment-option').forEach(o => o.classList.remove('selected'));
+                // Add selected to clicked
+                this.classList.add('selected');
+                // Check the radio
+                this.querySelector('input[type="radio"]').checked = true;
+                
+                // Show/hide bank info
+                const method = this.dataset.method;
+                const bankInfo = document.getElementById('bankInfo');
+                if (method === 'bank') {
+                    bankInfo.style.display = 'block';
+                    updateTransferContent();
+                } else {
+                    bankInfo.style.display = 'none';
+                }
+            });
+        });
+    }
+
+    function updateTransferContent() {
+        const name = document.getElementById('customerName').value || 'TEN';
+        const phone = document.getElementById('customerPhone').value || 'SDT';
+        document.getElementById('transferContent').textContent = `${name} ${phone}`;
+    }
+
+    // Update transfer content when name/phone changes
+    document.getElementById('customerName')?.addEventListener('input', updateTransferContent);
+    document.getElementById('customerPhone')?.addEventListener('input', updateTransferContent);
+
+    function getSelectedPaymentMethod() {
+        const selected = document.querySelector('input[name="paymentMethod"]:checked');
+        const methods = {
+            'cash': 'Tiền mặt (COD)',
+            'momo': 'Ví MoMo',
+            'zalopay': 'ZaloPay',
+            'vnpay': 'VNPay QR',
+            'bank': 'Chuyển khoản ngân hàng'
+        };
+        return {
+            code: selected?.value || 'cash',
+            name: methods[selected?.value] || 'Tiền mặt (COD)'
+        };
+    }
+
+    // Show login required modal
+    function showLoginRequiredModal() {
+        document.getElementById('loginModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close login modal
+    function closeLoginModal() {
+        document.getElementById('loginModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Close modal on overlay click
+    document.getElementById('loginModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLoginModal();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeLoginModal();
+        }
+    });
+
+    loadCart();
+    loadUserInfo();
+    initPaymentMethods();
+</script>
+}

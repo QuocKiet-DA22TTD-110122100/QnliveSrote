@@ -1,0 +1,300 @@
+@page
+@model AdminNhanVienModel
+@{
+    ViewData["Title"] = "Quản lý nhân viên";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Quản lý nhân viên</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Thêm nhân viên
+        </button>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="margin-bottom: 25px;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"><i class="fas fa-user-tie"></i></div>
+        <div class="stat-info">
+            <h3>Tổng nhân viên</h3>
+            <p class="stat-number">15</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-user-check"></i></div>
+        <div class="stat-info">
+            <h3>Đang làm việc</h3>
+            <p class="stat-number">12</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);"><i class="fas fa-store"></i></div>
+        <div class="stat-info">
+            <h3>Cửa hàng</h3>
+            <p class="stat-number">3</p>
+        </div>
+    </div>
+</div>
+
+<!-- Staff Table -->
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <div class="table-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Tìm tên, SĐT..." onkeyup="filterStaff()" />
+        </div>
+        <div class="table-filters">
+            <select id="storeFilter" onchange="filterStaff()">
+                <option value="">Tất cả cửa hàng</option>
+                <option value="1">Chi nhánh Quận 1</option>
+                <option value="2">Chi nhánh Quận 3</option>
+                <option value="3">Chi nhánh Quận 7</option>
+            </select>
+            <select id="roleFilter" onchange="filterStaff()">
+                <option value="">Tất cả chức vụ</option>
+                <option value="Quản lý">Quản lý</option>
+                <option value="Đầu bếp">Đầu bếp</option>
+                <option value="Thu ngân">Thu ngân</option>
+                <option value="Nhân viên phục vụ">Nhân viên phục vụ</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Nhân viên</th>
+                <th>Chức vụ</th>
+                <th>Cửa hàng</th>
+                <th>SĐT</th>
+                <th>Lương</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="staffTableBody"></tbody>
+    </table>
+
+    <div class="table-footer">
+        <div class="table-info">Hiển thị <span id="showingCount">0</span> / <span id="totalCount">0</span> nhân viên</div>
+    </div>
+</div>
+
+<!-- Staff Modal -->
+<div class="modal-overlay" id="staffModal">
+    <div class="modal" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3 id="modalTitle">Thêm nhân viên</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="staffForm">
+                <input type="hidden" id="staffId" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Họ và tên *</label>
+                        <input type="text" id="staffName" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Số điện thoại *</label>
+                        <input type="tel" id="staffPhone" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày sinh</label>
+                        <input type="date" id="staffBirthday" />
+                    </div>
+                    <div class="form-group">
+                        <label>Giới tính</label>
+                        <select id="staffGender">
+                            <option value="Nam">Nam</option>
+                            <option value="Nữ">Nữ</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Chức vụ *</label>
+                        <select id="staffRole" required>
+                            <option value="Nhân viên phục vụ">Nhân viên phục vụ</option>
+                            <option value="Thu ngân">Thu ngân</option>
+                            <option value="Đầu bếp">Đầu bếp</option>
+                            <option value="Quản lý">Quản lý</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Cửa hàng *</label>
+                        <select id="staffStore" required>
+                            <option value="1">Chi nhánh Quận 1</option>
+                            <option value="2">Chi nhánh Quận 3</option>
+                            <option value="3">Chi nhánh Quận 7</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Lương (VNĐ)</label>
+                        <input type="number" id="staffSalary" placeholder="8000000" />
+                    </div>
+                    <div class="form-group">
+                        <label>Ngày vào làm</label>
+                        <input type="date" id="staffStartDate" />
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Địa chỉ</label>
+                        <input type="text" id="staffAddress" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="saveStaff()">Lưu</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const stores = {
+    1: 'Chi nhánh Quận 1',
+    2: 'Chi nhánh Quận 3',
+    3: 'Chi nhánh Quận 7'
+};
+
+const staff = [
+    { id: 1, name: 'Trần Thị Quản Lý', phone: '0909000002', birthday: '1988-05-20', gender: 'Nữ', role: 'Quản lý', storeId: 1, salary: 15000000, startDate: '2023-01-15', address: 'Quận 1', status: 1 },
+    { id: 2, name: 'Lê Văn Nhân Viên', phone: '0909000003', birthday: '1998-05-15', gender: 'Nam', role: 'Nhân viên phục vụ', storeId: 1, salary: 8000000, startDate: '2023-06-01', address: 'Quận Bình Thạnh', status: 1 },
+    { id: 3, name: 'Phạm Thị Hoa', phone: '0909000004', birthday: '2000-08-20', gender: 'Nữ', role: 'Thu ngân', storeId: 1, salary: 8500000, startDate: '2023-08-15', address: 'Quận 1', status: 1 },
+    { id: 4, name: 'Nguyễn Văn Bếp', phone: '0909000005', birthday: '1995-03-10', gender: 'Nam', role: 'Đầu bếp', storeId: 1, salary: 12000000, startDate: '2023-01-20', address: 'Quận 3', status: 1 },
+    { id: 5, name: 'Hoàng Minh Tú', phone: '0909000006', birthday: '1997-11-25', gender: 'Nam', role: 'Nhân viên phục vụ', storeId: 2, salary: 8000000, startDate: '2024-02-01', address: 'Quận 3', status: 1 }
+];
+
+function renderStaff(data) {
+    const tbody = document.getElementById('staffTableBody');
+    tbody.innerHTML = data.map(s => `
+        <tr>
+            <td>
+                <div class="product-cell">
+                    <div class="user-avatar" style="width:40px;height:40px;background:${s.role === 'Quản lý' ? '#8b5cf6' : '#3b82f6'};color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;">
+                        ${s.name.charAt(0)}
+                    </div>
+                    <div>
+                        <div class="product-name">${s.name}</div>
+                        <div class="product-code">${s.gender} - ${s.birthday || ''}</div>
+                    </div>
+                </div>
+            </td>
+            <td><span style="padding:4px 12px;background:${s.role === 'Quản lý' ? '#ede9fe' : '#dbeafe'};color:${s.role === 'Quản lý' ? '#7c3aed' : '#2563eb'};border-radius:20px;font-size:0.8rem;">${s.role}</span></td>
+            <td>${stores[s.storeId]}</td>
+            <td>${s.phone}</td>
+            <td style="font-weight:600;">${s.salary ? s.salary.toLocaleString() + 'đ' : '-'}</td>
+            <td><span class="status-badge ${s.status ? 'active' : 'inactive'}">${s.status ? 'Đang làm' : 'Nghỉ việc'}</span></td>
+            <td class="actions">
+                <button class="action-btn edit" onclick="editStaff(${s.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                <button class="action-btn delete" onclick="deleteStaff(${s.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('showingCount').textContent = data.length;
+    document.getElementById('totalCount').textContent = staff.length;
+}
+
+function filterStaff() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const storeId = document.getElementById('storeFilter').value;
+    const role = document.getElementById('roleFilter').value;
+    
+    let filtered = staff.filter(s => {
+        const matchSearch = s.name.toLowerCase().includes(search) || s.phone.includes(search);
+        const matchStore = !storeId || s.storeId == storeId;
+        const matchRole = !role || s.role === role;
+        return matchSearch && matchStore && matchRole;
+    });
+    
+    renderStaff(filtered);
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm nhân viên';
+    document.getElementById('staffForm').reset();
+    document.getElementById('staffId').value = '';
+    document.getElementById('staffModal').classList.add('show');
+}
+
+function editStaff(id) {
+    const s = staff.find(x => x.id === id);
+    if (!s) return;
+    
+    document.getElementById('modalTitle').textContent = 'Sửa thông tin nhân viên';
+    document.getElementById('staffId').value = s.id;
+    document.getElementById('staffName').value = s.name;
+    document.getElementById('staffPhone').value = s.phone;
+    document.getElementById('staffBirthday').value = s.birthday || '';
+    document.getElementById('staffGender').value = s.gender;
+    document.getElementById('staffRole').value = s.role;
+    document.getElementById('staffStore').value = s.storeId;
+    document.getElementById('staffSalary').value = s.salary || '';
+    document.getElementById('staffStartDate').value = s.startDate || '';
+    document.getElementById('staffAddress').value = s.address || '';
+    
+    document.getElementById('staffModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('staffModal').classList.remove('show');
+}
+
+function saveStaff() {
+    const id = document.getElementById('staffId').value;
+    const data = {
+        name: document.getElementById('staffName').value,
+        phone: document.getElementById('staffPhone').value,
+        birthday: document.getElementById('staffBirthday').value,
+        gender: document.getElementById('staffGender').value,
+        role: document.getElementById('staffRole').value,
+        storeId: parseInt(document.getElementById('staffStore').value),
+        salary: parseInt(document.getElementById('staffSalary').value) || null,
+        startDate: document.getElementById('staffStartDate').value,
+        address: document.getElementById('staffAddress').value,
+        status: 1
+    };
+    
+    if (!data.name || !data.phone) {
+        showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+        return;
+    }
+    
+    if (id) {
+        const index = staff.findIndex(s => s.id == id);
+        if (index > -1) staff[index] = { ...staff[index], ...data };
+        showToast('Cập nhật thành công!', 'success');
+    } else {
+        data.id = staff.length + 1;
+        staff.unshift(data);
+        showToast('Thêm nhân viên thành công!', 'success');
+    }
+    
+    closeModal();
+    renderStaff(staff);
+}
+
+function deleteStaff(id) {
+    if (confirm('Bạn có chắc muốn xóa nhân viên này?')) {
+        const index = staff.findIndex(s => s.id === id);
+        if (index > -1) staff.splice(index, 1);
+        renderStaff(staff);
+        showToast('Đã xóa nhân viên!', 'warning');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+renderStaff(staff);
+</script>
+}

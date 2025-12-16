@@ -1,0 +1,189 @@
+@page
+@model AdminIndexModel
+@{
+    ViewData["Title"] = "Trang quản trị";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-dashboard">
+    <!-- Welcome Section -->
+    <div class="welcome-section">
+        <div class="welcome-text">
+            <h1>Xin chào, <span id="adminName">Admin</span>! 👋</h1>
+            <p>Chào mừng bạn đến với hệ thống quản trị Mỳ Cay Sasin</p>
+        </div>
+        <div class="date-time">
+            <span id="currentDate"></span>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="stats-grid">
+        <div class="stat-card stat-orders">
+            <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+            <div class="stat-info">
+                <h3>Đơn hàng hôm nay</h3>
+                <p class="stat-number">24</p>
+                <span class="stat-change positive">+12% so với hôm qua</span>
+            </div>
+        </div>
+        <div class="stat-card stat-revenue">
+            <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+            <div class="stat-info">
+                <h3>Doanh thu hôm nay</h3>
+                <p class="stat-number">3,450,000đ</p>
+                <span class="stat-change positive">+8% so với hôm qua</span>
+            </div>
+        </div>
+        <div class="stat-card stat-products">
+            <div class="stat-icon"><i class="fas fa-utensils"></i></div>
+            <div class="stat-info">
+                <h3>Sản phẩm</h3>
+                <p class="stat-number">100</p>
+                <span class="stat-change">10 danh mục</span>
+            </div>
+        </div>
+        <div class="stat-card stat-customers">
+            <div class="stat-icon"><i class="fas fa-users"></i></div>
+            <div class="stat-info">
+                <h3>Khách hàng</h3>
+                <p class="stat-number">156</p>
+                <span class="stat-change positive">+5 mới hôm nay</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions & Recent Orders -->
+    <div class="dashboard-grid">
+        <!-- Quick Actions -->
+        <div class="dashboard-card quick-actions">
+            <h2><i class="fas fa-bolt"></i> Thao tác nhanh</h2>
+            <div class="actions-grid">
+                <a href="/Admin/DonHang" class="action-btn">
+                    <i class="fas fa-plus-circle"></i>
+                    <span>Đơn hàng mới</span>
+                </a>
+                <a href="/Admin/SanPham/Them" class="action-btn">
+                    <i class="fas fa-hamburger"></i>
+                    <span>Thêm sản phẩm</span>
+                </a>
+                <a href="/Admin/BaoCao" class="action-btn">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Xem báo cáo</span>
+                </a>
+                <a href="/Admin/KhachHang" class="action-btn">
+                    <i class="fas fa-user-plus"></i>
+                    <span>Khách hàng</span>
+                </a>
+            </div>
+        </div>
+
+        <!-- Pending Orders -->
+        <div class="dashboard-card pending-orders">
+            <div class="card-header">
+                <h2><i class="fas fa-clock"></i> Đơn hàng chờ xử lý</h2>
+                <a href="/Admin/DonHang" class="view-all">Xem tất cả →</a>
+            </div>
+            <div class="orders-list">
+                <div class="order-item">
+                    <div class="order-info">
+                        <span class="order-id">#DH20241216003</span>
+                        <span class="order-customer">Khách vãng lai</span>
+                    </div>
+                    <div class="order-details">
+                        <span class="order-total">74,000đ</span>
+                        <span class="order-status pending">Chờ xác nhận</span>
+                    </div>
+                </div>
+                <div class="order-item">
+                    <div class="order-info">
+                        <span class="order-id">#DH20241216002</span>
+                        <span class="order-customer">Trần Văn Hùng</span>
+                    </div>
+                    <div class="order-details">
+                        <span class="order-total">253,000đ</span>
+                        <span class="order-status shipping">Đang giao</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row -->
+    <div class="charts-grid">
+        <div class="dashboard-card chart-card">
+            <h2><i class="fas fa-chart-line"></i> Doanh thu 7 ngày qua</h2>
+            <div class="chart-placeholder">
+                <canvas id="revenueChart"></canvas>
+            </div>
+        </div>
+        <div class="dashboard-card chart-card">
+            <h2><i class="fas fa-chart-pie"></i> Sản phẩm bán chạy</h2>
+            <div class="top-products">
+                <div class="product-item">
+                    <span class="rank">1</span>
+                    <span class="name">Mì Thập Cẩm No Nê</span>
+                    <span class="sold">45 phần</span>
+                </div>
+                <div class="product-item">
+                    <span class="rank">2</span>
+                    <span class="name">Mì Thập Cẩm</span>
+                    <span class="sold">38 phần</span>
+                </div>
+                <div class="product-item">
+                    <span class="rank">3</span>
+                    <span class="name">Combo Vui Vẻ</span>
+                    <span class="sold">32 phần</span>
+                </div>
+                <div class="product-item">
+                    <span class="rank">4</span>
+                    <span class="name">Tokbokki Phô Mai</span>
+                    <span class="sold">28 phần</span>
+                </div>
+                <div class="product-item">
+                    <span class="rank">5</span>
+                    <span class="name">Mì Hải Sản</span>
+                    <span class="sold">25 phần</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Update date
+    document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', {
+        weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+    });
+
+    // Update admin name from localStorage
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.name) {
+        document.getElementById('adminName').textContent = user.name;
+    }
+
+    // Revenue Chart
+    const ctx = document.getElementById('revenueChart').getContext('2d');
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+            datasets: [{
+                label: 'Doanh thu (triệu đồng)',
+                data: [2.8, 3.2, 2.9, 3.5, 4.1, 5.2, 3.4],
+                borderColor: '#f97316',
+                backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                fill: true,
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } }
+        }
+    });
+</script>
+}

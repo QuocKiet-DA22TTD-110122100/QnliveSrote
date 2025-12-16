@@ -1,0 +1,355 @@
+@page
+@model AdminSanPhamModel
+@{
+    ViewData["Title"] = "Quản lý sản phẩm";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Quản lý sản phẩm</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Thêm sản phẩm
+        </button>
+    </div>
+</div>
+
+<!-- Products Table -->
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <div class="table-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Tìm tên sản phẩm, mã..." onkeyup="filterProducts()" />
+        </div>
+        <div class="table-filters">
+            <select id="categoryFilter" onchange="filterProducts()">
+                <option value="">Tất cả danh mục</option>
+            </select>
+            <select id="statusFilter" onchange="filterProducts()">
+                <option value="">Tất cả trạng thái</option>
+                <option value="1">Đang bán</option>
+                <option value="0">Ngừng bán</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Sản phẩm</th>
+                <th>Danh mục</th>
+                <th>Giá</th>
+                <th>Cấp độ cay</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="productsTableBody">
+            <!-- Products will be loaded here -->
+        </tbody>
+    </table>
+
+    <div class="table-footer">
+        <div class="table-info">Hiển thị <span id="showingCount">0</span> / <span id="totalCount">0</span> sản phẩm</div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+</div>
+
+<!-- Add/Edit Product Modal -->
+<div class="modal-overlay" id="productModal">
+    <div class="modal" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3 id="modalTitle">Thêm sản phẩm mới</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="productForm">
+                <input type="hidden" id="productId" />
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Mã sản phẩm</label>
+                        <input type="text" id="productCode" placeholder="VD: M00012" />
+                    </div>
+                    <div class="form-group">
+                        <label>Danh mục *</label>
+                        <select id="productCategory" required>
+                            <option value="">Chọn danh mục</option>
+                        </select>
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Tên sản phẩm *</label>
+                        <input type="text" id="productName" placeholder="Nhập tên sản phẩm" required />
+                    </div>
+                    <div class="form-group full-width">
+                        <label>Mô tả</label>
+                        <textarea id="productDesc" placeholder="Mô tả sản phẩm..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Giá bán *</label>
+                        <input type="number" id="productPrice" placeholder="VD: 69000" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Giá khuyến mãi</label>
+                        <input type="number" id="productSalePrice" placeholder="Để trống nếu không KM" />
+                    </div>
+                    <div class="form-group">
+                        <label>Cấp độ cay (0-7)</label>
+                        <select id="productSpicy">
+                            <option value="0">0 - Không cay</option>
+                            <option value="1">1 - Ít cay</option>
+                            <option value="2">2</option>
+                            <option value="3">3 - Cay vừa</option>
+                            <option value="4">4</option>
+                            <option value="5">5 - Cay nhiều</option>
+                            <option value="6">6</option>
+                            <option value="7">7 - Siêu cay</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Trạng thái</label>
+                        <select id="productStatus">
+                            <option value="1">Đang bán</option>
+                            <option value="0">Ngừng bán</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Hình ảnh</label>
+                        <input type="text" id="productImage" placeholder="Tên file ảnh" />
+                    </div>
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="productFeatured" /> Sản phẩm nổi bật
+                        </label>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="saveProduct()">Lưu sản phẩm</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const categories = [
+    { id: 1, name: 'Mì Cay' },
+    { id: 2, name: 'Mì Tương Đen' },
+    { id: 3, name: 'Mì Xào' },
+    { id: 4, name: 'Món Khác' },
+    { id: 5, name: 'Món Thêm Mì' },
+    { id: 6, name: 'Combo' },
+    { id: 7, name: 'Lẩu Hàn Quốc' },
+    { id: 8, name: 'Món Thêm Lẩu' },
+    { id: 9, name: 'Khai Vị' },
+    { id: 10, name: 'Giải Khát' }
+];
+
+let products = [];
+let currentPage = 1;
+const itemsPerPage = 10;
+
+// Load products from JSON
+async function loadProducts() {
+    try {
+        const response = await fetch('/data/products.json');
+        const data = await response.json();
+        products = data.map((p, i) => ({
+            id: i + 1,
+            code: p.code || `SP${String(i+1).padStart(4, '0')}`,
+            name: p.name,
+            desc: p.description,
+            price: p.price,
+            salePrice: null,
+            image: p.image,
+            categoryId: getCategoryId(p.name),
+            spicy: getSpicyLevel(p.name),
+            status: 1,
+            featured: i < 5
+        }));
+        renderProducts();
+        renderCategoryFilters();
+    } catch (e) {
+        console.error('Error loading products:', e);
+    }
+}
+
+function getCategoryId(name) {
+    if (name.includes('Lẩu')) return 7;
+    if (name.includes('Combo')) return 6;
+    if (name.includes('Trộn Tương Đen')) return 2;
+    if (name.includes('Xào')) return 3;
+    if (name.includes('Cơm') || name.includes('Tokbok') || name.includes('Miến')) return 4;
+    if (name.includes('Thêm') && name.includes('Lẩu')) return 8;
+    if (name.includes('Thêm') || name.includes('Trứng') || name.includes('Bò Thêm')) return 5;
+    if (name.includes('Khoai') || name.includes('Phô Mai') || name.includes('Kimbap') || name.includes('Gà Viên') || name.includes('Mandu') || name.includes('Salad')) return 9;
+    if (name.includes('Nước') || name.includes('Soda') || name.includes('Trà') || name.includes('Coca') || name.includes('Sprite') || name.includes('Sting')) return 10;
+    return 1; // Default: Mì Cay
+}
+
+function getSpicyLevel(name) {
+    if (name.includes('Sincay') || name.includes('Kim Chi') || name.includes('Cay')) return 3;
+    return 0;
+}
+
+function renderCategoryFilters() {
+    const select = document.getElementById('categoryFilter');
+    const formSelect = document.getElementById('productCategory');
+    categories.forEach(c => {
+        select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        formSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+    });
+}
+
+function renderProducts() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const categoryId = document.getElementById('categoryFilter').value;
+    const status = document.getElementById('statusFilter').value;
+    
+    let filtered = products.filter(p => {
+        const matchSearch = p.name.toLowerCase().includes(search) || (p.code && p.code.toLowerCase().includes(search));
+        const matchCategory = !categoryId || p.categoryId == categoryId;
+        const matchStatus = status === '' || p.status == status;
+        return matchSearch && matchCategory && matchStatus;
+    });
+    
+    const start = (currentPage - 1) * itemsPerPage;
+    const paged = filtered.slice(start, start + itemsPerPage);
+    
+    const tbody = document.getElementById('productsTableBody');
+    tbody.innerHTML = paged.map(p => `
+        <tr>
+            <td>
+                <div class="product-cell">
+                    <img src="/images/products/${p.image || 'default.webp'}" class="product-img" onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                    <div>
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-code">${p.code || ''}</div>
+                    </div>
+                </div>
+            </td>
+            <td>${categories.find(c => c.id === p.categoryId)?.name || '-'}</td>
+            <td class="price">${p.price.toLocaleString()}đ</td>
+            <td>${'🌶️'.repeat(p.spicy) || '-'}</td>
+            <td><span class="status-badge ${p.status ? 'active' : 'inactive'}">${p.status ? 'Đang bán' : 'Ngừng bán'}</span></td>
+            <td class="actions">
+                <button class="action-btn edit" onclick="editProduct(${p.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                <button class="action-btn delete" onclick="deleteProduct(${p.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('showingCount').textContent = paged.length;
+    document.getElementById('totalCount').textContent = filtered.length;
+    
+    renderPagination(filtered.length);
+}
+
+function renderPagination(total) {
+    const pages = Math.ceil(total / itemsPerPage);
+    const pagination = document.getElementById('pagination');
+    pagination.innerHTML = '';
+    
+    for (let i = 1; i <= Math.min(pages, 5); i++) {
+        pagination.innerHTML += `<button class="${i === currentPage ? 'active' : ''}" onclick="goToPage(${i})">${i}</button>`;
+    }
+}
+
+function goToPage(page) {
+    currentPage = page;
+    renderProducts();
+}
+
+function filterProducts() {
+    currentPage = 1;
+    renderProducts();
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm sản phẩm mới';
+    document.getElementById('productForm').reset();
+    document.getElementById('productId').value = '';
+    document.getElementById('productModal').classList.add('show');
+}
+
+function editProduct(id) {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+    
+    document.getElementById('modalTitle').textContent = 'Sửa sản phẩm';
+    document.getElementById('productId').value = product.id;
+    document.getElementById('productCode').value = product.code || '';
+    document.getElementById('productName').value = product.name;
+    document.getElementById('productDesc').value = product.desc || '';
+    document.getElementById('productPrice').value = product.price;
+    document.getElementById('productSalePrice').value = product.salePrice || '';
+    document.getElementById('productCategory').value = product.categoryId;
+    document.getElementById('productSpicy').value = product.spicy;
+    document.getElementById('productStatus').value = product.status;
+    document.getElementById('productImage').value = product.image || '';
+    document.getElementById('productFeatured').checked = product.featured;
+    
+    document.getElementById('productModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('productModal').classList.remove('show');
+}
+
+function saveProduct() {
+    const id = document.getElementById('productId').value;
+    const data = {
+        code: document.getElementById('productCode').value,
+        name: document.getElementById('productName').value,
+        desc: document.getElementById('productDesc').value,
+        price: parseInt(document.getElementById('productPrice').value),
+        salePrice: document.getElementById('productSalePrice').value ? parseInt(document.getElementById('productSalePrice').value) : null,
+        categoryId: parseInt(document.getElementById('productCategory').value),
+        spicy: parseInt(document.getElementById('productSpicy').value),
+        status: parseInt(document.getElementById('productStatus').value),
+        image: document.getElementById('productImage').value,
+        featured: document.getElementById('productFeatured').checked
+    };
+    
+    if (!data.name || !data.price || !data.categoryId) {
+        showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+        return;
+    }
+    
+    if (id) {
+        const index = products.findIndex(p => p.id == id);
+        if (index > -1) {
+            products[index] = { ...products[index], ...data };
+        }
+        showToast('Cập nhật sản phẩm thành công!', 'success');
+    } else {
+        data.id = products.length + 1;
+        products.unshift(data);
+        showToast('Thêm sản phẩm thành công!', 'success');
+    }
+    
+    closeModal();
+    renderProducts();
+}
+
+function deleteProduct(id) {
+    if (confirm('Bạn có chắc muốn xóa sản phẩm này?')) {
+        products = products.filter(p => p.id !== id);
+        renderProducts();
+        showToast('Đã xóa sản phẩm!', 'warning');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Init
+loadProducts();
+</script>
+}

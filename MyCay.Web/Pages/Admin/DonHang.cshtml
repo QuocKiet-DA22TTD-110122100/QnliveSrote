@@ -1,0 +1,291 @@
+@page
+@model AdminDonHangModel
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Quản lý đơn hàng</h1>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="exportOrders()">
+            <i class="fas fa-download"></i> Xuất Excel
+        </button>
+    </div>
+</div>
+
+<!-- Order Stats -->
+<div class="stats-grid" style="margin-bottom: 25px;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-clock"></i></div>
+        <div class="stat-info">
+            <h3>Chờ xác nhận</h3>
+            <p class="stat-number" id="pendingCount">1</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"><i class="fas fa-truck"></i></div>
+        <div class="stat-info">
+            <h3>Đang giao</h3>
+            <p class="stat-number" id="shippingCount">1</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-check-circle"></i></div>
+        <div class="stat-info">
+            <h3>Hoàn thành</h3>
+            <p class="stat-number" id="completedCount">1</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-times-circle"></i></div>
+        <div class="stat-info">
+            <h3>Đã hủy</h3>
+            <p class="stat-number" id="cancelledCount">0</p>
+        </div>
+    </div>
+</div>
+
+<!-- Orders Table -->
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <div class="table-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Tìm mã đơn, tên khách..." onkeyup="filterOrders()" />
+        </div>
+        <div class="table-filters">
+            <select id="statusFilter" onchange="filterOrders()">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Chờ xác nhận">Chờ xác nhận</option>
+                <option value="Đang chuẩn bị">Đang chuẩn bị</option>
+                <option value="Đang giao">Đang giao</option>
+                <option value="Hoàn thành">Hoàn thành</option>
+                <option value="Đã hủy">Đã hủy</option>
+            </select>
+            <select id="dateFilter" onchange="filterOrders()">
+                <option value="">Tất cả thời gian</option>
+                <option value="today">Hôm nay</option>
+                <option value="week">Tuần này</option>
+                <option value="month">Tháng này</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Địa chỉ giao</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Ngày đặt</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="ordersTableBody">
+            <!-- Orders will be loaded here -->
+        </tbody>
+    </table>
+
+    <div class="table-footer">
+        <div class="table-info">Hiển thị <span id="showingCount">0</span> / <span id="totalCount">0</span> đơn hàng</div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+</div>
+
+<!-- Order Detail Modal -->
+<div class="modal-overlay" id="orderModal">
+    <div class="modal" style="max-width: 700px;">
+        <div class="modal-header">
+            <h3>Chi tiết đơn hàng <span id="modalOrderId"></span></h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="order-detail-grid">
+                <div class="order-info-section">
+                    <h4>Thông tin khách hàng</h4>
+                    <p><strong>Tên:</strong> <span id="modalCustomer"></span></p>
+                    <p><strong>SĐT:</strong> <span id="modalPhone"></span></p>
+                    <p><strong>Địa chỉ:</strong> <span id="modalAddress"></span></p>
+                </div>
+                <div class="order-info-section">
+                    <h4>Thông tin đơn hàng</h4>
+                    <p><strong>Ngày đặt:</strong> <span id="modalDate"></span></p>
+                    <p><strong>Thanh toán:</strong> <span id="modalPayment"></span></p>
+                    <p><strong>Ghi chú:</strong> <span id="modalNote"></span></p>
+                </div>
+            </div>
+            <h4 style="margin: 20px 0 10px;">Sản phẩm</h4>
+            <table class="data-table" style="font-size: 0.9rem;">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>Đơn giá</th>
+                        <th>SL</th>
+                        <th>Thành tiền</th>
+                    </tr>
+                </thead>
+                <tbody id="modalProducts"></tbody>
+                <tfoot>
+                    <tr><td colspan="3">Tạm tính</td><td id="modalSubtotal"></td></tr>
+                    <tr><td colspan="3">Phí giao hàng</td><td id="modalShipping"></td></tr>
+                    <tr><td colspan="3">Giảm giá</td><td id="modalDiscount"></td></tr>
+                    <tr style="font-weight: bold;"><td colspan="3">Tổng cộng</td><td id="modalTotal"></td></tr>
+                </tfoot>
+            </table>
+            <div class="form-group" style="margin-top: 20px;">
+                <label>Cập nhật trạng thái</label>
+                <select id="modalStatus" class="form-control">
+                    <option value="Chờ xác nhận">Chờ xác nhận</option>
+                    <option value="Đang chuẩn bị">Đang chuẩn bị</option>
+                    <option value="Đang giao">Đang giao</option>
+                    <option value="Hoàn thành">Hoàn thành</option>
+                    <option value="Đã hủy">Đã hủy</option>
+                </select>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Đóng</button>
+            <button class="btn btn-primary" onclick="updateOrderStatus()">Cập nhật</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.order-detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.order-info-section { background: var(--admin-light); padding: 15px; border-radius: var(--radius); }
+.order-info-section h4 { margin-bottom: 10px; color: var(--admin-primary); }
+.order-info-section p { margin: 5px 0; font-size: 0.9rem; }
+.data-table tfoot td { padding: 10px 20px; text-align: right; }
+.data-table tfoot tr:last-child { background: var(--admin-light); }
+</style>
+
+@section Scripts {
+<script>
+const orders = [
+    { id: 'DH20241216001', customer: 'Nguyễn Thị Mai', phone: '0988888881', address: '123 Lê Lợi, Quận 1', subtotal: 146000, shipping: 0, discount: 0, total: 146000, status: 'Hoàn thành', date: '2024-12-16 10:30', payment: 'Tiền mặt', note: '', products: [{name: 'Mì Thập Cẩm No Nê', price: 77000, qty: 1}, {name: 'Tokbokki Phô Mai Sasin', price: 59000, qty: 1}] },
+    { id: 'DH20241216002', customer: 'Trần Văn Hùng', phone: '0988888882', address: '456 Hai Bà Trưng, Quận 3', subtotal: 238000, shipping: 15000, discount: 0, total: 253000, status: 'Đang giao', date: '2024-12-16 11:45', payment: 'Chuyển khoản', note: 'Giao trước 12h', products: [{name: 'Mì Thập Cẩm', price: 69000, qty: 2}, {name: 'Combo Vui Vẻ', price: 69000, qty: 1}] },
+    { id: 'DH20241216003', customer: 'Khách vãng lai', phone: '0999999999', address: '789 CMT8, Quận 10', subtotal: 69000, shipping: 15000, discount: 10000, total: 74000, status: 'Chờ xác nhận', date: '2024-12-16 12:00', payment: 'Tiền mặt', note: 'Không hành', products: [{name: 'Combo Vui Vẻ', price: 69000, qty: 1}] }
+];
+
+let currentOrder = null;
+
+function renderOrders(data) {
+    const tbody = document.getElementById('ordersTableBody');
+    tbody.innerHTML = data.map(order => `
+        <tr>
+            <td><strong>${order.id}</strong></td>
+            <td>
+                <div>${order.customer}</div>
+                <small style="color: var(--admin-gray);">${order.phone}</small>
+            </td>
+            <td style="max-width: 200px;">${order.address}</td>
+            <td class="price">${order.total.toLocaleString()}đ</td>
+            <td><span class="order-status ${getStatusClass(order.status)}">${order.status}</span></td>
+            <td>${order.date}</td>
+            <td class="actions">
+                <button class="action-btn edit" onclick="viewOrder('${order.id}')" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
+                <button class="action-btn delete" onclick="cancelOrder('${order.id}')" title="Hủy đơn"><i class="fas fa-times"></i></button>
+            </td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('showingCount').textContent = data.length;
+    document.getElementById('totalCount').textContent = orders.length;
+}
+
+function getStatusClass(status) {
+    const classes = {
+        'Chờ xác nhận': 'pending',
+        'Đang chuẩn bị': 'pending',
+        'Đang giao': 'shipping',
+        'Hoàn thành': 'completed',
+        'Đã hủy': 'cancelled'
+    };
+    return classes[status] || '';
+}
+
+function filterOrders() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    
+    let filtered = orders.filter(o => {
+        const matchSearch = o.id.toLowerCase().includes(search) || o.customer.toLowerCase().includes(search);
+        const matchStatus = !status || o.status === status;
+        return matchSearch && matchStatus;
+    });
+    
+    renderOrders(filtered);
+}
+
+function viewOrder(id) {
+    currentOrder = orders.find(o => o.id === id);
+    if (!currentOrder) return;
+    
+    document.getElementById('modalOrderId').textContent = currentOrder.id;
+    document.getElementById('modalCustomer').textContent = currentOrder.customer;
+    document.getElementById('modalPhone').textContent = currentOrder.phone;
+    document.getElementById('modalAddress').textContent = currentOrder.address;
+    document.getElementById('modalDate').textContent = currentOrder.date;
+    document.getElementById('modalPayment').textContent = currentOrder.payment;
+    document.getElementById('modalNote').textContent = currentOrder.note || 'Không có';
+    document.getElementById('modalStatus').value = currentOrder.status;
+    
+    document.getElementById('modalProducts').innerHTML = currentOrder.products.map(p => `
+        <tr>
+            <td>${p.name}</td>
+            <td>${p.price.toLocaleString()}đ</td>
+            <td>${p.qty}</td>
+            <td>${(p.price * p.qty).toLocaleString()}đ</td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('modalSubtotal').textContent = currentOrder.subtotal.toLocaleString() + 'đ';
+    document.getElementById('modalShipping').textContent = currentOrder.shipping.toLocaleString() + 'đ';
+    document.getElementById('modalDiscount').textContent = '-' + currentOrder.discount.toLocaleString() + 'đ';
+    document.getElementById('modalTotal').textContent = currentOrder.total.toLocaleString() + 'đ';
+    
+    document.getElementById('orderModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('orderModal').classList.remove('show');
+}
+
+function updateOrderStatus() {
+    if (!currentOrder) return;
+    const newStatus = document.getElementById('modalStatus').value;
+    currentOrder.status = newStatus;
+    renderOrders(orders);
+    closeModal();
+    showToast('Cập nhật trạng thái thành công!', 'success');
+}
+
+function cancelOrder(id) {
+    if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
+        const order = orders.find(o => o.id === id);
+        if (order) {
+            order.status = 'Đã hủy';
+            renderOrders(orders);
+            showToast('Đã hủy đơn hàng!', 'warning');
+        }
+    }
+}
+
+function exportOrders() {
+    showToast('Đang xuất file Excel...', 'success');
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+// Init
+renderOrders(orders);
+</script>
+}
