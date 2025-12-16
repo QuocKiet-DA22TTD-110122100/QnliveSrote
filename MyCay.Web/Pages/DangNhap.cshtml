@@ -116,7 +116,7 @@
             const result = await response.json();
             
             if (result.success) {
-                loginSuccess(result.data.email, result.data.name, result.data.role, result.data.token);
+                loginSuccess(result.data.email, result.data.name, result.data.role, result.data.token, result.data.id);
             } else {
                 // Fallback: kiểm tra localStorage
                 checkLocalStorage(email, password);
@@ -159,13 +159,14 @@
         }
     }
 
-    function loginSuccess(email, name, role, phone = '') {
+    function loginSuccess(email, name, role, token = '', id = null) {
         localStorage.setItem('user', JSON.stringify({
+            id: id,
             username: email,
             email: email,
             name: name,
             role: role,
-            phone: phone
+            token: token
         }));
         showToast('✓ Đăng nhập thành công!', 'success');
         

@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
-using System.Text.Json;
+using Microsoft.EntityFrameworkCore;
+using MyCay.Infrastructure.Data;
 
 namespace MyCay.Web.Api
 {
@@ -7,57 +8,68 @@ namespace MyCay.Web.Api
     [Route("api/[controller]")]
     public class ProductsController : ControllerBase
     {
-        private readonly IWebHostEnvironment _env;
+        private readonly MyCayDbContext _context;
+        private readonly ILogger<ProductsController> _logger;
 
-        public ProductsController(IWebHostEnvironment env)
+        public ProductsController(MyCayDbContext context, ILogger<ProductsController> logger)
         {
-            _env = env;
+            _context = context;
+            _logger = logger;
         }
 
         // GET: api/products
         [HttpGet]
         public async Task<IActionResult> GetProducts([FromQuery] int? categoryId, [FromQuery] string? search, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
         {
-            var products = await LoadProductsAsync();
-
-            // Filter by category
-            if (categoryId.HasValue)
+            try
             {
-                products = products.Where(p => p.CategoryId == categoryId.Value).ToList();
+                var query = _context.SanPhams.Include(s => s.DanhMuc).Where(s => s.TrangThai == true);
+
+                if (categoryId.HasValue)
+                    query = query.Where(s => s.MaDM == categoryId.Value);
+
+                if (!string.IsNullOrEmpty(search))
+                    query = query.Where(s => s.TenSP.Contains(search) || (s.MoTa != null && s.MoTa.Contains(search)));
+
+                var total = await query.CountAsync();
+                var items = await query.Skip((page - 1) * pageSize).Take(pageSize)
+                    .Select(s => new ProductDto
+                    {
+                        Id = s.MaSP,
+                        Code = s.MaSPCode,
+                        Name = s.TenSP,
+                        Description = s.MoTa,
+                        Price = (int)s.DonGia,
+                        SalePrice = s.GiaKhuyenMai.HasValue ? (int?)s.GiaKhuyenMai.Value : null,
+                        Image = s.HinhAnh,
+                        CategoryId = s.MaDM ?? 0,
+                        CategoryName = s.DanhMuc != null ? s.DanhMuc.TenDanhMuc : null,
+                        SpicyLevel = s.CapDoCay,
+                        IsFeatured = s.NoiBat
+                    }).ToListAsync();
+
+                return Ok(new { success = true, data = items, pagination = new { page, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) } });
             }
-
-            // Search
-            if (!string.IsNullOrEmpty(search))
+            catch (Exception ex)
             {
-                products = products.Where(p => 
-                    p.Name.Contains(search, StringComparison.OrdinalIgnoreCase) ||
-                    (p.Description?.Contains(search, StringComparison.OrdinalIgnoreCase) ?? false)
-                ).ToList();
+                _logger.LogError(ex, "Lỗi lấy danh sách sản phẩm");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
             }
-
-            var total = products.Count;
-            var items = products.Skip((page - 1) * pageSize).Take(pageSize).ToList();
-
-            return Ok(new
-            {
-                success = true,
-                data = items,
-                pagination = new
-                {
-                    page,
-                    pageSize,
-                    total,
-                    totalPages = (int)Math.Ceiling((double)total / pageSize)
-                }
-            });
         }
 
         // GET: api/products/{id}
         [HttpGet("{id}")]
         public async Task<IActionResult> GetProduct(int id)
         {
-            var products = await LoadProductsAsync();
-            var product = products.FirstOrDefault(p => p.Id == id);
+            var product = await _context.SanPhams.Include(s => s.DanhMuc)
+                .Where(s => s.MaSP == id)
+                .Select(s => new ProductDto
+                {
+                    Id = s.MaSP, Code = s.MaSPCode, Name = s.TenSP, Description = s.MoTa,
+                    Price = (int)s.DonGia, SalePrice = s.GiaKhuyenMai.HasValue ? (int?)s.GiaKhuyenMai.Value : null,
+                    Image = s.HinhAnh, CategoryId = s.MaDM ?? 0, CategoryName = s.DanhMuc != null ? s.DanhMuc.TenDanhMuc : null,
+                    SpicyLevel = s.CapDoCay, IsFeatured = s.NoiBat
+                }).FirstOrDefaultAsync();
 
             if (product == null)
                 return NotFound(new { success = false, message = "Không tìm thấy sản phẩm" });
@@ -65,89 +77,111 @@ namespace MyCay.Web.Api
             return Ok(new { success = true, data = product });
         }
 
+
         // GET: api/products/featured
         [HttpGet("featured")]
         public async Task<IActionResult> GetFeaturedProducts([FromQuery] int limit = 6)
         {
-            var products = await LoadProductsAsync();
-            var featured = products.Take(limit).ToList();
+            var products = await _context.SanPhams.Include(s => s.DanhMuc)
+                .Where(s => s.TrangThai == true && s.NoiBat == true)
+                .Take(limit)
+                .Select(s => new ProductDto
+                {
+                    Id = s.MaSP, Code = s.MaSPCode, Name = s.TenSP, Description = s.MoTa,
+                    Price = (int)s.DonGia, SalePrice = s.GiaKhuyenMai.HasValue ? (int?)s.GiaKhuyenMai.Value : null,
+                    Image = s.HinhAnh, CategoryId = s.MaDM ?? 0, CategoryName = s.DanhMuc != null ? s.DanhMuc.TenDanhMuc : null,
+                    SpicyLevel = s.CapDoCay, IsFeatured = s.NoiBat
+                }).ToListAsync();
 
-            return Ok(new { success = true, data = featured });
+            return Ok(new { success = true, data = products });
         }
 
         // GET: api/products/categories
         [HttpGet("categories")]
-        public IActionResult GetCategories()
+        public async Task<IActionResult> GetCategories()
         {
-            var categories = new[]
-            {
-                new { id = 1, name = "Mì Cay", icon = "🍜", count = 10 },
-                new { id = 2, name = "Mì Tương Đen", icon = "🥢", count = 4 },
-                new { id = 3, name = "Mì Xào", icon = "🍝", count = 3 },
-                new { id = 4, name = "Món Khác", icon = "🍚", count = 7 },
-                new { id = 5, name = "Món Thêm Mì", icon = "🥚", count = 13 },
-                new { id = 6, name = "Combo", icon = "🎁", count = 6 },
-                new { id = 7, name = "Lẩu Hàn Quốc", icon = "🍲", count = 6 },
-                new { id = 8, name = "Món Thêm Lẩu", icon = "🥬", count = 17 },
-                new { id = 9, name = "Khai Vị", icon = "🍟", count = 17 },
-                new { id = 10, name = "Giải Khát", icon = "🥤", count = 17 }
-            };
+            var categories = await _context.DanhMucs
+                .Where(d => d.TrangThai == true)
+                .OrderBy(d => d.ThuTu)
+                .Select(d => new
+                {
+                    id = d.MaDM,
+                    name = d.TenDanhMuc,
+                    description = d.MoTa,
+                    image = d.HinhAnh,
+                    count = _context.SanPhams.Count(s => s.MaDM == d.MaDM && s.TrangThai == true)
+                }).ToListAsync();
 
             return Ok(new { success = true, data = categories });
         }
 
-        private async Task<List<ProductDto>> LoadProductsAsync()
+        // POST: api/products (Admin)
+        [HttpPost]
+        public async Task<IActionResult> CreateProduct([FromBody] CreateProductRequest request)
         {
-            var filePath = Path.Combine(_env.WebRootPath, "data", "products.json");
-            if (!System.IO.File.Exists(filePath))
-                return new List<ProductDto>();
-
-            var json = await System.IO.File.ReadAllTextAsync(filePath);
-            var products = JsonSerializer.Deserialize<List<JsonProduct>>(json, new JsonSerializerOptions
+            try
             {
-                PropertyNameCaseInsensitive = true
-            }) ?? new List<JsonProduct>();
+                var sanPham = new MyCay.Domain.Entities.SanPham
+                {
+                    MaSPCode = request.Code,
+                    TenSP = request.Name,
+                    MoTa = request.Description,
+                    DonGia = request.Price,
+                    GiaKhuyenMai = request.SalePrice,
+                    HinhAnh = request.Image,
+                    MaDM = request.CategoryId,
+                    CapDoCay = request.SpicyLevel,
+                    NoiBat = request.IsFeatured,
+                    TrangThai = true,
+                    NgayTao = DateTime.Now
+                };
 
-            return products.Select((p, i) => new ProductDto
+                _context.SanPhams.Add(sanPham);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { success = true, message = "Thêm sản phẩm thành công", data = new { id = sanPham.MaSP } });
+            }
+            catch (Exception ex)
             {
-                Id = i + 1,
-                Code = p.Code,
-                Name = p.Name,
-                Description = p.Description,
-                Price = p.GetPriceAsInt(),
-                Image = p.Image,
-                CategoryId = GetCategoryId(p.Name)
-            }).ToList();
+                _logger.LogError(ex, "Lỗi thêm sản phẩm");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
         }
 
-        private int GetCategoryId(string name)
+        // PUT: api/products/{id} (Admin)
+        [HttpPut("{id}")]
+        public async Task<IActionResult> UpdateProduct(int id, [FromBody] CreateProductRequest request)
         {
-            if (name.Contains("Lẩu")) return 7;
-            if (name.Contains("Combo")) return 6;
-            if (name.Contains("Trộn Tương Đen")) return 2;
-            if (name.Contains("Xào")) return 3;
-            if (name.Contains("Cơm") || name.Contains("Tokbok") || name.Contains("Miến")) return 4;
-            if (name.Contains("Nước") || name.Contains("Soda") || name.Contains("Trà") || name.Contains("Coca") || name.Contains("Sprite") || name.Contains("Sting")) return 10;
-            if (name.Contains("Khoai") || name.Contains("Phô Mai Que") || name.Contains("Kimbap") || name.Contains("Gà Viên") || name.Contains("Mandu Chiên") || name.Contains("Salad")) return 9;
-            return 1;
-        }
-    }
+            var sanPham = await _context.SanPhams.FindAsync(id);
+            if (sanPham == null)
+                return NotFound(new { success = false, message = "Không tìm thấy sản phẩm" });
 
-    public class JsonProduct
-    {
-        public string? Code { get; set; }
-        public string Name { get; set; } = "";
-        public string? Description { get; set; }
-        public string? Price { get; set; }
-        public string? Category { get; set; }
-        public string? Image { get; set; }
-        
-        public int GetPriceAsInt()
+            sanPham.MaSPCode = request.Code;
+            sanPham.TenSP = request.Name;
+            sanPham.MoTa = request.Description;
+            sanPham.DonGia = request.Price;
+            sanPham.GiaKhuyenMai = request.SalePrice;
+            sanPham.HinhAnh = request.Image;
+            sanPham.MaDM = request.CategoryId;
+            sanPham.CapDoCay = request.SpicyLevel;
+            sanPham.NoiBat = request.IsFeatured;
+            sanPham.NgayCapNhat = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = "Cập nhật sản phẩm thành công" });
+        }
+
+        // DELETE: api/products/{id} (Admin)
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteProduct(int id)
         {
-            if (string.IsNullOrEmpty(Price)) return 0;
-            // Parse "77,000VNĐ" -> 77000
-            var numStr = new string(Price.Where(c => char.IsDigit(c)).ToArray());
-            return int.TryParse(numStr, out var result) ? result : 0;
+            var sanPham = await _context.SanPhams.FindAsync(id);
+            if (sanPham == null)
+                return NotFound(new { success = false, message = "Không tìm thấy sản phẩm" });
+
+            sanPham.TrangThai = false; // Soft delete
+            await _context.SaveChangesAsync();
+            return Ok(new { success = true, message = "Xóa sản phẩm thành công" });
         }
     }
 
@@ -158,7 +192,24 @@ namespace MyCay.Web.Api
         public string Name { get; set; } = "";
         public string? Description { get; set; }
         public int Price { get; set; }
+        public int? SalePrice { get; set; }
         public string? Image { get; set; }
         public int CategoryId { get; set; }
+        public string? CategoryName { get; set; }
+        public int SpicyLevel { get; set; }
+        public bool IsFeatured { get; set; }
+    }
+
+    public class CreateProductRequest
+    {
+        public string? Code { get; set; }
+        public string Name { get; set; } = "";
+        public string? Description { get; set; }
+        public decimal Price { get; set; }
+        public decimal? SalePrice { get; set; }
+        public string? Image { get; set; }
+        public int? CategoryId { get; set; }
+        public int SpicyLevel { get; set; }
+        public bool IsFeatured { get; set; }
     }
 }

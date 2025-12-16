@@ -1,4 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MyCay.Infrastructure.Data;
 
 namespace MyCay.Web.Api
 {
@@ -6,124 +8,207 @@ namespace MyCay.Web.Api
     [Route("api/[controller]")]
     public class OrdersController : ControllerBase
     {
-        private static List<OrderDto> _orders = new()
+        private readonly MyCayDbContext _context;
+        private readonly ILogger<OrdersController> _logger;
+
+        public OrdersController(MyCayDbContext context, ILogger<OrdersController> logger)
         {
-            new OrderDto { Id = 1, Code = "DH20241216001", CustomerName = "Nguyễn Thị Mai", Phone = "0988888881", Address = "123 Lê Lợi, Quận 1", Total = 146000, Status = "Hoàn thành", CreatedAt = DateTime.Now.AddHours(-2) },
-            new OrderDto { Id = 2, Code = "DH20241216002", CustomerName = "Trần Văn Hùng", Phone = "0988888882", Address = "456 Hai Bà Trưng, Quận 3", Total = 253000, Status = "Đang giao", CreatedAt = DateTime.Now.AddHours(-1) },
-            new OrderDto { Id = 3, Code = "DH20241216003", CustomerName = "Khách vãng lai", Phone = "0999999999", Address = "789 CMT8, Quận 10", Total = 74000, Status = "Chờ xác nhận", CreatedAt = DateTime.Now }
-        };
+            _context = context;
+            _logger = logger;
+        }
 
         // GET: api/orders
         [HttpGet]
-        public IActionResult GetOrders([FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetOrders([FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
         {
-            var orders = _orders.AsQueryable();
+            var query = _context.DonHangs.Include(d => d.KhachHang).AsQueryable();
 
             if (!string.IsNullOrEmpty(status))
-                orders = orders.Where(o => o.Status == status);
+                query = query.Where(d => d.TrangThai == status);
 
-            var total = orders.Count();
-            var items = orders.OrderByDescending(o => o.CreatedAt)
-                              .Skip((page - 1) * pageSize)
-                              .Take(pageSize)
-                              .ToList();
+            var total = await query.CountAsync();
+            var items = await query.OrderByDescending(d => d.NgayDat)
+                .Skip((page - 1) * pageSize).Take(pageSize)
+                .Select(d => new OrderDto
+                {
+                    Id = d.MaDH,
+                    Code = d.MaDHCode ?? $"DH{d.MaDH:D6}",
+                    CustomerName = d.TenKhach ?? (d.KhachHang != null ? d.KhachHang.HoTen : "Khách vãng lai"),
+                    Phone = d.SDTKhach ?? "",
+                    Address = d.DiaChiGiao,
+                    Subtotal = d.TamTinh,
+                    ShippingFee = d.PhiGiaoHang,
+                    Discount = d.GiamGia,
+                    Total = d.TongTien,
+                    PaymentMethod = d.PhuongThucThanhToan ?? "Tiền mặt",
+                    PaymentStatus = d.TrangThaiThanhToan ?? "Chưa thanh toán",
+                    Note = d.GhiChu,
+                    Status = d.TrangThai ?? "Chờ xác nhận",
+                    CreatedAt = d.NgayDat ?? DateTime.Now
+                }).ToListAsync();
 
-            return Ok(new
-            {
-                success = true,
-                data = items,
-                pagination = new { page, pageSize, total }
-            });
+            return Ok(new { success = true, data = items, pagination = new { page, pageSize, total } });
         }
 
         // GET: api/orders/{id}
         [HttpGet("{id}")]
-        public IActionResult GetOrder(int id)
+        public async Task<IActionResult> GetOrder(int id)
         {
-            var order = _orders.FirstOrDefault(o => o.Id == id);
+            var order = await _context.DonHangs.Include(d => d.KhachHang)
+                .Where(d => d.MaDH == id)
+                .Select(d => new OrderDto
+                {
+                    Id = d.MaDH, Code = d.MaDHCode ?? $"DH{d.MaDH:D6}",
+                    CustomerName = d.TenKhach ?? (d.KhachHang != null ? d.KhachHang.HoTen : "Khách vãng lai"),
+                    Phone = d.SDTKhach ?? "", Address = d.DiaChiGiao,
+                    Subtotal = d.TamTinh, ShippingFee = d.PhiGiaoHang, Discount = d.GiamGia, Total = d.TongTien,
+                    PaymentMethod = d.PhuongThucThanhToan ?? "Tiền mặt", PaymentStatus = d.TrangThaiThanhToan ?? "Chưa thanh toán",
+                    Note = d.GhiChu, Status = d.TrangThai ?? "Chờ xác nhận", CreatedAt = d.NgayDat ?? DateTime.Now
+                }).FirstOrDefaultAsync();
+
             if (order == null)
                 return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
+
+            // Lấy chi tiết đơn hàng
+            order.Items = await _context.ChiTietDonHangs.Where(c => c.MaDH == id)
+                .Select(c => new OrderItemDto
+                {
+                    ProductId = c.MaSP, Name = c.TenSP, Price = (int)c.DonGia,
+                    Quantity = c.SoLuong, SpicyLevel = c.CapDoCay, BrothType = c.LoaiNuocDung
+                }).ToListAsync();
 
             return Ok(new { success = true, data = order });
         }
 
+
         // POST: api/orders
         [HttpPost]
-        public IActionResult CreateOrder([FromBody] CreateOrderRequest request)
+        public async Task<IActionResult> CreateOrder([FromBody] CreateOrderRequest request)
         {
             if (string.IsNullOrEmpty(request.CustomerName) || string.IsNullOrEmpty(request.Phone))
                 return BadRequest(new { success = false, message = "Vui lòng điền đầy đủ thông tin" });
 
-            var newOrder = new OrderDto
+            try
             {
-                Id = _orders.Count + 1,
-                Code = $"DH{DateTime.Now:yyyyMMdd}{(_orders.Count + 1):D3}",
-                CustomerName = request.CustomerName,
-                Phone = request.Phone,
-                Address = request.Address,
-                Subtotal = request.Subtotal,
-                ShippingFee = request.ShippingFee,
-                Discount = request.Discount,
-                Total = request.Subtotal + request.ShippingFee - request.Discount,
-                PaymentMethod = request.PaymentMethod ?? "Tiền mặt",
-                Note = request.Note,
-                Status = "Chờ xác nhận",
-                Items = request.Items,
-                CreatedAt = DateTime.Now
-            };
+                var orderCode = $"DH{DateTime.Now:yyyyMMddHHmmss}";
+                var donHang = new MyCay.Domain.Entities.DonHang
+                {
+                    MaDHCode = orderCode,
+                    MaKH = request.CustomerId,
+                    TenKhach = request.CustomerName,
+                    SDTKhach = request.Phone,
+                    DiaChiGiao = request.Address,
+                    TamTinh = request.Subtotal,
+                    PhiGiaoHang = request.ShippingFee,
+                    GiamGia = request.Discount,
+                    TongTien = request.Subtotal + request.ShippingFee - request.Discount,
+                    PhuongThucThanhToan = request.PaymentMethod ?? "Tiền mặt",
+                    TrangThaiThanhToan = "Chưa thanh toán",
+                    TrangThai = "Chờ xác nhận",
+                    GhiChu = request.Note,
+                    NgayDat = DateTime.Now
+                };
 
-            _orders.Add(newOrder);
+                _context.DonHangs.Add(donHang);
+                await _context.SaveChangesAsync();
 
-            return Ok(new
+                // Thêm chi tiết đơn hàng
+                if (request.Items != null)
+                {
+                    foreach (var item in request.Items)
+                    {
+                        var chiTiet = new MyCay.Domain.Entities.ChiTietDonHang
+                        {
+                            MaDH = donHang.MaDH,
+                            MaSP = item.ProductId,
+                            TenSP = item.Name,
+                            SoLuong = item.Quantity,
+                            DonGia = item.Price,
+                            CapDoCay = item.SpicyLevel,
+                            LoaiNuocDung = item.BrothType,
+                            GhiChu = item.Note
+                        };
+                        _context.ChiTietDonHangs.Add(chiTiet);
+                    }
+                    await _context.SaveChangesAsync();
+                }
+
+                _logger.LogInformation("Đơn hàng mới: {OrderCode}", orderCode);
+                return Ok(new { success = true, message = "Đặt hàng thành công!", data = new { orderId = donHang.MaDH, orderCode } });
+            }
+            catch (Exception ex)
             {
-                success = true,
-                message = "Đặt hàng thành công!",
-                data = new { orderId = newOrder.Id, orderCode = newOrder.Code }
-            });
+                _logger.LogError(ex, "Lỗi tạo đơn hàng");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
         }
 
         // PUT: api/orders/{id}/status
         [HttpPut("{id}/status")]
-        public IActionResult UpdateOrderStatus(int id, [FromBody] UpdateStatusRequest request)
+        public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateStatusRequest request)
         {
-            var order = _orders.FirstOrDefault(o => o.Id == id);
+            var order = await _context.DonHangs.FindAsync(id);
             if (order == null)
                 return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
 
-            order.Status = request.Status;
+            order.TrangThai = request.Status;
+            order.NgayCapNhat = DateTime.Now;
+            if (request.Status == "Hoàn thành") order.TrangThaiThanhToan = "Đã thanh toán";
+            await _context.SaveChangesAsync();
+
             return Ok(new { success = true, message = "Cập nhật trạng thái thành công" });
         }
 
         // DELETE: api/orders/{id}
         [HttpDelete("{id}")]
-        public IActionResult CancelOrder(int id)
+        public async Task<IActionResult> CancelOrder(int id)
         {
-            var order = _orders.FirstOrDefault(o => o.Id == id);
+            var order = await _context.DonHangs.FindAsync(id);
             if (order == null)
                 return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
 
-            order.Status = "Đã hủy";
+            order.TrangThai = "Đã hủy";
+            order.NgayCapNhat = DateTime.Now;
+            await _context.SaveChangesAsync();
+
             return Ok(new { success = true, message = "Đã hủy đơn hàng" });
         }
 
         // GET: api/orders/stats
         [HttpGet("stats")]
-        public IActionResult GetOrderStats()
+        public async Task<IActionResult> GetOrderStats()
         {
+            var today = DateTime.Today;
             return Ok(new
             {
                 success = true,
                 data = new
                 {
-                    pending = _orders.Count(o => o.Status == "Chờ xác nhận"),
-                    preparing = _orders.Count(o => o.Status == "Đang chuẩn bị"),
-                    shipping = _orders.Count(o => o.Status == "Đang giao"),
-                    completed = _orders.Count(o => o.Status == "Hoàn thành"),
-                    cancelled = _orders.Count(o => o.Status == "Đã hủy"),
-                    totalRevenue = _orders.Where(o => o.Status == "Hoàn thành").Sum(o => o.Total),
-                    todayOrders = _orders.Count(o => o.CreatedAt.Date == DateTime.Today)
+                    pending = await _context.DonHangs.CountAsync(d => d.TrangThai == "Chờ xác nhận"),
+                    preparing = await _context.DonHangs.CountAsync(d => d.TrangThai == "Đang chuẩn bị"),
+                    shipping = await _context.DonHangs.CountAsync(d => d.TrangThai == "Đang giao"),
+                    completed = await _context.DonHangs.CountAsync(d => d.TrangThai == "Hoàn thành"),
+                    cancelled = await _context.DonHangs.CountAsync(d => d.TrangThai == "Đã hủy"),
+                    totalRevenue = await _context.DonHangs.Where(d => d.TrangThai == "Hoàn thành").SumAsync(d => d.TongTien),
+                    todayOrders = await _context.DonHangs.CountAsync(d => d.NgayDat != null && d.NgayDat.Value.Date == today)
                 }
             });
+        }
+
+        // GET: api/orders/my (Đơn hàng của khách hàng)
+        [HttpGet("my")]
+        public async Task<IActionResult> GetMyOrders([FromQuery] int customerId)
+        {
+            var orders = await _context.DonHangs.Where(d => d.MaKH == customerId)
+                .OrderByDescending(d => d.NgayDat)
+                .Select(d => new OrderDto
+                {
+                    Id = d.MaDH, Code = d.MaDHCode ?? $"DH{d.MaDH:D6}",
+                    CustomerName = d.TenKhach ?? "", Phone = d.SDTKhach ?? "", Address = d.DiaChiGiao,
+                    Total = d.TongTien, Status = d.TrangThai ?? "Chờ xác nhận", CreatedAt = d.NgayDat ?? DateTime.Now
+                }).ToListAsync();
+
+            return Ok(new { success = true, data = orders });
         }
     }
 
@@ -139,6 +224,7 @@ namespace MyCay.Web.Api
         public decimal Discount { get; set; }
         public decimal Total { get; set; }
         public string PaymentMethod { get; set; } = "Tiền mặt";
+        public string PaymentStatus { get; set; } = "Chưa thanh toán";
         public string? Note { get; set; }
         public string Status { get; set; } = "Chờ xác nhận";
         public List<OrderItemDto>? Items { get; set; }
@@ -152,10 +238,13 @@ namespace MyCay.Web.Api
         public int Price { get; set; }
         public int Quantity { get; set; }
         public int SpicyLevel { get; set; }
+        public string? BrothType { get; set; }
+        public string? Note { get; set; }
     }
 
     public class CreateOrderRequest
     {
+        public int? CustomerId { get; set; }
         public string CustomerName { get; set; } = "";
         public string Phone { get; set; } = "";
         public string? Address { get; set; }

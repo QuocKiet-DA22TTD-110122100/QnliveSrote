@@ -54,7 +54,7 @@
                         <p class="product-desc">@product.Description</p>
                         <div class="product-footer">
                             <span class="product-price">@product.Price</span>
-                            <button class="btn-add" onclick="addToCart('@product.Code', '@product.Name.Replace("'", "")','@product.PriceNumber', '@product.Image')">
+                            <button class="btn-add" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" onclick="addToCartFromBtn(this)">
                                 <span>+</span> Thêm
                             </button>
                         </div>
@@ -384,6 +384,26 @@
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(249,115,22,0.4);
 }
+
+/* Toast Notification */
+.toast-message {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 16px 30px;
+    border-radius: 12px;
+    font-weight: 600;
+    z-index: 9999;
+    animation: toastSlide 0.3s ease;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+@@keyframes toastSlide {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
 </style>
 
 @section Scripts {
@@ -449,15 +469,32 @@
     // Check if product is Mì Cay
     function isMiCay(code, name) {
         const nameLower = name.toLowerCase();
-        return nameLower.includes('mì cay') || nameLower.includes('mi cay') || 
-               nameLower.includes('mỳ cay') || nameLower.includes('my cay');
+        return nameLower.includes('mì') || nameLower.includes('mi ') || 
+               nameLower.includes('mỳ') || nameLower.includes('my ');
+    }
+
+    // Add to cart from button (using data attributes)
+    function addToCartFromBtn(btn) {
+        const code = btn.dataset.code;
+        const name = btn.dataset.name;
+        const price = btn.dataset.price;
+        const image = btn.dataset.image;
+        addToCart(code, name, price, image);
     }
 
     // Add to cart - check if Mì Cay to show modal
     function addToCart(code, name, price, image) {
-        // Get category from card
-        const card = document.querySelector(`.product-card[data-name="${name.toLowerCase()}"]`);
-        const category = card ? card.dataset.category : '';
+        console.log('Adding to cart:', code, name, price, image);
+        
+        // Get category from card by code
+        const cards = document.querySelectorAll('.product-card');
+        let category = '';
+        cards.forEach(card => {
+            const btn = card.querySelector('.btn-add');
+            if (btn && btn.dataset.code === code) {
+                category = card.dataset.category;
+            }
+        });
         
         // If it's Mì Cay, show modal for options
         if (isMiCay(code, name) || category === 'mi-cay') {
@@ -602,12 +639,26 @@
         closeProductModal();
     }
 
-    // Direct add to cart
+    // Get or create session ID for guest users
+    function getSessionId() {
+        let sessionId = localStorage.getItem('sessionId');
+        if (!sessionId) {
+            sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('sessionId', sessionId);
+        }
+        return sessionId;
+    }
+
+    // Get customer ID if logged in
+    function getCustomerId() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user.id || null;
+    }
+
+    // Direct add to cart - save to both localStorage and API
     function addToCartDirect(code, name, price, image, broth, spicyLevel, quantity) {
+        // Save to localStorage for immediate UI update
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
-        
-        // Create unique key for Mì Cay with options
-        const itemKey = broth ? `${code}_${broth}_${spicyLevel}` : code;
         
         const existing = cart.find(item => {
             if (broth) {
@@ -627,7 +678,6 @@
                 quantity: quantity
             };
             
-            // Add options for Mì Cay
             if (broth) {
                 cartItem.broth = broth;
                 cartItem.spicyLevel = spicyLevel;
@@ -639,6 +689,29 @@
         
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
+        
+        // Also save to API backend
+        const customerId = getCustomerId();
+        const sessionId = getSessionId();
+        
+        // Extract product ID from code (assuming code like M00012)
+        const productId = parseInt(code.replace(/\D/g, '')) || 1;
+        
+        fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customerId: customerId,
+                sessionId: sessionId,
+                productId: productId,
+                quantity: quantity,
+                spicyLevel: spicyLevel || 0,
+                brothType: broth || null,
+                note: null
+            })
+        }).then(res => res.json())
+          .then(data => console.log('Cart API:', data))
+          .catch(err => console.log('Cart API error (using localStorage):', err));
         
         let message = '✓ Đã thêm "' + name + '"';
         if (broth) {

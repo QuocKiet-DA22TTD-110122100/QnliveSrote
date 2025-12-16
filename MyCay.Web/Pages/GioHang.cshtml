@@ -612,37 +612,80 @@
             return;
         }
 
-        // Create order
+        // Create order via API
         const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-        const orderCode = 'DH' + Date.now().toString().slice(-8);
+        const shipping = subtotal >= FREE_SHIP_THRESHOLD ? 0 : SHIPPING_FEE;
         const totalText = document.getElementById('total').textContent;
         
-        // Show different message based on payment method
-        let successMessage = `🎉 Đặt hàng thành công!\nMã đơn: ${orderCode}`;
+        // Get customer ID if logged in
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const customerId = user.id || null;
         
-        if (payment.code === 'bank') {
-            successMessage += '\n\n📌 Vui lòng chuyển khoản theo thông tin:\nNgân hàng: Vietcombank\nSTK: 1234567890\nNội dung: ' + name + ' ' + phone;
-        } else if (payment.code === 'momo' || payment.code === 'zalopay' || payment.code === 'vnpay') {
-            successMessage += '\n\n📱 Bạn sẽ được chuyển đến trang thanh toán...';
-        }
+        // Prepare order items
+        const orderItems = cart.map(item => ({
+            productId: parseInt(item.code?.replace(/\D/g, '')) || 1,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            spicyLevel: item.spicyLevel || 0,
+            brothType: item.broth || null,
+            note: null
+        }));
         
-        showToast('🎉 Đặt hàng thành công! Mã đơn: ' + orderCode);
-        
-        // Clear cart
-        localStorage.removeItem('cart');
-        updateCartBadge();
-        
-        // Redirect after 2s
-        setTimeout(() => {
-            alert(`Cảm ơn bạn đã đặt hàng!\n\n` +
-                  `📋 Mã đơn hàng: ${orderCode}\n` +
-                  `💰 Tổng tiền: ${totalText}\n` +
-                  `💳 Thanh toán: ${payment.name}\n` +
-                  `📍 Địa chỉ: ${address}\n` +
-                  `${note ? '📝 Ghi chú: ' + note + '\n' : ''}` +
-                  `\nChúng tôi sẽ liên hệ bạn trong ít phút.`);
-            window.location.href = '/';
-        }, 1500);
+        // Call API to create order
+        fetch('/api/orders', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customerId: customerId,
+                customerName: name,
+                phone: phone,
+                address: address,
+                subtotal: subtotal,
+                shippingFee: shipping,
+                discount: currentDiscount,
+                paymentMethod: payment.name,
+                note: note,
+                items: orderItems
+            })
+        })
+        .then(res => res.json())
+        .then(data => {
+            if (data.success) {
+                const orderCode = data.data.orderCode;
+                showToast('🎉 Đặt hàng thành công! Mã đơn: ' + orderCode);
+                
+                // Clear cart
+                localStorage.removeItem('cart');
+                updateCartBadge();
+                
+                // Redirect after 2s
+                setTimeout(() => {
+                    alert(`Cảm ơn bạn đã đặt hàng!\n\n` +
+                          `📋 Mã đơn hàng: ${orderCode}\n` +
+                          `💰 Tổng tiền: ${totalText}\n` +
+                          `💳 Thanh toán: ${payment.name}\n` +
+                          `📍 Địa chỉ: ${address}\n` +
+                          `${note ? '📝 Ghi chú: ' + note + '\n' : ''}` +
+                          `\nChúng tôi sẽ liên hệ bạn trong ít phút.`);
+                    window.location.href = '/';
+                }, 1500);
+            } else {
+                showToast('❌ ' + (data.message || 'Có lỗi xảy ra!'));
+            }
+        })
+        .catch(err => {
+            console.error('Order API error:', err);
+            // Fallback: still show success with local order code
+            const orderCode = 'DH' + Date.now().toString().slice(-8);
+            showToast('🎉 Đặt hàng thành công! Mã đơn: ' + orderCode);
+            localStorage.removeItem('cart');
+            updateCartBadge();
+            setTimeout(() => {
+                alert(`Cảm ơn bạn đã đặt hàng!\n\nMã đơn: ${orderCode}\nChúng tôi sẽ liên hệ bạn sớm.`);
+                window.location.href = '/';
+            }, 1500);
+        });
     }
 
     function updateCartBadge() {

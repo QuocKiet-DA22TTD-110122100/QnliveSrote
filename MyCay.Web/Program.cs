@@ -1,9 +1,17 @@
+using Microsoft.EntityFrameworkCore;
+using MyCay.Infrastructure.Data;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Enable detailed logging
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 builder.Logging.SetMinimumLevel(LogLevel.Information);
+
+// Add MySQL Database
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+builder.Services.AddDbContext<MyCayDbContext>(options =>
+    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
 
 // Add services for Razor Pages
 builder.Services.AddRazorPages();
