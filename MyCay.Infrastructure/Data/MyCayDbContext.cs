@@ -38,9 +38,9 @@ public class MyCayDbContext : DbContext
             .HasIndex(d => d.MaDHCode)
             .IsUnique();
 
-        // ChiTietDonHang - ThanhTien computed column
+        // ChiTietDonHang - ThanhTien is computed column in database
         modelBuilder.Entity<ChiTietDonHang>()
             .Property(c => c.ThanhTien)
-            .HasComputedColumnSql("SoLuong * DonGia");
+            .ValueGeneratedOnAddOrUpdate();
     }
 }

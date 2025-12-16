@@ -30,7 +30,8 @@ public class ChiTietDonHang
     public string? GhiChu { get; set; }
     
     [Column(TypeName = "decimal(18,2)")]
-    public decimal ThanhTien => SoLuong * DonGia;
+    [DatabaseGenerated(DatabaseGeneratedOption.Computed)]
+    public decimal ThanhTien { get; private set; }
     
     // Navigation
     [ForeignKey("MaDH")]
