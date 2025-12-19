@@ -142,9 +142,14 @@
                 <span>Tổng tiền:</span>
                 <span class="total-price" id="modalTotalPrice">0đ</span>
             </div>
-            <button class="btn-add-to-cart" onclick="confirmAddToCart()">
-                <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
-            </button>
+            <div class="modal-buttons">
+                <button class="btn-add-to-cart" onclick="confirmAddToCart()">
+                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+                <button class="btn-buy-now" onclick="buyNow()">
+                    <i class="fas fa-bolt"></i> Mua ngay
+                </button>
+            </div>
         </div>
     </div>
 </div>
@@ -386,23 +391,52 @@
     font-weight: 800;
     color: #f97316;
 }
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
 .btn-add-to-cart {
-    padding: 15px 30px;
+    flex: 1;
+    min-width: 150px;
+    padding: 15px 20px;
     background: linear-gradient(135deg, #f97316, #ea580c);
     color: white;
     border: none;
     border-radius: 12px;
-    font-size: 1rem;
+    font-size: 0.95rem;
     font-weight: 700;
     cursor: pointer;
     transition: all 0.2s;
     display: flex;
     align-items: center;
-    gap: 10px;
+    justify-content: center;
+    gap: 8px;
 }
 .btn-add-to-cart:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+.btn-buy-now {
+    flex: 1;
+    min-width: 150px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-buy-now:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239,68,68,0.4);
 }
 
 /* Toast Notification */
@@ -832,6 +866,40 @@
         );
         
         closeProductModal();
+    }
+    
+    // Mua ngay - thêm vào giỏ và chuyển đến trang giỏ hàng
+    function buyNow() {
+        // Kiểm tra đăng nhập
+        if (!isLoggedIn()) {
+            closeProductModal();
+            showLoginRequired();
+            return;
+        }
+        
+        const broth = currentProduct.broth;
+        const spicy = currentProduct.spicyLevel;
+        const qty = currentProduct.quantity;
+        
+        // Get broth name
+        const brothNames = { kimchi: 'Kim Chi', soyum: 'Soyum', sincay: 'Sincay' };
+        const brothName = brothNames[broth] || broth;
+        
+        addToCartDirect(
+            currentProduct.code, 
+            currentProduct.name, 
+            currentProduct.price, 
+            currentProduct.image,
+            brothName,
+            spicy,
+            qty,
+            currentProduct.productId
+        );
+        
+        closeProductModal();
+        
+        // Chuyển đến trang giỏ hàng
+        window.location.href = '/GioHang';
     }
 
     // Get or create session ID for guest users
