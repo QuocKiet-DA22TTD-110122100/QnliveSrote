@@ -1042,3 +1042,40 @@ ul { list-style: none; }
         grid-column: span 1;
     }
 }
+
+/* ===== Role Badges ===== */
+.role-badge {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.7rem;
+    font-weight: 600;
+    margin-left: 8px;
+    text-transform: uppercase;
+}
+
+.role-badge.admin {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+}
+
+.role-badge.manager {
+    background: linear-gradient(135deg, #3b82f6, #2563eb);
+    color: white;
+}
+
+.role-badge.staff {
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+}
+
+/* ===== Permission-based visibility ===== */
+.permission-hidden {
+    display: none !important;
+}
+
+.btn-disabled {
+    opacity: 0.5;
+    pointer-events: none;
+    cursor: not-allowed;
+}

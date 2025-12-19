@@ -1,5 +1,9 @@
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
 using MyCay.Infrastructure.Data;
+using MyCay.Web.Services;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,13 +15,37 @@ builder.Logging.SetMinimumLevel(LogLevel.Information);
 // Add MySQL Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<MyCayDbContext>(options =>
-    options.UseMySql(connectionString, ServerVersion.AutoDetect(connectionString)));
+    options.UseMySql(connectionString, new MariaDbServerVersion(new Version(10, 6, 0))));
+
+// Add JWT Service
+builder.Services.AddSingleton<IJwtService, JwtService>();
+
+// Add JWT Authentication
+var jwtKey = builder.Configuration["Jwt:SecretKey"] ?? "MyCaySasin_DefaultKey_2024_32Chars!";
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtKey)),
+            ValidateIssuer = true,
+            ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "MyCaySasin",
+            ValidateAudience = true,
+            ValidAudience = builder.Configuration["Jwt:Audience"] ?? "MyCaySasinApp",
+            ValidateLifetime = true,
+            ClockSkew = TimeSpan.Zero
+        };
+    });
 
 // Add services for Razor Pages
 builder.Services.AddRazorPages();
 
 // Add services for API Controllers
 builder.Services.AddControllers();
+
+// Add HttpClient for Gemini API
+builder.Services.AddHttpClient();
 
 // Add CORS for API
 builder.Services.AddCors(options =>
@@ -45,6 +73,8 @@ var app = builder.Build();
 app.UseStaticFiles();
 
 app.UseCors("AllowAll");
+app.UseAuthentication();
+app.UseAuthorization();
 app.UseSession();
 
 // Add request logging middleware

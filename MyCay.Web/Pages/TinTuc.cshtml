@@ -1,0 +1,294 @@
+@page
+@model TinTucModel
+@{
+    ViewData["Title"] = "Tin tức";
+}
+
+<section class="news-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="news-header">
+            <h1 class="page-title">📰 Tin tức & Sự kiện</h1>
+            <p class="page-subtitle">Cập nhật những tin tức mới nhất từ Mỳ Cay Sasin</p>
+        </div>
+
+        <!-- Featured News -->
+        <div class="featured-news">
+            <div class="featured-news-image">
+                <img src="~/images/products/MenuItem_M00143.webp" alt="Tin nổi bật">
+                <span class="news-badge">Mới nhất</span>
+            </div>
+            <div class="featured-news-content">
+                <span class="news-category">Khuyến mãi</span>
+                <h2>Khai trương chi nhánh mới - Giảm 20% toàn menu</h2>
+                <p>Mỳ Cay Sasin chính thức khai trương chi nhánh thứ 10 tại Quận 7, TP.HCM. Nhân dịp này, chúng tôi dành tặng ưu đãi giảm 20% toàn bộ menu trong tuần đầu tiên...</p>
+                <div class="news-meta">
+                    <span class="news-date">📅 15/12/2025</span>
+                    <span class="news-views">👁️ 1,234 lượt xem</span>
+                </div>
+                <a href="#" class="btn btn-primary">Đọc tiếp</a>
+            </div>
+        </div>
+
+        <!-- News Grid -->
+        <div class="news-grid">
+            <!-- News 1 -->
+            <article class="news-card">
+                <div class="news-card-image">
+                    <img src="~/images/products/MenuItem_M00141.webp" alt="Combo mới">
+                    <span class="news-category-tag">Sản phẩm mới</span>
+                </div>
+                <div class="news-card-content">
+                    <h3>Ra mắt Combo Gia Đình - Tiết kiệm đến 50k</h3>
+                    <p>Combo dành cho 3-4 người với giá chỉ 219.000đ, bao gồm 3 món mì cay và 1 phần khai vị...</p>
+                    <div class="news-card-footer">
+                        <span class="news-date">10/12/2025</span>
+                        <a href="#" class="read-more">Đọc tiếp →</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- News 2 -->
+            <article class="news-card">
+                <div class="news-card-image">
+                    <img src="~/images/products/MenuItem_M00037.webp" alt="Lẩu mới">
+                    <span class="news-category-tag">Sản phẩm mới</span>
+                </div>
+                <div class="news-card-content">
+                    <h3>Lẩu Sincay - Hương vị mới cho mùa đông</h3>
+                    <p>Thưởng thức lẩu Sincay nóng hổi với nước dùng đặc biệt, hải sản tươi ngon cùng bạn bè...</p>
+                    <div class="news-card-footer">
+                        <span class="news-date">05/12/2025</span>
+                        <a href="#" class="read-more">Đọc tiếp →</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- News 3 -->
+            <article class="news-card">
+                <div class="news-card-image">
+                    <img src="~/images/products/MenuItem_MI0006.webp" alt="Tokbokki">
+                    <span class="news-category-tag">Ẩm thực</span>
+                </div>
+                <div class="news-card-content">
+                    <h3>Bí quyết làm Tokbokki phô mai chuẩn Hàn</h3>
+                    <p>Chia sẻ công thức làm Tokbokki phô mai thơm ngon như tại nhà hàng Hàn Quốc...</p>
+                    <div class="news-card-footer">
+                        <span class="news-date">01/12/2025</span>
+                        <a href="#" class="read-more">Đọc tiếp →</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- News 4 -->
+            <article class="news-card">
+                <div class="news-card-image">
+                    <img src="~/images/products/MenuItem_M00134.webp" alt="Kimbap">
+                    <span class="news-category-tag">Sự kiện</span>
+                </div>
+                <div class="news-card-content">
+                    <h3>Workshop làm Kimbap miễn phí cuối tuần</h3>
+                    <p>Tham gia workshop học làm Kimbap cùng đầu bếp Hàn Quốc vào Chủ nhật hàng tuần...</p>
+                    <div class="news-card-footer">
+                        <span class="news-date">28/11/2025</span>
+                        <a href="#" class="read-more">Đọc tiếp →</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- News 5 -->
+            <article class="news-card">
+                <div class="news-card-image">
+                    <img src="~/images/products/MenuItem_M00018.webp" alt="Mì hải sản">
+                    <span class="news-category-tag">Khuyến mãi</span>
+                </div>
+                <div class="news-card-content">
+                    <h3>Thứ 3 hàng tuần - Mua 1 tặng 1 nước uống</h3>
+                    <p>Chương trình ưu đãi đặc biệt vào thứ 3 hàng tuần, mua bất kỳ món mì nào được tặng 1 nước...</p>
+                    <div class="news-card-footer">
+                        <span class="news-date">25/11/2025</span>
+                        <a href="#" class="read-more">Đọc tiếp →</a>
+                    </div>
+                </div>
+            </article>
+
+            <!-- News 6 -->
+            <article class="news-card">
+                <div class="news-card-image">
+                    <img src="~/images/products/MenuItem_M00012.webp" alt="Best seller">
+                    <span class="news-category-tag">Tin tức</span>
+                </div>
+                <div class="news-card-content">
+                    <h3>Mỳ Cay Sasin đạt Top 10 quán ăn được yêu thích</h3>
+                    <p>Vinh dự được bình chọn vào Top 10 quán ăn Hàn Quốc được yêu thích nhất TP.HCM năm 2025...</p>
+                    <div class="news-card-footer">
+                        <span class="news-date">20/11/2025</span>
+                        <a href="#" class="read-more">Đọc tiếp →</a>
+                    </div>
+                </div>
+            </article>
+        </div>
+
+        <!-- Load More -->
+        <div class="load-more-section">
+            <button class="btn btn-outline">Xem thêm tin tức</button>
+        </div>
+    </div>
+</section>
+
+<style>
+.news-page { padding: 40px 0 80px; }
+.news-header { text-align: center; margin-bottom: 40px; }
+.news-header .page-title { font-size: 2.5rem; margin-bottom: 10px; }
+.news-header .page-subtitle { color: var(--gray); font-size: 1.1rem; }
+
+.featured-news {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr;
+    gap: 40px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+    margin-bottom: 50px;
+}
+.featured-news-image {
+    position: relative;
+    height: 100%;
+    min-height: 350px;
+}
+.featured-news-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.news-badge {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    background: #ef4444;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+.featured-news-content {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+.news-category {
+    color: var(--primary);
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+.featured-news-content h2 {
+    font-size: 1.8rem;
+    margin: 15px 0;
+    line-height: 1.3;
+    color: var(--dark);
+}
+.featured-news-content p {
+    color: var(--gray);
+    line-height: 1.7;
+    margin-bottom: 20px;
+}
+.news-meta {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 25px;
+    color: #9ca3af;
+    font-size: 0.9rem;
+}
+
+.news-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 30px;
+    margin-bottom: 50px;
+}
+.news-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.news-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.news-card-image {
+    position: relative;
+    height: 200px;
+    overflow: hidden;
+}
+.news-card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.3s;
+}
+.news-card:hover .news-card-image img {
+    transform: scale(1.05);
+}
+.news-category-tag {
+    position: absolute;
+    bottom: 15px;
+    left: 15px;
+    background: rgba(249, 115, 22, 0.9);
+    color: white;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+.news-card-content {
+    padding: 25px;
+}
+.news-card-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 12px;
+    color: var(--dark);
+    line-height: 1.4;
+}
+.news-card-content p {
+    color: var(--gray);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-bottom: 15px;
+}
+.news-card-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid #f3f4f6;
+}
+.news-card-footer .news-date {
+    color: #9ca3af;
+    font-size: 0.85rem;
+}
+.read-more {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+.read-more:hover { text-decoration: underline; }
+
+.load-more-section { text-align: center; }
+
+@@media (max-width: 992px) {
+    .featured-news { grid-template-columns: 1fr; }
+    .featured-news-image { min-height: 250px; }
+    .news-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@@media (max-width: 576px) {
+    .news-grid { grid-template-columns: 1fr; }
+}
+</style>

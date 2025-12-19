@@ -128,17 +128,41 @@
         }
     });
 
+    // Chuẩn hóa role (giống backend)
+    function normalizeRole(role) {
+        const roleMap = {
+            'quantrivien': 'admin',
+            'quanly': 'manager',
+            'nhanvien': 'staff',
+            'khachhang': 'customer',
+            'admin': 'admin',
+            'manager': 'manager',
+            'staff': 'staff',
+            'customer': 'customer'
+        };
+        return roleMap[(role || '').toLowerCase()] || 'customer';
+    }
+
     function checkLocalStorage(email, password) {
-        // Demo accounts
+        // Demo accounts (role đã chuẩn hóa)
         const demoAccounts = {
             'admin@mycaysasin.vn': { password: '123456', role: 'admin', name: 'Nguyễn Văn Admin' },
             'admin': { password: '123456', role: 'admin', name: 'Nguyễn Văn Admin' },
+            'admin2': { password: '123456', role: 'admin', name: 'Trần Văn Admin 2' },
             'quanly1@mycaysasin.vn': { password: '123456', role: 'manager', name: 'Trần Thị Quản Lý' },
             'quanly1': { password: '123456', role: 'manager', name: 'Trần Thị Quản Lý' },
+            'quanly2': { password: '123456', role: 'manager', name: 'Nguyễn Thị Quản Lý 2' },
+            'quanly3': { password: '123456', role: 'manager', name: 'Lê Văn Quản Lý 3' },
             'nhanvien1@mycaysasin.vn': { password: '123456', role: 'staff', name: 'Lê Văn Nhân Viên' },
             'nhanvien1': { password: '123456', role: 'staff', name: 'Lê Văn Nhân Viên' },
+            'nhanvien2': { password: '123456', role: 'staff', name: 'Phạm Thị Hoa' },
+            'nhanvien3': { password: '123456', role: 'staff', name: 'Hoàng Văn Minh' },
+            'nhanvien4': { password: '123456', role: 'staff', name: 'Trần Thị Lan' },
             'khach1@gmail.com': { password: '123456', role: 'customer', name: 'Nguyễn Thị Mai' },
-            'khachhang1': { password: '123456', role: 'customer', name: 'Nguyễn Thị Mai' }
+            'khachhang1': { password: '123456', role: 'customer', name: 'Nguyễn Thị Mai' },
+            'khachhang2': { password: '123456', role: 'customer', name: 'Trần Văn Hùng' },
+            'khachhang3': { password: '123456', role: 'customer', name: 'Lê Thị Hương' },
+            'khachhang4': { password: '123456', role: 'customer', name: 'Phạm Minh Tuấn' }
         };
 
         if (demoAccounts[email] && demoAccounts[email].password === password) {
@@ -153,22 +177,33 @@
         );
 
         if (user) {
-            loginSuccess(user.email, user.fullName, user.role, user.phone);
+            loginSuccess(user.email, user.fullName, normalizeRole(user.role), user.phone);
         } else {
             showToast('❌ Email/SĐT hoặc mật khẩu không đúng!', 'error');
         }
     }
 
     function loginSuccess(email, name, role, token = '', id = null) {
+        // Chuẩn hóa role
+        const normalizedRole = normalizeRole(role);
+        
         localStorage.setItem('user', JSON.stringify({
             id: id,
             username: email,
             email: email,
             name: name,
-            role: role,
+            role: normalizedRole,
             token: token
         }));
-        showToast('✓ Đăng nhập thành công!', 'success');
+        
+        // Hiển thị thông báo theo role
+        const roleNames = {
+            'admin': 'Quản trị viên',
+            'manager': 'Quản lý',
+            'staff': 'Nhân viên',
+            'customer': 'Khách hàng'
+        };
+        showToast(`✓ Đăng nhập thành công! Xin chào ${roleNames[normalizedRole] || 'bạn'}`, 'success');
         
         // Lấy returnUrl nếu có
         const urlParams = new URLSearchParams(window.location.search);
@@ -177,7 +212,7 @@
         setTimeout(() => {
             if (returnUrl) {
                 window.location.href = returnUrl;
-            } else if (role === 'admin' || role === 'manager' || role === 'staff') {
+            } else if (['admin', 'manager', 'staff'].includes(normalizedRole)) {
                 window.location.href = '/Admin';
             } else {
                 window.location.href = '/';

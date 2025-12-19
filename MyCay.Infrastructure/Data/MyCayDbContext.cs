@@ -18,6 +18,17 @@ public class MyCayDbContext : DbContext
     public DbSet<DonHang> DonHangs { get; set; }
     public DbSet<ChiTietDonHang> ChiTietDonHangs { get; set; }
     public DbSet<GioHang> GioHangs { get; set; }
+    
+    // Quản lý Chi nhánh
+    public DbSet<ChiNhanh> ChiNhanhs { get; set; }
+    
+    // Quản lý Kho/Nguyên vật liệu
+    public DbSet<NguyenVatLieu> NguyenVatLieus { get; set; }
+    public DbSet<TonKho> TonKhos { get; set; }
+    public DbSet<CongThuc> CongThucs { get; set; }
+    
+    // Mã giảm giá
+    public DbSet<MaGiamGia> MaGiamGias { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -42,5 +53,15 @@ public class MyCayDbContext : DbContext
         modelBuilder.Entity<ChiTietDonHang>()
             .Property(c => c.ThanhTien)
             .ValueGeneratedOnAddOrUpdate();
+        
+        // MaGiamGia - unique MaCode
+        modelBuilder.Entity<MaGiamGia>()
+            .HasIndex(m => m.MaCode)
+            .IsUnique();
+        
+        // TonKho - unique combination of MaCN + MaNVL
+        modelBuilder.Entity<TonKho>()
+            .HasIndex(t => new { t.MaCN, t.MaNVL })
+            .IsUnique();
     }
 }

@@ -1,0 +1,323 @@
+@page
+@model UuDaiModel
+@{
+    ViewData["Title"] = "Ưu đãi";
+}
+
+<section class="promo-page">
+    <div class="container">
+        <!-- Header -->
+        <div class="promo-header">
+            <h1 class="page-title">🎁 Ưu đãi hấp dẫn</h1>
+            <p class="page-subtitle">Khám phá các chương trình khuyến mãi đặc biệt tại Mỳ Cay Sasin</p>
+        </div>
+
+        <!-- Featured Promo -->
+        <div class="featured-promo">
+            <div class="featured-promo-content">
+                <span class="promo-badge">HOT</span>
+                <h2>Giảm 15% cho đơn hàng đầu tiên</h2>
+                <p>Áp dụng cho khách hàng mới đăng ký tài khoản. Nhập mã <strong>NEWUSER</strong> khi thanh toán.</p>
+                <div class="promo-details">
+                    <span class="promo-code">NEWUSER</span>
+                    <span class="promo-expiry">HSD: 31/12/2025</span>
+                </div>
+                <a href="/ThucDon" class="btn btn-primary">Đặt món ngay</a>
+            </div>
+            <div class="featured-promo-image">
+                <img src="~/images/products/MenuItem_M00012.webp" alt="Ưu đãi đặc biệt">
+            </div>
+        </div>
+
+        <!-- Promo Grid -->
+        <div class="promo-grid">
+            <!-- Promo 1 -->
+            <div class="promo-card">
+                <div class="promo-card-header">
+                    <span class="discount-badge">-10%</span>
+                </div>
+                <div class="promo-card-body">
+                    <h3>Giảm 10% đơn từ 100k</h3>
+                    <p>Áp dụng cho tất cả đơn hàng từ 100.000đ trở lên</p>
+                    <div class="promo-code-box">
+                        <span>Mã: </span>
+                        <strong>SASIN10</strong>
+                        <button class="btn-copy" onclick="copyCode('SASIN10')">📋</button>
+                    </div>
+                    <span class="promo-condition">Đơn tối thiểu: 100.000đ</span>
+                </div>
+            </div>
+
+            <!-- Promo 2 -->
+            <div class="promo-card">
+                <div class="promo-card-header">
+                    <span class="discount-badge">-20%</span>
+                </div>
+                <div class="promo-card-body">
+                    <h3>Giảm 20% đơn từ 200k</h3>
+                    <p>Siêu ưu đãi cho đơn hàng lớn từ 200.000đ</p>
+                    <div class="promo-code-box">
+                        <span>Mã: </span>
+                        <strong>SASIN20</strong>
+                        <button class="btn-copy" onclick="copyCode('SASIN20')">📋</button>
+                    </div>
+                    <span class="promo-condition">Đơn tối thiểu: 200.000đ</span>
+                </div>
+            </div>
+
+            <!-- Promo 3 -->
+            <div class="promo-card">
+                <div class="promo-card-header freeship">
+                    <span class="discount-badge">FREE SHIP</span>
+                </div>
+                <div class="promo-card-body">
+                    <h3>Miễn phí giao hàng</h3>
+                    <p>Miễn phí ship cho đơn hàng từ 150.000đ</p>
+                    <div class="promo-code-box">
+                        <span>Mã: </span>
+                        <strong>FREESHIP</strong>
+                        <button class="btn-copy" onclick="copyCode('FREESHIP')">📋</button>
+                    </div>
+                    <span class="promo-condition">Đơn tối thiểu: 150.000đ</span>
+                </div>
+            </div>
+
+            <!-- Promo 4 -->
+            <div class="promo-card">
+                <div class="promo-card-header combo">
+                    <span class="discount-badge">COMBO</span>
+                </div>
+                <div class="promo-card-body">
+                    <h3>Combo Bạn Thân</h3>
+                    <p>2 món mì cay + 1 khai vị chỉ 159.000đ (tiết kiệm 30k)</p>
+                    <a href="/ThucDon" class="btn btn-outline-sm">Xem combo</a>
+                    <span class="promo-condition">Áp dụng tại quán & online</span>
+                </div>
+            </div>
+
+            <!-- Promo 5 -->
+            <div class="promo-card">
+                <div class="promo-card-header birthday">
+                    <span class="discount-badge">🎂 SINH NHẬT</span>
+                </div>
+                <div class="promo-card-body">
+                    <h3>Ưu đãi sinh nhật</h3>
+                    <p>Giảm 25% trong ngày sinh nhật của bạn</p>
+                    <div class="promo-code-box">
+                        <span>Mã: </span>
+                        <strong>BIRTHDAY25</strong>
+                        <button class="btn-copy" onclick="copyCode('BIRTHDAY25')">📋</button>
+                    </div>
+                    <span class="promo-condition">Cần xác minh CMND/CCCD</span>
+                </div>
+            </div>
+
+            <!-- Promo 6 -->
+            <div class="promo-card">
+                <div class="promo-card-header weekend">
+                    <span class="discount-badge">WEEKEND</span>
+                </div>
+                <div class="promo-card-body">
+                    <h3>Cuối tuần vui vẻ</h3>
+                    <p>Giảm 15% mọi đơn hàng vào T7 & CN</p>
+                    <div class="promo-code-box">
+                        <span>Mã: </span>
+                        <strong>WEEKEND15</strong>
+                        <button class="btn-copy" onclick="copyCode('WEEKEND15')">📋</button>
+                    </div>
+                    <span class="promo-condition">Chỉ áp dụng T7 & CN</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Terms -->
+        <div class="promo-terms">
+            <h3>📋 Điều kiện áp dụng</h3>
+            <ul>
+                <li>Mỗi mã giảm giá chỉ được sử dụng 1 lần/khách hàng</li>
+                <li>Không áp dụng đồng thời nhiều mã giảm giá</li>
+                <li>Chương trình có thể thay đổi mà không báo trước</li>
+                <li>Liên hệ hotline 0123 456 789 nếu cần hỗ trợ</li>
+            </ul>
+        </div>
+    </div>
+</section>
+
+<style>
+.promo-page { padding: 40px 0 80px; }
+.promo-header { text-align: center; margin-bottom: 40px; }
+.promo-header .page-title { font-size: 2.5rem; margin-bottom: 10px; }
+.promo-header .page-subtitle { color: var(--gray); font-size: 1.1rem; }
+
+.featured-promo {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    border-radius: 20px;
+    padding: 40px;
+    margin-bottom: 50px;
+    align-items: center;
+}
+.featured-promo-content .promo-badge {
+    background: #ef4444;
+    color: white;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
+.featured-promo-content h2 {
+    font-size: 2rem;
+    margin: 20px 0 15px;
+    color: var(--dark);
+}
+.featured-promo-content p { color: var(--gray); line-height: 1.7; margin-bottom: 20px; }
+.promo-details { display: flex; gap: 20px; margin-bottom: 25px; }
+.promo-code {
+    background: var(--primary);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+.promo-expiry { color: var(--gray); font-size: 0.9rem; align-self: center; }
+.featured-promo-image img {
+    width: 100%;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 25px;
+    margin-bottom: 50px;
+}
+.promo-card {
+    background: white;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: transform 0.3s, box-shadow 0.3s;
+}
+.promo-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.promo-card-header {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    padding: 25px;
+    text-align: center;
+}
+.promo-card-header.freeship { background: linear-gradient(135deg, #10b981, #059669); }
+.promo-card-header.combo { background: linear-gradient(135deg, #8b5cf6, #7c3aed); }
+.promo-card-header.birthday { background: linear-gradient(135deg, #ec4899, #db2777); }
+.promo-card-header.weekend { background: linear-gradient(135deg, #3b82f6, #2563eb); }
+.discount-badge {
+    color: white;
+    font-size: 1.5rem;
+    font-weight: 800;
+}
+.promo-card-body {
+    padding: 25px;
+}
+.promo-card-body h3 {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--dark);
+}
+.promo-card-body p {
+    color: var(--gray);
+    font-size: 0.95rem;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+.promo-code-box {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f3f4f6;
+    padding: 10px 15px;
+    border-radius: 8px;
+    margin-bottom: 12px;
+}
+.promo-code-box strong {
+    color: var(--primary);
+    font-size: 1.1rem;
+}
+.btn-copy {
+    margin-left: auto;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1.2rem;
+}
+.promo-condition {
+    display: block;
+    font-size: 0.85rem;
+    color: #9ca3af;
+}
+.btn-outline-sm {
+    display: inline-block;
+    padding: 8px 20px;
+    border: 2px solid var(--primary);
+    color: var(--primary);
+    border-radius: 8px;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 12px;
+}
+.btn-outline-sm:hover {
+    background: var(--primary);
+    color: white;
+}
+
+.promo-terms {
+    background: #f9fafb;
+    padding: 30px;
+    border-radius: 16px;
+}
+.promo-terms h3 { margin-bottom: 15px; color: var(--dark); }
+.promo-terms ul { list-style: none; padding: 0; }
+.promo-terms li {
+    padding: 8px 0;
+    color: var(--gray);
+    padding-left: 25px;
+    position: relative;
+}
+.promo-terms li::before {
+    content: "✓";
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+@@media (max-width: 992px) {
+    .featured-promo { grid-template-columns: 1fr; }
+    .promo-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@@media (max-width: 576px) {
+    .promo-grid { grid-template-columns: 1fr; }
+}
+</style>
+
+@section Scripts {
+<script>
+function copyCode(code) {
+    navigator.clipboard.writeText(code).then(() => {
+        showToast('✓ Đã copy mã: ' + code);
+    });
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
+}
+</script>
+}

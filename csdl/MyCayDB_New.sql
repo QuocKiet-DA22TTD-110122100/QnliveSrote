@@ -1,14 +1,3 @@
--- =====================================================
--- CƠ SỞ DỮ LIỆU MỲ CAY SASIN
--- Tạo mới: 16/12/2024
--- =====================================================
-
--- Tạo Database
-IF NOT EXISTS (SELECT * FROM sys.databases WHERE name = 'MyCayDB')
-BEGIN
-    CREATE DATABASE MyCayDB;
-END
-GO
 
 USE MyCayDB;
 GO

@@ -623,7 +623,7 @@
         
         // Prepare order items
         const orderItems = cart.map(item => ({
-            productId: parseInt(item.code?.replace(/\D/g, '')) || 1,
+            productId: item.productId || parseInt(item.code?.replace(/\D/g, '')) || 1,
             name: item.name,
             price: item.price,
             quantity: item.quantity,

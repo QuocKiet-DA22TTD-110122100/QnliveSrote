@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyCay.Infrastructure.Data;
+using MyCay.Web.Services;
 using System.Security.Cryptography;
 using System.Text;
 
@@ -12,11 +13,13 @@ namespace MyCay.Web.Api
     {
         private readonly MyCayDbContext _context;
         private readonly ILogger<AuthController> _logger;
+        private readonly IJwtService _jwtService;
 
-        public AuthController(MyCayDbContext context, ILogger<AuthController> logger)
+        public AuthController(MyCayDbContext context, ILogger<AuthController> logger, IJwtService jwtService)
         {
             _context = context;
             _logger = logger;
+            _jwtService = jwtService;
         }
 
         // POST: api/auth/login
@@ -65,7 +68,14 @@ namespace MyCay.Web.Api
                     if (nhanVien != null) hoTen = nhanVien.HoTen;
                 }
 
-                _logger.LogInformation("Đăng nhập thành công: {Email}, Role: {Role}", request.Email, role);
+                // Chuẩn hóa role
+                var normalizedRole = NormalizeRole(role);
+                var email = taiKhoan.Email ?? taiKhoan.TenDangNhap;
+                
+                // Tạo JWT token
+                var token = _jwtService.GenerateToken(taiKhoan.MaTK, email, normalizedRole, hoTen);
+                
+                _logger.LogInformation("Đăng nhập thành công: {Email}, Role: {Role} -> {NormalizedRole}", request.Email, role, normalizedRole);
 
                 return Ok(new
                 {
@@ -74,10 +84,10 @@ namespace MyCay.Web.Api
                     data = new
                     {
                         id = taiKhoan.MaTK,
-                        email = taiKhoan.Email ?? taiKhoan.TenDangNhap,
+                        email = email,
                         name = hoTen,
-                        role = role,
-                        token = GenerateToken(taiKhoan.MaTK, taiKhoan.Email ?? taiKhoan.TenDangNhap, role)
+                        role = normalizedRole,
+                        token = token
                     }
                 });
             }
@@ -165,9 +175,10 @@ namespace MyCay.Web.Api
 
             try
             {
-                var tokenData = ParseToken(token);
+                // Sử dụng JWT Service để parse token
+                var tokenData = _jwtService.ParseToken(token);
                 if (tokenData == null)
-                    return Unauthorized(new { success = false, message = "Token không hợp lệ" });
+                    return Unauthorized(new { success = false, message = "Token không hợp lệ hoặc đã hết hạn" });
 
                 var taiKhoan = await _context.TaiKhoans
                     .Include(t => t.VaiTro)
@@ -194,7 +205,7 @@ namespace MyCay.Web.Api
                         id = taiKhoan.MaTK,
                         email = taiKhoan.Email ?? taiKhoan.TenDangNhap,
                         name = hoTen,
-                        role = taiKhoan.VaiTro?.TenVaiTro ?? "KhachHang",
+                        role = NormalizeRole(taiKhoan.VaiTro?.TenVaiTro ?? "KhachHang"),
                         phone = sdt
                     }
                 });
@@ -204,6 +215,39 @@ namespace MyCay.Web.Api
                 _logger.LogError(ex, "Lỗi lấy profile");
                 return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
             }
+        }
+        
+        // POST: api/auth/refresh - Làm mới token
+        [HttpPost("refresh")]
+        public async Task<IActionResult> RefreshToken([FromHeader(Name = "Authorization")] string? token)
+        {
+            if (string.IsNullOrEmpty(token))
+                return Unauthorized(new { success = false, message = "Token không hợp lệ" });
+
+            var tokenData = _jwtService.ParseToken(token);
+            if (tokenData == null)
+                return Unauthorized(new { success = false, message = "Token không hợp lệ hoặc đã hết hạn" });
+
+            var taiKhoan = await _context.TaiKhoans
+                .Include(t => t.VaiTro)
+                .FirstOrDefaultAsync(t => t.MaTK == tokenData.Value.userId);
+
+            if (taiKhoan == null || !taiKhoan.TrangThai)
+                return Unauthorized(new { success = false, message = "Tài khoản không tồn tại hoặc đã bị khóa" });
+
+            string hoTen = taiKhoan.TenDangNhap;
+            var khachHang = await _context.KhachHangs.FirstOrDefaultAsync(k => k.MaTK == taiKhoan.MaTK);
+            if (khachHang != null) hoTen = khachHang.HoTen;
+
+            var normalizedRole = NormalizeRole(taiKhoan.VaiTro?.TenVaiTro ?? "KhachHang");
+            var newToken = _jwtService.GenerateToken(taiKhoan.MaTK, taiKhoan.Email ?? taiKhoan.TenDangNhap, normalizedRole, hoTen);
+
+            return Ok(new
+            {
+                success = true,
+                message = "Token đã được làm mới",
+                data = new { token = newToken }
+            });
         }
 
         // POST: api/auth/logout
@@ -220,24 +264,22 @@ namespace MyCay.Web.Api
             var hashBytes = md5.ComputeHash(inputBytes);
             return Convert.ToHexString(hashBytes).ToLower();
         }
-
-        private string GenerateToken(int userId, string email, string role)
+        
+        /// <summary>
+        /// Chuẩn hóa role từ database sang frontend
+        /// Database: QuanTriVien, QuanLy, NhanVien, KhachHang
+        /// Frontend: admin, manager, staff, customer
+        /// </summary>
+        private static string NormalizeRole(string? role)
         {
-            return Convert.ToBase64String(Encoding.UTF8.GetBytes($"{userId}:{email}:{role}:{DateTime.Now.Ticks}"));
-        }
-
-        private (int userId, string email, string role)? ParseToken(string token)
-        {
-            try
+            return role?.ToLower() switch
             {
-                if (token.StartsWith("Bearer ")) token = token[7..];
-                var decoded = Encoding.UTF8.GetString(Convert.FromBase64String(token));
-                var parts = decoded.Split(':');
-                if (parts.Length >= 3)
-                    return (int.Parse(parts[0]), parts[1], parts[2]);
-            }
-            catch { }
-            return null;
+                "quantrivien" => "admin",
+                "quanly" => "manager",
+                "nhanvien" => "staff",
+                "khachhang" => "customer",
+                _ => role?.ToLower() ?? "customer"
+            };
         }
     }
 

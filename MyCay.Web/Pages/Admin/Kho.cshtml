@@ -1,0 +1,373 @@
+@page
+@{
+    ViewData["Title"] = "Quản lý Kho";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-header">
+    <h1>📦 Quản lý Kho & Nguyên vật liệu</h1>
+</div>
+
+<!-- Tabs -->
+<div class="tabs">
+    <button class="tab-btn active" onclick="showTab('stock')">📊 Tồn kho</button>
+    <button class="tab-btn" onclick="showTab('materials')">🥬 Nguyên vật liệu</button>
+    <button class="tab-btn" onclick="showTab('alerts')">⚠️ Cảnh báo</button>
+</div>
+
+<!-- Tab Tồn kho -->
+<div class="tab-content active" id="stockTab">
+    <div class="filter-bar">
+        <select id="branchFilter" onchange="loadStock()">
+            <option value="">Tất cả chi nhánh</option>
+        </select>
+    </div>
+    
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Chi nhánh</th>
+                    <th>Nguyên vật liệu</th>
+                    <th>Nhóm</th>
+                    <th>Số lượng</th>
+                    <th>Đơn vị</th>
+                    <th>Tối thiểu</th>
+                    <th>Trạng thái</th>
+                    <th>Cập nhật</th>
+                </tr>
+            </thead>
+            <tbody id="stockTableBody">
+                <tr><td colspan="8" class="loading">Đang tải...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Nguyên vật liệu -->
+<div class="tab-content" id="materialsTab">
+    <div class="admin-header" style="margin-top: 0;">
+        <span></span>
+        <button class="btn btn-primary" onclick="showAddMaterial()">
+            <i class="fas fa-plus"></i> Thêm NVL
+        </button>
+    </div>
+    
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên NVL</th>
+                    <th>Nhóm</th>
+                    <th>Đơn vị</th>
+                    <th>Giá nhập</th>
+                    <th>SL tối thiểu</th>
+                    <th>Thao tác</th>
+                </tr>
+            </thead>
+            <tbody id="materialsTableBody">
+                <tr><td colspan="7" class="loading">Đang tải...</td></tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Tab Cảnh báo -->
+<div class="tab-content" id="alertsTab">
+    <div class="alert-list" id="alertsList">
+        <p class="loading">Đang tải...</p>
+    </div>
+</div>
+
+<!-- Modal Thêm NVL -->
+<div class="modal-overlay" id="materialModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Thêm nguyên vật liệu</h3>
+            <button class="modal-close" onclick="closeMaterialModal()">&times;</button>
+        </div>
+        <form id="materialForm" onsubmit="saveMaterial(event)">
+            <input type="hidden" id="materialId">
+            <div class="form-group">
+                <label>Tên NVL *</label>
+                <input type="text" id="tenNVL" required>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Nhóm</label>
+                    <select id="nhomNVL">
+                        <option value="Mì">Mì</option>
+                        <option value="Thịt">Thịt</option>
+                        <option value="Hải sản">Hải sản</option>
+                        <option value="Rau củ">Rau củ</option>
+                        <option value="Gia vị">Gia vị</option>
+                        <option value="Khác">Khác</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Đơn vị tính</label>
+                    <input type="text" id="donViTinh" placeholder="kg, g, lít...">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Giá nhập</label>
+                    <input type="number" id="giaNhap" value="0">
+                </div>
+                <div class="form-group">
+                    <label>SL tối thiểu</label>
+                    <input type="number" id="soLuongToiThieu" value="10">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeMaterialModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+.tabs {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #e5e7eb;
+    padding-bottom: 10px;
+}
+.tab-btn {
+    padding: 10px 20px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+}
+.tab-btn.active {
+    background: #f97316;
+    color: white;
+}
+.tab-content {
+    display: none;
+}
+.tab-content.active {
+    display: block;
+}
+.filter-bar {
+    margin-bottom: 20px;
+}
+.filter-bar select {
+    padding: 10px 15px;
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    min-width: 200px;
+}
+.alert-list {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+.alert-item {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    border-radius: 12px;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.alert-item .info strong {
+    color: #dc2626;
+}
+.status-ok {
+    background: #dcfce7;
+    color: #16a34a;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+.status-low {
+    background: #fef2f2;
+    color: #dc2626;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+}
+</style>
+
+@section Scripts {
+<script>
+let branches = [];
+let materials = [];
+let stock = [];
+let alerts = [];
+
+async function init() {
+    await loadBranches();
+    await loadMaterials();
+    await loadStock();
+    await loadAlerts();
+}
+
+async function loadBranches() {
+    const res = await fetch('/api/branch');
+    branches = await res.json();
+    
+    const select = document.getElementById('branchFilter');
+    branches.forEach(b => {
+        select.innerHTML += `<option value="${b.maCN}">${b.tenChiNhanh}</option>`;
+    });
+}
+
+async function loadMaterials() {
+    const res = await fetch('/api/inventory/materials');
+    materials = await res.json();
+    renderMaterials();
+}
+
+async function loadStock() {
+    const branchId = document.getElementById('branchFilter').value;
+    const url = branchId ? `/api/inventory/stock?branchId=${branchId}` : '/api/inventory/stock';
+    const res = await fetch(url);
+    stock = await res.json();
+    renderStock();
+}
+
+async function loadAlerts() {
+    const res = await fetch('/api/inventory/alerts');
+    const data = await res.json();
+    alerts = data.alerts;
+    renderAlerts();
+}
+
+function renderStock() {
+    const tbody = document.getElementById('stockTableBody');
+    if (stock.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">Chưa có dữ liệu tồn kho</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = stock.map(s => `
+        <tr>
+            <td>${s.tenChiNhanh}</td>
+            <td><strong>${s.tenNVL}</strong></td>
+            <td>${s.nhomNVL || '-'}</td>
+            <td>${s.soLuong}</td>
+            <td>${s.donViTinh || '-'}</td>
+            <td>${s.soLuongToiThieu}</td>
+            <td>
+                <span class="${s.canhBao ? 'status-low' : 'status-ok'}">
+                    ${s.canhBao ? '⚠️ Sắp hết' : '✓ Đủ'}
+                </span>
+            </td>
+            <td>${new Date(s.ngayCapNhat).toLocaleDateString('vi-VN')}</td>
+        </tr>
+    `).join('');
+}
+
+function renderMaterials() {
+    const tbody = document.getElementById('materialsTableBody');
+    if (materials.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" class="empty">Chưa có nguyên vật liệu</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = materials.map(m => `
+        <tr>
+            <td>${m.maNVL}</td>
+            <td><strong>${m.tenNVL}</strong></td>
+            <td>${m.nhomNVL || '-'}</td>
+            <td>${m.donViTinh || '-'}</td>
+            <td>${m.giaNhap?.toLocaleString()}đ</td>
+            <td>${m.soLuongToiThieu}</td>
+            <td>
+                <button class="btn-icon" onclick="editMaterial(${m.maNVL})">
+                    <i class="fas fa-edit"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function renderAlerts() {
+    const container = document.getElementById('alertsList');
+    if (alerts.length === 0) {
+        container.innerHTML = '<p style="text-align:center; color:#16a34a;">✓ Tất cả nguyên vật liệu đều đủ số lượng!</p>';
+        return;
+    }
+    
+    container.innerHTML = alerts.map(a => `
+        <div class="alert-item">
+            <div class="info">
+                <strong>⚠️ ${a.tenNVL}</strong> tại <strong>${a.tenChiNhanh}</strong>
+                <br>
+                <small>Còn ${a.soLuong} ${a.donViTinh} (tối thiểu: ${a.soLuongToiThieu})</small>
+            </div>
+            <span class="status-low">Thiếu ${a.thieuHut} ${a.donViTinh}</span>
+        </div>
+    `).join('');
+}
+
+function showTab(tab) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    
+    event.target.classList.add('active');
+    document.getElementById(tab + 'Tab').classList.add('active');
+}
+
+function showAddMaterial() {
+    document.getElementById('materialForm').reset();
+    document.getElementById('materialId').value = '';
+    document.getElementById('materialModal').classList.add('active');
+}
+
+function editMaterial(id) {
+    const m = materials.find(x => x.maNVL === id);
+    if (!m) return;
+    
+    document.getElementById('materialId').value = id;
+    document.getElementById('tenNVL').value = m.tenNVL;
+    document.getElementById('nhomNVL').value = m.nhomNVL || 'Khác';
+    document.getElementById('donViTinh').value = m.donViTinh || '';
+    document.getElementById('giaNhap').value = m.giaNhap || 0;
+    document.getElementById('soLuongToiThieu').value = m.soLuongToiThieu || 10;
+    document.getElementById('materialModal').classList.add('active');
+}
+
+async function saveMaterial(e) {
+    e.preventDefault();
+    const id = document.getElementById('materialId').value;
+    const data = {
+        tenNVL: document.getElementById('tenNVL').value,
+        nhomNVL: document.getElementById('nhomNVL').value,
+        donViTinh: document.getElementById('donViTinh').value,
+        giaNhap: parseFloat(document.getElementById('giaNhap').value) || 0,
+        soLuongToiThieu: parseInt(document.getElementById('soLuongToiThieu').value) || 10,
+        trangThai: true
+    };
+    
+    const url = id ? `/api/inventory/materials/${id}` : '/api/inventory/materials';
+    const method = id ? 'PUT' : 'POST';
+    
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    
+    if (res.ok) {
+        closeMaterialModal();
+        loadMaterials();
+        alert('Lưu thành công!');
+    }
+}
+
+function closeMaterialModal() {
+    document.getElementById('materialModal').classList.remove('active');
+}
+
+init();
+</script>
+}

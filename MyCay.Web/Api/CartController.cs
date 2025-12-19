@@ -11,15 +11,6 @@ namespace MyCay.Web.Api
         private readonly MyCayDbContext _context;
         private readonly ILogger<CartController> _logger;
 
-        // Promo codes (có thể chuyển vào database sau)
-        private static readonly Dictionary<string, PromoCode> _promoCodes = new()
-        {
-            ["SASIN10"] = new PromoCode { Code = "SASIN10", Type = "percent", Value = 10, MinOrder = 100000, Description = "Giảm 10% đơn từ 100k" },
-            ["SASIN20"] = new PromoCode { Code = "SASIN20", Type = "percent", Value = 20, MinOrder = 200000, Description = "Giảm 20% đơn từ 200k" },
-            ["FREESHIP"] = new PromoCode { Code = "FREESHIP", Type = "shipping", Value = 15000, MinOrder = 150000, Description = "Miễn phí ship đơn từ 150k" },
-            ["NEWUSER"] = new PromoCode { Code = "NEWUSER", Type = "fixed", Value = 30000, MinOrder = 100000, Description = "Giảm 30k cho khách mới" }
-        };
-
         public CartController(MyCayDbContext context, ILogger<CartController> logger)
         {
             _context = context;
@@ -157,46 +148,95 @@ namespace MyCay.Web.Api
             return Ok(new { success = true, message = "Đã xóa giỏ hàng" });
         }
 
-        // POST: api/cart/apply-promo
+        // POST: api/cart/apply-promo - Áp dụng mã giảm giá từ database
         [HttpPost("apply-promo")]
-        public IActionResult ApplyPromoCode([FromBody] ApplyPromoRequest request)
+        public async Task<IActionResult> ApplyPromoCode([FromBody] ApplyPromoRequest request)
         {
             if (string.IsNullOrEmpty(request.Code))
                 return BadRequest(new { success = false, message = "Vui lòng nhập mã giảm giá" });
 
             var code = request.Code.ToUpper();
-            if (!_promoCodes.TryGetValue(code, out var promo))
+            var coupon = await _context.MaGiamGias
+                .FirstOrDefaultAsync(m => m.MaCode.ToUpper() == code);
+
+            if (coupon == null)
                 return BadRequest(new { success = false, message = "Mã giảm giá không hợp lệ" });
 
-            if (request.Subtotal < promo.MinOrder)
-                return BadRequest(new { success = false, message = $"Đơn hàng tối thiểu {promo.MinOrder:N0}đ để áp dụng mã này" });
+            // Kiểm tra trạng thái
+            if (!coupon.TrangThai)
+                return BadRequest(new { success = false, message = "Mã giảm giá đã bị vô hiệu hóa" });
+
+            // Kiểm tra thời gian
+            var now = DateTime.Now;
+            if (coupon.NgayBatDau.HasValue && coupon.NgayBatDau > now)
+                return BadRequest(new { success = false, message = "Mã giảm giá chưa có hiệu lực" });
+
+            if (coupon.NgayKetThuc.HasValue && coupon.NgayKetThuc < now)
+                return BadRequest(new { success = false, message = "Mã giảm giá đã hết hạn" });
+
+            // Kiểm tra số lượng
+            if (coupon.DaSuDung >= coupon.SoLuong)
+                return BadRequest(new { success = false, message = "Mã giảm giá đã hết lượt sử dụng" });
+
+            // Kiểm tra đơn tối thiểu
+            if (request.Subtotal < coupon.DonToiThieu)
+                return BadRequest(new { success = false, message = $"Đơn hàng tối thiểu {coupon.DonToiThieu:N0}đ để áp dụng mã này" });
 
             decimal discount = 0;
             decimal shippingDiscount = 0;
 
-            switch (promo.Type)
+            switch (coupon.LoaiGiam.ToLower())
             {
-                case "percent": discount = request.Subtotal * promo.Value / 100; break;
-                case "fixed": discount = promo.Value; break;
-                case "shipping": shippingDiscount = promo.Value; break;
+                case "percent":
+                    discount = request.Subtotal * coupon.GiaTri / 100;
+                    if (coupon.GiamToiDa.HasValue && discount > coupon.GiamToiDa)
+                        discount = coupon.GiamToiDa.Value;
+                    break;
+                case "fixed":
+                    discount = coupon.GiaTri;
+                    break;
+                case "freeship":
+                    shippingDiscount = coupon.GiaTri;
+                    break;
             }
 
             return Ok(new
             {
                 success = true,
                 message = $"Áp dụng mã {code} thành công!",
-                data = new { code = promo.Code, description = promo.Description, discount, shippingDiscount, type = promo.Type }
+                data = new
+                {
+                    couponId = coupon.MaMGG,
+                    code = coupon.MaCode,
+                    description = coupon.MoTa,
+                    discount,
+                    shippingDiscount,
+                    type = coupon.LoaiGiam
+                }
             });
         }
 
-        // GET: api/cart/promo-codes
+        // GET: api/cart/promo-codes - Lấy danh sách mã giảm giá đang hoạt động
         [HttpGet("promo-codes")]
-        public IActionResult GetPromoCodes()
+        public async Task<IActionResult> GetPromoCodes()
         {
-            var codes = _promoCodes.Values.Select(p => new
-            {
-                code = p.Code, description = p.Description, type = p.Type, value = p.Value, minOrder = p.MinOrder
-            });
+            var now = DateTime.Now;
+            var codes = await _context.MaGiamGias
+                .Where(m => m.TrangThai
+                    && (m.NgayBatDau == null || m.NgayBatDau <= now)
+                    && (m.NgayKetThuc == null || m.NgayKetThuc >= now)
+                    && m.DaSuDung < m.SoLuong)
+                .Select(m => new
+                {
+                    code = m.MaCode,
+                    description = m.MoTa,
+                    type = m.LoaiGiam,
+                    value = m.GiaTri,
+                    maxDiscount = m.GiamToiDa,
+                    minOrder = m.DonToiThieu
+                })
+                .ToListAsync();
+
             return Ok(new { success = true, data = codes });
         }
 
@@ -215,15 +255,6 @@ namespace MyCay.Web.Api
                 data = new { subtotal, shippingFee, discount, total = Math.Max(0, total), itemCount = request.Items?.Sum(i => i.Quantity) ?? 0 }
             });
         }
-    }
-
-    public class PromoCode
-    {
-        public string Code { get; set; } = "";
-        public string Type { get; set; } = "percent";
-        public decimal Value { get; set; }
-        public decimal MinOrder { get; set; }
-        public string Description { get; set; } = "";
     }
 
     public class AddToCartRequest

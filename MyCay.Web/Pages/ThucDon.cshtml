@@ -24,7 +24,9 @@
                 <button class="tab-btn" data-category="mi-tuong-den">🥢 Mì Tương Đen</button>
                 <button class="tab-btn" data-category="mi-xao">🍝 Mì Xào</button>
                 <button class="tab-btn" data-category="mon-khac">🍚 Món Khác</button>
+                <button class="tab-btn" data-category="mon-them">🥢 Món Thêm Mì</button>
                 <button class="tab-btn" data-category="lau">🍲 Lẩu</button>
+                <button class="tab-btn" data-category="mon-them-lau">🥘 Món Thêm Lẩu</button>
                 <button class="tab-btn" data-category="khai-vi">🍟 Khai Vị</button>
                 <button class="tab-btn" data-category="combo">🎁 Combo</button>
                 <button class="tab-btn" data-category="giai-khat">🥤 Giải Khát</button>
@@ -43,7 +45,7 @@
                 <div class="product-card" data-category="@product.CategorySlug" data-name="@product.Name.ToLower()" data-desc="@(product.Description?.ToLower() ?? "")">
                     <div class="product-image">
                         <img src="~/images/products/@product.Image" alt="@product.Name" loading="lazy" 
-                             onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                             onerror="this.onerror=null; this.src='https://placehold.co/300x300/fff5f0/f97316?text=🍜'; this.style.objectFit='contain';" />
                         @if (product.IsBestSeller)
                         {
                             <span class="product-badge">Best Seller</span>
@@ -54,7 +56,7 @@
                         <p class="product-desc">@product.Description</p>
                         <div class="product-footer">
                             <span class="product-price">@product.Price</span>
-                            <button class="btn-add" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" onclick="addToCartFromBtn(this)">
+                            <button class="btn-add" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" data-id="@product.Id" onclick="if(!checkLoginFirst()){return false;}addToCartFromBtn(this)">
                                 <span>+</span> Thêm
                             </button>
                         </div>
@@ -143,6 +145,24 @@
             <button class="btn-add-to-cart" onclick="confirmAddToCart()">
                 <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
             </button>
+        </div>
+    </div>
+</div>
+
+<!-- Login Required Modal -->
+<div class="login-modal-overlay" id="loginRequiredModal">
+    <div class="login-modal">
+        <button class="modal-close" onclick="closeLoginRequired()">×</button>
+        <div class="login-modal-icon">🔐</div>
+        <h2>Vui lòng đăng nhập</h2>
+        <p>Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng và đặt món.</p>
+        <div class="login-modal-buttons">
+            <a href="/DangNhap?returnUrl=/ThucDon" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a href="/DangKy?returnUrl=/ThucDon" class="btn-register">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
         </div>
     </div>
 </div>
@@ -404,10 +424,124 @@
     from { transform: translateX(-50%) translateY(20px); opacity: 0; }
     to { transform: translateX(-50%) translateY(0); opacity: 1; }
 }
+
+/* Login Required Modal */
+.login-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+}
+.login-modal-overlay.active {
+    display: flex;
+}
+.login-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+.login-modal .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.login-modal .modal-close:hover {
+    background: #ef4444;
+    color: white;
+}
+.login-modal-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+.login-modal h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+.login-modal p {
+    color: #6b7280;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+.login-modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+.login-modal-buttons a {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.btn-login {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+}
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+.btn-register {
+    background: #f3f4f6;
+    color: #374151;
+}
+.btn-register:hover {
+    background: #e5e7eb;
+}
 </style>
 
 @section Scripts {
 <script>
+    // KIỂM TRA ĐĂNG NHẬP - HÀM NÀY CHẠY ĐẦU TIÊN
+    function checkLoginFirst() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr || userStr === 'null' || userStr === '{}') {
+            showLoginModal();
+            return false;
+        }
+        try {
+            const user = JSON.parse(userStr);
+            if (!user || !user.username) {
+                showLoginModal();
+                return false;
+            }
+            return true;
+        } catch(e) {
+            showLoginModal();
+            return false;
+        }
+    }
+    
+    // Hiện modal yêu cầu đăng nhập
+    function showLoginModal() {
+        const modal = document.getElementById('loginRequiredModal');
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
     let allCards = document.querySelectorAll('.product-card');
     
     // Current product for modal
@@ -434,10 +568,10 @@
     });
 
     // Search with debounce
-    let searchTimeout;
+    let menuSearchTimeout;
     document.getElementById('searchInput').addEventListener('input', function() {
-        clearTimeout(searchTimeout);
-        searchTimeout = setTimeout(() => filterProducts(), 300);
+        clearTimeout(menuSearchTimeout);
+        menuSearchTimeout = setTimeout(() => filterProducts(), 300);
     });
 
     function filterProducts() {
@@ -475,16 +609,68 @@
 
     // Add to cart from button (using data attributes)
     function addToCartFromBtn(btn) {
+        console.log('Button clicked - addToCartFromBtn');
+        
+        // Kiểm tra đăng nhập ngay tại đây
+        if (!isLoggedIn()) {
+            console.log('Not logged in - blocking add to cart');
+            showLoginRequired();
+            return; // STOP - không cho thêm
+        }
+        
         const code = btn.dataset.code;
         const name = btn.dataset.name;
         const price = btn.dataset.price;
         const image = btn.dataset.image;
-        addToCart(code, name, price, image);
+        const productId = btn.dataset.id || 0;
+        addToCart(code, name, price, image, productId);
+    }
+
+    // Check if user is logged in - kiểm tra chặt chẽ
+    function isLoggedIn() {
+        try {
+            const userStr = localStorage.getItem('user');
+            if (!userStr || userStr === 'null' || userStr === '{}') {
+                console.log('User not logged in: no user data');
+                return false;
+            }
+            const user = JSON.parse(userStr);
+            const loggedIn = user && user.username && user.username.length > 0;
+            console.log('Login check:', loggedIn ? 'Logged in as ' + user.username : 'Not logged in');
+            return loggedIn;
+        } catch (e) {
+            console.log('Login check error:', e);
+            return false;
+        }
+    }
+
+    // Show login required modal
+    function showLoginRequired() {
+        console.log('Showing login required modal');
+        document.getElementById('loginRequiredModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close login required modal
+    function closeLoginRequired() {
+        document.getElementById('loginRequiredModal').classList.remove('active');
+        document.body.style.overflow = '';
     }
 
     // Add to cart - check if Mì Cay to show modal
-    function addToCart(code, name, price, image) {
-        console.log('Adding to cart:', code, name, price, image);
+    function addToCart(code, name, price, image, productId) {
+        console.log('addToCart called - checking login...');
+        
+        // Check login first - QUAN TRỌNG
+        if (!isLoggedIn()) {
+            console.log('User not logged in - showing modal');
+            showLoginRequired();
+            return; // STOP HERE - không thêm vào giỏ
+        }
+        
+        console.log('User is logged in - proceeding to add');
+        
+        console.log('Adding to cart:', code, name, price, image, productId);
         
         // Get category from card by code
         const cards = document.querySelectorAll('.product-card');
@@ -498,21 +684,22 @@
         
         // If it's Mì Cay, show modal for options
         if (isMiCay(code, name) || category === 'mi-cay') {
-            openProductModal(code, name, price, image, category);
+            openProductModal(code, name, price, image, category, productId);
         } else {
             // Direct add to cart for non-Mì Cay items
-            addToCartDirect(code, name, price, image, null, null, 1);
+            addToCartDirect(code, name, price, image, null, null, 1, productId);
         }
     }
 
     // Open product modal
-    function openProductModal(code, name, price, image, category) {
+    function openProductModal(code, name, price, image, category, productId) {
         currentProduct = {
             code: code,
             name: name,
             price: parseFloat(price),
             image: image,
             category: category,
+            productId: parseInt(productId) || 0,
             broth: 'kimchi',
             spicyLevel: 3,
             quantity: 1
@@ -618,6 +805,13 @@
 
     // Confirm add to cart from modal
     function confirmAddToCart() {
+        // Kiểm tra đăng nhập lần nữa để chắc chắn
+        if (!isLoggedIn()) {
+            closeProductModal();
+            showLoginRequired();
+            return;
+        }
+        
         const broth = currentProduct.broth;
         const spicy = currentProduct.spicyLevel;
         const qty = currentProduct.quantity;
@@ -633,7 +827,8 @@
             currentProduct.image,
             brothName,
             spicy,
-            qty
+            qty,
+            currentProduct.productId
         );
         
         closeProductModal();
@@ -656,7 +851,7 @@
     }
 
     // Direct add to cart - save to both localStorage and API
-    function addToCartDirect(code, name, price, image, broth, spicyLevel, quantity) {
+    function addToCartDirect(code, name, price, image, broth, spicyLevel, quantity, productId) {
         // Save to localStorage for immediate UI update
         let cart = JSON.parse(localStorage.getItem('cart') || '[]');
         
@@ -675,7 +870,8 @@
                 name, 
                 price: parseFloat(price), 
                 image: image,
-                quantity: quantity
+                quantity: quantity,
+                productId: parseInt(productId) || 0
             };
             
             if (broth) {
@@ -694,8 +890,8 @@
         const customerId = getCustomerId();
         const sessionId = getSessionId();
         
-        // Extract product ID from code (assuming code like M00012)
-        const productId = parseInt(code.replace(/\D/g, '')) || 1;
+        // Use actual productId from database
+        const actualProductId = parseInt(productId) || 1;
         
         fetch('/api/cart', {
             method: 'POST',
@@ -703,7 +899,7 @@
             body: JSON.stringify({
                 customerId: customerId,
                 sessionId: sessionId,
-                productId: productId,
+                productId: actualProductId,
                 quantity: quantity,
                 spicyLevel: spicyLevel || 0,
                 brothType: broth || null,
@@ -754,10 +950,18 @@
         }
     });
 
+    // Close login modal on overlay click
+    document.getElementById('loginRequiredModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLoginRequired();
+        }
+    });
+
     // Close modal on Escape key
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
             closeProductModal();
+            closeLoginRequired();
         }
     });
 

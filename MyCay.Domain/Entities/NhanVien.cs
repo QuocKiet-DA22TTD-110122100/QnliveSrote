@@ -33,6 +33,8 @@ public class NhanVien
     
     public int? MaTK { get; set; }
     
+    public int? MaCN { get; set; } // Chi nhánh làm việc
+    
     public DateTime NgayVaoLam { get; set; } = DateTime.Now;
     
     public bool TrangThai { get; set; } = true;
@@ -40,4 +42,7 @@ public class NhanVien
     // Navigation
     [ForeignKey("MaTK")]
     public virtual TaiKhoan? TaiKhoan { get; set; }
+    
+    [ForeignKey("MaCN")]
+    public virtual ChiNhanh? ChiNhanh { get; set; }
 }
