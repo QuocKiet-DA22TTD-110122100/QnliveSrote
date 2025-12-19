@@ -22,25 +22,35 @@
                 <li><a href="/ThucDon" class="nav-link">Thực đơn</a></li>
                 <li><a href="/UuDai" class="nav-link">Ưu đãi</a></li>
                 <li><a href="/TinTuc" class="nav-link">Tin tức</a></li>
-                <li><a href="/GioHang" class="nav-link cart-link">
-                    <i class="fas fa-shopping-cart"></i>
-                    Giỏ hàng
-                    <span class="cart-badge" id="cartCount">0</span>
-                </a></li>
-                <li id="loginLink"><a href="/DangNhap" class="nav-link">Đăng nhập</a></li>
+                
+                <!-- Icon Giỏ hàng -->
+                <li class="nav-cart-icon">
+                    <a href="/GioHang" class="nav-link cart-icon-link" title="Giỏ hàng">
+                        <i class="fas fa-shopping-cart"></i>
+                        <span class="cart-badge" id="cartCount">0</span>
+                    </a>
+                </li>
+                
+                <!-- Nút Đăng nhập (hiện khi chưa đăng nhập) -->
+                <li id="loginLink"><a href="/DangNhap" class="nav-link btn-login">Đăng nhập</a></li>
+                
+                <!-- Icon User (hiện khi đã đăng nhập) -->
                 <li id="userMenu" class="user-menu-item" style="display: none;">
                     <div class="user-dropdown-nav">
-                        <button class="user-nav-btn">
-                            <span class="user-avatar-small">👤</span>
-                            <span id="navUserName">User</span>
-                            <i class="fas fa-chevron-down"></i>
+                        <button class="user-nav-btn" title="Tài khoản">
+                            <i class="fas fa-user-circle user-icon"></i>
                         </button>
                         <div class="user-dropdown-content">
+                            <div class="user-dropdown-header">
+                                <span class="user-greeting">Xin chào,</span>
+                                <span class="user-name" id="navUserName">User</span>
+                            </div>
+                            <hr>
                             <a href="/TaiKhoan"><i class="fas fa-user"></i> Tài khoản</a>
-                            <a href="/DonHangCuaToi"><i class="fas fa-shopping-bag"></i> Đơn hàng</a>
+                            <a href="/DonHangCuaToi"><i class="fas fa-shopping-bag"></i> Đơn hàng của tôi</a>
                             <a href="/Admin" id="adminLink" style="display: none;"><i class="fas fa-cog"></i> Quản trị</a>
                             <hr>
-                            <a href="#" onclick="logoutUser()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                            <a href="#" onclick="logoutUser()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
                         </div>
                     </div>
                 </li>
@@ -121,48 +131,99 @@
     </footer>
 
     <style>
+    /* Cart Icon Styles */
+    .nav-cart-icon { position: relative; }
+    .cart-icon-link {
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.2rem;
+        padding: 8px 12px !important;
+    }
+    .cart-icon-link .cart-badge {
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.65rem;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    
+    /* Login Button */
+    .btn-login {
+        background: linear-gradient(135deg, #f97316, #ea580c) !important;
+        color: white !important;
+        padding: 8px 20px !important;
+        border-radius: 25px !important;
+        font-weight: 600 !important;
+        transition: all 0.3s ease !important;
+    }
+    .btn-login:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+    }
+    
     /* User Menu Styles */
     .user-menu-item { position: relative; }
     .user-dropdown-nav { position: relative; }
     .user-nav-btn {
         display: flex;
         align-items: center;
-        gap: 8px;
+        justify-content: center;
         background: none;
         border: none;
         cursor: pointer;
-        padding: 8px 12px;
-        border-radius: 25px;
+        padding: 8px;
+        border-radius: 50%;
         transition: all 0.2s;
-        font-family: inherit;
-        font-size: 0.95rem;
         color: #374151;
     }
-    .user-nav-btn:hover { background: #f3f4f6; }
-    .user-avatar-small {
-        width: 32px;
-        height: 32px;
-        background: linear-gradient(135deg, #f97316, #ea580c);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 0.9rem;
+    .user-nav-btn:hover { 
+        background: #fff7ed;
+        color: #f97316;
+    }
+    .user-icon {
+        font-size: 1.5rem;
+        color: #f97316;
     }
     .user-dropdown-content {
         position: absolute;
         top: 100%;
         right: 0;
         background: white;
-        min-width: 200px;
+        min-width: 220px;
         border-radius: 12px;
         box-shadow: 0 10px 40px rgba(0,0,0,0.15);
-        padding: 8px 0;
+        padding: 0;
         display: none;
         z-index: 1000;
+        overflow: hidden;
     }
     .user-dropdown-nav:hover .user-dropdown-content,
     .user-dropdown-content:hover { display: block; }
+    .user-dropdown-header {
+        background: linear-gradient(135deg, #fff7ed, #ffedd5);
+        padding: 15px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    .user-greeting {
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+    .user-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #f97316;
+    }
     .user-dropdown-content a {
         display: flex;
         align-items: center;
@@ -176,8 +237,16 @@
         background: #fff7ed;
         color: #f97316;
     }
+    .user-dropdown-content a i {
+        width: 18px;
+        text-align: center;
+    }
+    .logout-link:hover {
+        background: #fef2f2 !important;
+        color: #ef4444 !important;
+    }
     .user-dropdown-content hr {
-        margin: 8px 0;
+        margin: 0;
         border: none;
         border-top: 1px solid #e5e7eb;
     }
