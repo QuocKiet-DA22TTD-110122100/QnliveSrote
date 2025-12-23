@@ -6,36 +6,75 @@
 
 <section class="menu-page">
     <div class="container">
-        <!-- Header -->
-        <div class="menu-header">
-            <h1 class="page-title">🍜 Thực đơn</h1>
-            <p class="page-subtitle">Khám phá hơn 100 món ăn đa dạng tại Mỳ Cay Sasin</p>
+        <!-- Hero Banner -->
+        <div class="menu-hero">
+            <div class="menu-hero-content">
+                <span class="menu-hero-badge">🔥 Hơn 100+ món ngon</span>
+                <h1 class="menu-hero-title">Thực đơn <span>Mỳ Cay Sasin</span></h1>
+                <p class="menu-hero-subtitle">Khám phá hương vị Hàn Quốc đích thực với các món mì cay, lẩu, và nhiều món ngon khác</p>
+            </div>
+            <div class="menu-hero-decoration">
+                <span class="floating-emoji e1">🍜</span>
+                <span class="floating-emoji e2">🌶️</span>
+                <span class="floating-emoji e3">🍲</span>
+                <span class="floating-emoji e4">🥢</span>
+            </div>
         </div>
 
-        <!-- Filter & Search -->
+        <!-- Filter by Category -->
         <div class="menu-filters">
-            <div class="search-box">
-                <span class="search-icon">🔍</span>
-                <input type="text" id="searchInput" placeholder="Tìm kiếm món ăn..." />
+            <div class="filter-header">
+                <h3>🏷️ Danh mục</h3>
+                <span class="products-count">
+                    <span id="visibleCount">@Model.Products.Count</span> sản phẩm
+                </span>
             </div>
             <div class="category-tabs">
-                <button class="tab-btn active" data-category="all">Tất cả</button>
-                <button class="tab-btn" data-category="mi-cay">🌶️ Mì Cay</button>
-                <button class="tab-btn" data-category="mi-tuong-den">🥢 Mì Tương Đen</button>
-                <button class="tab-btn" data-category="mi-xao">🍝 Mì Xào</button>
-                <button class="tab-btn" data-category="mon-khac">🍚 Món Khác</button>
-                <button class="tab-btn" data-category="mon-them">🥢 Món Thêm Mì</button>
-                <button class="tab-btn" data-category="lau">🍲 Lẩu</button>
-                <button class="tab-btn" data-category="mon-them-lau">🥘 Món Thêm Lẩu</button>
-                <button class="tab-btn" data-category="khai-vi">🍟 Khai Vị</button>
-                <button class="tab-btn" data-category="combo">🎁 Combo</button>
-                <button class="tab-btn" data-category="giai-khat">🥤 Giải Khát</button>
+                <button class="tab-btn active" data-category="all">
+                    <span class="tab-icon">📋</span>
+                    <span class="tab-text">Tất cả</span>
+                </button>
+                <button class="tab-btn" data-category="mi-cay">
+                    <span class="tab-icon">🌶️</span>
+                    <span class="tab-text">Mì Cay</span>
+                </button>
+                <button class="tab-btn" data-category="mi-tuong-den">
+                    <span class="tab-icon">🥢</span>
+                    <span class="tab-text">Mì Tương Đen</span>
+                </button>
+                <button class="tab-btn" data-category="mi-xao">
+                    <span class="tab-icon">🍝</span>
+                    <span class="tab-text">Mì Xào</span>
+                </button>
+                <button class="tab-btn" data-category="mon-khac">
+                    <span class="tab-icon">🍚</span>
+                    <span class="tab-text">Món Khác</span>
+                </button>
+                <button class="tab-btn" data-category="mon-them">
+                    <span class="tab-icon">🥟</span>
+                    <span class="tab-text">Topping Mì</span>
+                </button>
+                <button class="tab-btn" data-category="lau">
+                    <span class="tab-icon">🍲</span>
+                    <span class="tab-text">Lẩu</span>
+                </button>
+                <button class="tab-btn" data-category="mon-them-lau">
+                    <span class="tab-icon">🥘</span>
+                    <span class="tab-text">Topping Lẩu</span>
+                </button>
+                <button class="tab-btn" data-category="khai-vi">
+                    <span class="tab-icon">🍟</span>
+                    <span class="tab-text">Khai Vị</span>
+                </button>
+                <button class="tab-btn" data-category="combo">
+                    <span class="tab-icon">🎁</span>
+                    <span class="tab-text">Combo</span>
+                </button>
+                <button class="tab-btn" data-category="giai-khat">
+                    <span class="tab-icon">🥤</span>
+                    <span class="tab-text">Giải Khát</span>
+                </button>
             </div>
-        </div>
-
-        <!-- Products Count -->
-        <div class="products-count" style="margin-bottom: 20px; color: var(--gray);">
-            Hiển thị <strong id="visibleCount">@Model.Products.Count</strong> / <strong>@Model.Products.Count</strong> sản phẩm
         </div>
 
         <!-- Products Grid -->
@@ -48,8 +87,13 @@
                              onerror="this.onerror=null; this.src='https://placehold.co/300x300/fff5f0/f97316?text=🍜'; this.style.objectFit='contain';" />
                         @if (product.IsBestSeller)
                         {
-                            <span class="product-badge">Best Seller</span>
+                            <span class="product-badge bestseller">🔥 Best Seller</span>
                         }
+                        <div class="product-overlay">
+                            <button class="btn-quick-view" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" data-id="@product.Id" onclick="if(!checkLoginFirst()){return false;}addToCartFromBtn(this)">
+                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
                     </div>
                     <div class="product-info">
                         <h3 class="product-name">@product.Name</h3>
@@ -57,7 +101,7 @@
                         <div class="product-footer">
                             <span class="product-price">@product.Price</span>
                             <button class="btn-add" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" data-id="@product.Id" onclick="if(!checkLoginFirst()){return false;}addToCartFromBtn(this)">
-                                <span>+</span> Thêm
+                                <i class="fas fa-plus"></i>
                             </button>
                         </div>
                     </div>
@@ -65,11 +109,11 @@
             }
         </div>
 
-        <!-- Load More (optional) -->
-        <div class="load-more" style="text-align: center; margin-top: 40px; display: none;" id="loadMore">
-            <button class="btn btn-outline" onclick="loadMoreProducts()">
-                Xem thêm sản phẩm <i class="fas fa-chevron-down"></i>
-            </button>
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">🍜</div>
+            <h3>Không tìm thấy sản phẩm</h3>
+            <p>Vui lòng chọn danh mục khác</p>
         </div>
     </div>
 </section>
@@ -173,6 +217,374 @@
 </div>
 
 <style>
+/* Menu Page - Modern Design */
+.menu-page {
+    padding: 0;
+    background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%);
+    min-height: 100vh;
+    margin-top: -75px; /* Offset the main padding for full-width hero */
+    padding-top: 75px;
+}
+
+/* Hero Banner */
+.menu-hero {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
+    padding: 60px 40px;
+    border-radius: 0 0 40px 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+.menu-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+}
+.menu-hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+}
+.menu-hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.menu-hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.menu-hero-title span {
+    display: block;
+    font-size: 3rem;
+    background: linear-gradient(to right, #fff, #ffe4d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.menu-hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+.menu-hero-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.floating-emoji {
+    position: absolute;
+    font-size: 2.5rem;
+    animation: float 4s ease-in-out infinite;
+    opacity: 0.6;
+}
+.floating-emoji.e1 { top: 20%; left: 10%; animation-delay: 0s; }
+.floating-emoji.e2 { top: 60%; left: 5%; animation-delay: 1s; }
+.floating-emoji.e3 { top: 30%; right: 10%; animation-delay: 2s; }
+.floating-emoji.e4 { top: 70%; right: 8%; animation-delay: 0.5s; }
+@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(10deg); }
+}
+
+/* Menu Filters - Improved */
+.menu-filters {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    position: sticky;
+    top: 80px;
+    z-index: 100;
+}
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.filter-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+.products-count {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ea580c;
+}
+.category-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+.category-tabs::-webkit-scrollbar {
+    display: none;
+}
+.tab-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+.tab-btn .tab-icon {
+    font-size: 1.1rem;
+}
+.tab-btn:hover {
+    border-color: #f97316;
+    background: #fff7ed;
+    transform: translateY(-2px);
+}
+.tab-btn.active {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(249,115,22,0.4);
+}
+
+/* Products Grid - Enhanced */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding-bottom: 40px;
+}
+
+/* Product Card - Modern Style */
+.product-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(249,115,22,0.2);
+}
+.product-image {
+    position: relative;
+    background: linear-gradient(135deg, #fff5f0, #ffffff);
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.5s ease;
+}
+.product-card:hover .product-image img {
+    transform: scale(1.1);
+}
+.product-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 2;
+}
+.product-badge.bestseller {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 10px rgba(239,68,68,0.4);
+}
+.product-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+.btn-quick-view {
+    background: white;
+    color: #f97316;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+.product-card:hover .btn-quick-view {
+    transform: translateY(0);
+}
+.btn-quick-view:hover {
+    background: #f97316;
+    color: white;
+}
+.product-info {
+    padding: 20px;
+}
+.product-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.product-desc {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.btn-add {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(249,115,22,0.4);
+}
+.btn-add:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 20px rgba(249,115,22,0.5);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+.empty-state h3 {
+    font-size: 1.3rem;
+    color: #374151;
+    margin-bottom: 10px;
+}
+.empty-state p {
+    color: #6b7280;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .menu-hero {
+        padding: 40px 20px;
+        border-radius: 0 0 30px 30px;
+    }
+    .menu-hero-title {
+        font-size: 1.8rem;
+    }
+    .menu-hero-title span {
+        font-size: 2.2rem;
+    }
+    .menu-filters {
+        padding: 15px;
+        border-radius: 15px;
+        position: static;
+    }
+    .filter-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .tab-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    .product-info {
+        padding: 15px;
+    }
+    .product-name {
+        font-size: 0.95rem;
+    }
+    .product-price {
+        font-size: 1.1rem;
+    }
+    .btn-add {
+        width: 40px;
+        height: 40px;
+    }
+    .floating-emoji {
+        font-size: 1.8rem;
+    }
+}
+
 /* Product Modal */
 .product-modal-overlay {
     position: fixed;
@@ -577,6 +989,7 @@
     }
 
     let allCards = document.querySelectorAll('.product-card');
+    console.log('Total products loaded:', allCards.length);
     
     // Current product for modal
     let currentProduct = {
@@ -595,50 +1008,78 @@
         btn.addEventListener('click', function() {
             document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
             this.classList.add('active');
-            
-            const category = this.dataset.category;
             filterProducts();
         });
     });
 
-    // Search with debounce
-    let menuSearchTimeout;
-    document.getElementById('searchInput').addEventListener('input', function() {
-        clearTimeout(menuSearchTimeout);
-        menuSearchTimeout = setTimeout(() => filterProducts(), 300);
-    });
-
     function filterProducts() {
-        const search = document.getElementById('searchInput').value.toLowerCase();
         const activeTab = document.querySelector('.tab-btn.active');
         const category = activeTab ? activeTab.dataset.category : 'all';
         
+        console.log('Filtering - Category:', category);
+        
         let visibleCount = 0;
         
+        // Re-query cards in case DOM changed
+        allCards = document.querySelectorAll('.product-card');
+        
         allCards.forEach(card => {
-            const name = card.dataset.name;
-            const desc = card.dataset.desc;
-            const cardCategory = card.dataset.category;
-            
-            const matchSearch = !search || name.includes(search) || desc.includes(search);
+            const cardCategory = card.dataset.category || '';
             const matchCategory = category === 'all' || cardCategory === category;
             
-            if (matchSearch && matchCategory) {
-                card.style.display = 'flex';
+            if (matchCategory) {
+                card.style.display = '';
                 visibleCount++;
             } else {
                 card.style.display = 'none';
             }
         });
         
+        console.log('Visible products:', visibleCount);
         document.getElementById('visibleCount').textContent = visibleCount;
+        
+        // Show/hide empty state
+        const emptyState = document.getElementById('emptyState');
+        const productsGrid = document.getElementById('productsGrid');
+        if (visibleCount === 0) {
+            emptyState.style.display = 'block';
+            productsGrid.style.display = 'none';
+        } else {
+            emptyState.style.display = 'none';
+            productsGrid.style.display = 'grid';
+        }
     }
 
-    // Check if product is Mì Cay
+    // Check if product is Mì Cay (cần chọn nước dùng và cấp độ cay)
+    // Loại trừ: Mì Tương Đen, Mì Xào, Mì Phô Mai, Mì Tương Hàn - không cần chọn
     function isMiCay(code, name) {
         const nameLower = name.toLowerCase();
-        return nameLower.includes('mì') || nameLower.includes('mi ') || 
-               nameLower.includes('mỳ') || nameLower.includes('my ');
+        
+        // Các loại mì KHÔNG cần chọn nước dùng và cấp cay
+        const excludedTypes = [
+            'tương đen', 'tuong den',
+            'mì xào', 'mi xao', 'mỳ xào', 'my xao',
+            'phô mai', 'pho mai',
+            'tương hàn', 'tuong han',
+            'jajang', 'jjajang',
+            'carbonara'
+        ];
+        
+        // Nếu tên chứa các loại loại trừ -> không phải mì cay
+        for (const excluded of excludedTypes) {
+            if (nameLower.includes(excluded)) {
+                return false;
+            }
+        }
+        
+        // Chỉ các món có chữ "mì/mỳ" và thuộc danh mục mì cay mới cần chọn
+        const isMi = nameLower.includes('mì') || nameLower.includes('mi ') || 
+                     nameLower.includes('mỳ') || nameLower.includes('my ');
+        
+        // Kiểm tra thêm: phải có từ "cay" hoặc không có các từ loại trừ
+        const hasCay = nameLower.includes('cay');
+        
+        return isMi && hasCay;
     }
 
     // Add to cart from button (using data attributes)
@@ -716,17 +1157,14 @@
             }
         });
         
-        // If it's Mì Cay, show modal for options
-        if (isMiCay(code, name) || category === 'mi-cay') {
-            openProductModal(code, name, price, image, category, productId);
-        } else {
-            // Direct add to cart for non-Mì Cay items
-            addToCartDirect(code, name, price, image, null, null, 1, productId);
-        }
+        // Luôn mở modal để chọn số lượng (ẩn nước dùng/cấp cay nếu không phải mì cay)
+        openProductModal(code, name, price, image, category, productId);
     }
 
     // Open product modal
     function openProductModal(code, name, price, image, category, productId) {
+        const isMiCayProduct = isMiCay(code, name) || category === 'mi-cay';
+        
         currentProduct = {
             code: code,
             name: name,
@@ -734,15 +1172,17 @@
             image: image,
             category: category,
             productId: parseInt(productId) || 0,
-            broth: 'kimchi',
-            spicyLevel: 3,
+            broth: isMiCayProduct ? 'kimchi' : null,
+            spicyLevel: isMiCayProduct ? 3 : 0,
             quantity: 1
         };
         
         // Update modal content
         document.getElementById('modalProductImage').src = '/images/products/' + image;
         document.getElementById('modalProductName').textContent = name;
-        document.getElementById('modalProductDesc').textContent = 'Món ăn đặc trưng của Mỳ Cay Sasin';
+        document.getElementById('modalProductDesc').textContent = isMiCayProduct 
+            ? 'Món mì cay đặc trưng của Mỳ Cay Sasin - Chọn nước dùng và cấp độ cay'
+            : 'Món ăn ngon từ Mỳ Cay Sasin';
         document.getElementById('modalProductPrice').textContent = formatPrice(currentProduct.price);
         
         // Reset options
@@ -756,8 +1196,7 @@
             if (btn.dataset.value === 'kimchi') btn.classList.add('active');
         });
         
-        // Show/hide options based on category
-        const isMiCayProduct = isMiCay(code, name) || category === 'mi-cay';
+        // Show/hide options based on category - CHỈ MÌ CAY mới hiện nước dùng và cấp cay
         document.getElementById('brothTypeGroup').style.display = isMiCayProduct ? 'block' : 'none';
         document.getElementById('spicyLevelGroup').style.display = isMiCayProduct ? 'block' : 'none';
         

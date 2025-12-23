@@ -51,6 +51,16 @@ packages/
 .env
 .env.*
 
+# Secrets & API Keys - IMPORTANT: Never commit these!
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+**/secrets.json
+**/appsettings.*.local.json
+
+# User Secrets
+secrets/
+
 # ASP.NET Scaffolding
 ScaffoldingReadMe.txt
 

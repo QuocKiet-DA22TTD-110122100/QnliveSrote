@@ -102,10 +102,21 @@ namespace MyCay.Web.Api
                     orderCode = $"DH{DateTime.Now:yyyyMMddHHmmss}{randomSuffix}";
                 }
                 
+                // Kiểm tra CustomerId có tồn tại trong database không
+                int? validCustomerId = null;
+                if (request.CustomerId.HasValue && request.CustomerId.Value > 0)
+                {
+                    var customerExists = await _context.KhachHangs.AnyAsync(k => k.MaKH == request.CustomerId.Value);
+                    if (customerExists)
+                    {
+                        validCustomerId = request.CustomerId.Value;
+                    }
+                }
+                
                 var donHang = new MyCay.Domain.Entities.DonHang
                 {
                     MaDHCode = orderCode,
-                    MaKH = request.CustomerId,
+                    MaKH = validCustomerId, // Null nếu khách vãng lai hoặc CustomerId không hợp lệ
                     TenKhach = request.CustomerName,
                     SDTKhach = request.Phone,
                     DiaChiGiao = request.Address,

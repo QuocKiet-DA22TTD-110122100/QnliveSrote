@@ -58,6 +58,11 @@ ul {
     padding: 0 20px;
 }
 
+/* Main content - offset for fixed header */
+main {
+    padding-top: 75px;
+}
+
 /* ===== Header ===== */
 .header {
     position: fixed;

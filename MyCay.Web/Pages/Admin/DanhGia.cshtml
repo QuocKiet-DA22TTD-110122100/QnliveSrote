@@ -1,0 +1,327 @@
+@page
+@{
+    ViewData["Title"] = "Quản lý đánh giá";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-header">
+    <h1>⭐ Quản lý đánh giá</h1>
+    <p>Xem và phản hồi đánh giá từ khách hàng</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-row" id="statsRow">
+    <div class="stat-card">
+        <div class="stat-icon">📝</div>
+        <div class="stat-info">
+            <span class="stat-value" id="statTotal">0</span>
+            <span class="stat-label">Tổng đánh giá</span>
+        </div>
+    </div>
+    <div class="stat-card warning">
+        <div class="stat-icon">⏳</div>
+        <div class="stat-info">
+            <span class="stat-value" id="statPending">0</span>
+            <span class="stat-label">Chờ duyệt</span>
+        </div>
+    </div>
+    <div class="stat-card info">
+        <div class="stat-icon">💬</div>
+        <div class="stat-info">
+            <span class="stat-value" id="statUnreplied">0</span>
+            <span class="stat-label">Chưa phản hồi</span>
+        </div>
+    </div>
+    <div class="stat-card success">
+        <div class="stat-icon">📅</div>
+        <div class="stat-info">
+            <span class="stat-value" id="statToday">0</span>
+            <span class="stat-label">Hôm nay</span>
+        </div>
+    </div>
+</div>
+
+<!-- Filter Tabs -->
+<div class="filter-tabs">
+    <button class="tab-btn active" data-status="all">Tất cả</button>
+    <button class="tab-btn" data-status="pending">Chờ duyệt</button>
+    <button class="tab-btn" data-status="unreplied">Chưa phản hồi</button>
+    <button class="tab-btn" data-status="replied">Đã phản hồi</button>
+</div>
+
+<!-- Reviews Table -->
+<div class="table-container">
+    <table class="data-table" id="reviewsTable">
+        <thead>
+            <tr>
+                <th>Khách hàng</th>
+                <th>Đánh giá</th>
+                <th>Nội dung</th>
+                <th>Ngày</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="reviewsBody">
+            <tr><td colspan="6" class="loading">Đang tải...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Reply Modal -->
+<div class="modal-overlay" id="replyModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>💬 Phản hồi đánh giá</h3>
+            <button class="modal-close" onclick="closeReplyModal()">×</button>
+        </div>
+        <div class="modal-body">
+            <div class="review-preview" id="reviewPreview"></div>
+            <div class="form-group">
+                <label>Nội dung phản hồi</label>
+                <textarea id="replyContent" rows="4" placeholder="Nhập phản hồi của bạn..."></textarea>
+            </div>
+            <div class="quick-replies">
+                <span>Mẫu nhanh:</span>
+                <button onclick="useQuickReply('Cảm ơn bạn đã ủng hộ Mỳ Cay Sasin! Hẹn gặp lại bạn lần sau nhé! 🍜')">Cảm ơn</button>
+                <button onclick="useQuickReply('Cảm ơn góp ý của bạn! Chúng tôi sẽ cải thiện trong thời gian tới. 🙏')">Tiếp thu góp ý</button>
+                <button onclick="useQuickReply('Xin lỗi về trải nghiệm không tốt. Chúng tôi sẽ liên hệ bạn để hỗ trợ! 📞')">Xin lỗi</button>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeReplyModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="submitReply()">Gửi phản hồi</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.filter-tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+.filter-tabs .tab-btn {
+    padding: 10px 20px; border: 2px solid #e5e7eb; background: white;
+    border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+}
+.filter-tabs .tab-btn:hover { border-color: #f97316; color: #f97316; }
+.filter-tabs .tab-btn.active { background: #f97316; color: white; border-color: #f97316; }
+
+.review-preview {
+    background: #f8f9fa; padding: 15px; border-radius: 10px; margin-bottom: 20px;
+}
+.review-preview .customer { font-weight: 600; margin-bottom: 5px; }
+.review-preview .stars { color: #fbbf24; margin-bottom: 10px; }
+.review-preview .content { color: #4b5563; line-height: 1.6; }
+
+.quick-replies { margin-top: 15px; }
+.quick-replies span { font-size: 0.9rem; color: #6b7280; margin-right: 10px; }
+.quick-replies button {
+    padding: 6px 12px; background: #f3f4f6; border: none;
+    border-radius: 15px; font-size: 0.85rem; cursor: pointer; margin: 3px;
+}
+.quick-replies button:hover { background: #e5e7eb; }
+
+.badge { padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+.badge-pending { background: #fef3c7; color: #d97706; }
+.badge-approved { background: #d1fae5; color: #059669; }
+.badge-replied { background: #dbeafe; color: #2563eb; }
+.badge-hidden { background: #f3f4f6; color: #6b7280; }
+
+.stars-display { color: #fbbf24; }
+.review-text { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.reply-text { font-size: 0.85rem; color: #059669; margin-top: 5px; }
+</style>
+
+@section Scripts {
+<script>
+let currentStatus = 'all';
+let currentReviewId = null;
+
+document.addEventListener('DOMContentLoaded', loadReviews);
+
+// Filter tabs
+document.querySelectorAll('.filter-tabs .tab-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.filter-tabs .tab-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        currentStatus = this.dataset.status;
+        loadReviews();
+    });
+});
+
+async function loadReviews() {
+    try {
+        const url = currentStatus === 'all' 
+            ? '/api/reviews/admin' 
+            : `/api/reviews/admin?status=${currentStatus}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.success) {
+            renderStats(data.stats);
+            renderReviews(data.data);
+        }
+    } catch (err) {
+        console.error('Error loading reviews:', err);
+    }
+}
+
+function renderStats(stats) {
+    document.getElementById('statTotal').textContent = stats.Total || 0;
+    document.getElementById('statPending').textContent = stats.Pending || 0;
+    document.getElementById('statUnreplied').textContent = stats.Unreplied || 0;
+    document.getElementById('statToday').textContent = stats.Today || 0;
+}
+
+function renderReviews(reviews) {
+    const tbody = document.getElementById('reviewsBody');
+    
+    if (!reviews || reviews.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="6" class="loading">Không có đánh giá nào</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = reviews.map(r => `
+        <tr>
+            <td>
+                <strong>${r.TenKhach}</strong>
+                ${r.SDT ? `<br><small>${r.SDT}</small>` : ''}
+                ${r.Email ? `<br><small>${r.Email}</small>` : ''}
+            </td>
+            <td>
+                <span class="stars-display">${'⭐'.repeat(r.SoSao)}</span>
+                ${r.ProductName ? `<br><small>🍜 ${r.ProductName}</small>` : ''}
+            </td>
+            <td>
+                <div class="review-text" title="${r.NoiDung}">${r.NoiDung}</div>
+                ${r.PhanHoi ? `<div class="reply-text">↳ ${r.PhanHoi.substring(0, 50)}...</div>` : ''}
+            </td>
+            <td>${formatDate(r.NgayDanhGia)}</td>
+            <td>
+                ${!r.DaDuyet ? '<span class="badge badge-pending">Chờ duyệt</span>' : 
+                  r.PhanHoi ? '<span class="badge badge-replied">Đã phản hồi</span>' : 
+                  '<span class="badge badge-approved">Đã duyệt</span>'}
+                ${!r.HienThi ? '<span class="badge badge-hidden">Ẩn</span>' : ''}
+            </td>
+            <td>
+                <div class="action-buttons">
+                    ${!r.DaDuyet ? `<button class="btn-icon btn-success" onclick="approveReview(${r.MaDG})" title="Duyệt">✓</button>` : ''}
+                    <button class="btn-icon btn-primary" onclick="openReplyModal(${r.MaDG}, '${escapeHtml(r.TenKhach)}', ${r.SoSao}, '${escapeHtml(r.NoiDung)}', '${escapeHtml(r.PhanHoi || '')}')" title="Phản hồi">💬</button>
+                    <button class="btn-icon ${r.HienThi ? 'btn-warning' : 'btn-info'}" onclick="toggleReview(${r.MaDG})" title="${r.HienThi ? 'Ẩn' : 'Hiện'}">
+                        ${r.HienThi ? '👁️' : '👁️‍🗨️'}
+                    </button>
+                    <button class="btn-icon btn-danger" onclick="deleteReview(${r.MaDG})" title="Xóa">🗑️</button>
+                </div>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('vi-VN');
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return str.replace(/'/g, "\\'").replace(/"/g, '\\"').replace(/\n/g, ' ');
+}
+
+async function approveReview(id) {
+    if (!confirm('Duyệt đánh giá này?')) return;
+    
+    try {
+        const res = await fetch(`/api/reviews/${id}/approve`, { method: 'PUT' });
+        const data = await res.json();
+        if (data.success) {
+            showToast('✓ Đã duyệt đánh giá');
+            loadReviews();
+        }
+    } catch (err) {
+        showToast('❌ Có lỗi xảy ra');
+    }
+}
+
+function openReplyModal(id, name, stars, content, existingReply) {
+    currentReviewId = id;
+    document.getElementById('reviewPreview').innerHTML = `
+        <div class="customer">${name}</div>
+        <div class="stars">${'⭐'.repeat(stars)}</div>
+        <div class="content">${content}</div>
+    `;
+    document.getElementById('replyContent').value = existingReply || '';
+    document.getElementById('replyModal').classList.add('active');
+}
+
+function closeReplyModal() {
+    document.getElementById('replyModal').classList.remove('active');
+    currentReviewId = null;
+}
+
+function useQuickReply(text) {
+    document.getElementById('replyContent').value = text;
+}
+
+async function submitReply() {
+    const reply = document.getElementById('replyContent').value.trim();
+    if (!reply) {
+        alert('Vui lòng nhập nội dung phản hồi');
+        return;
+    }
+    
+    try {
+        const res = await fetch(`/api/reviews/${currentReviewId}/reply`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ reply })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast('✓ Đã gửi phản hồi');
+            closeReplyModal();
+            loadReviews();
+        } else {
+            showToast('❌ ' + data.message);
+        }
+    } catch (err) {
+        showToast('❌ Có lỗi xảy ra');
+    }
+}
+
+async function toggleReview(id) {
+    try {
+        const res = await fetch(`/api/reviews/${id}/toggle`, { method: 'PUT' });
+        const data = await res.json();
+        if (data.success) {
+            showToast('✓ ' + data.message);
+            loadReviews();
+        }
+    } catch (err) {
+        showToast('❌ Có lỗi xảy ra');
+    }
+}
+
+async function deleteReview(id) {
+    if (!confirm('Xóa đánh giá này? Hành động không thể hoàn tác!')) return;
+    
+    try {
+        const res = await fetch(`/api/reviews/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        if (data.success) {
+            showToast('✓ Đã xóa đánh giá');
+            loadReviews();
+        }
+    } catch (err) {
+        showToast('❌ Có lỗi xảy ra');
+    }
+}
+
+function showToast(message) {
+    const toast = document.createElement('div');
+    toast.className = 'toast-message';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+}

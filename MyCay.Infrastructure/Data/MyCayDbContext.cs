@@ -29,6 +29,9 @@ public class MyCayDbContext : DbContext
     
     // Mã giảm giá
     public DbSet<MaGiamGia> MaGiamGias { get; set; }
+    
+    // Đánh giá
+    public DbSet<DanhGia> DanhGias { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

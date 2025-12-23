@@ -752,10 +752,13 @@
     // Load user info from localStorage if logged in
     function loadUserInfo() {
         const user = JSON.parse(localStorage.getItem('user') || '{}');
-        const savedInfo = JSON.parse(localStorage.getItem('customerInfo') || '{}');
+        
+        // Lấy customerInfo theo userId để tránh nhầm lẫn giữa các user
+        const customerInfoKey = user.id ? `customerInfo_${user.id}` : 'customerInfo_guest';
+        const savedInfo = JSON.parse(localStorage.getItem(customerInfoKey) || '{}');
         let hasSavedInfo = false;
         
-        // Ưu tiên thông tin đã lưu từ lần đặt hàng trước
+        // Ưu tiên thông tin đã lưu từ lần đặt hàng trước của user này
         if (savedInfo.name) {
             document.getElementById('customerName').value = savedInfo.name;
             hasSavedInfo = true;
@@ -783,10 +786,12 @@
         }
     }
     
-    // Lưu thông tin khách hàng để dùng cho lần sau
+    // Lưu thông tin khách hàng theo userId để dùng cho lần sau
     function saveCustomerInfo(name, phone, address) {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const customerInfoKey = user.id ? `customerInfo_${user.id}` : 'customerInfo_guest';
         const customerInfo = { name, phone, address, savedAt: new Date().toISOString() };
-        localStorage.setItem('customerInfo', JSON.stringify(customerInfo));
+        localStorage.setItem(customerInfoKey, JSON.stringify(customerInfo));
     }
 
     // Payment method selection
