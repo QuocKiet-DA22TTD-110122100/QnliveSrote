@@ -1,0 +1,188 @@
+@page
+@model TaiKhoanModel
+@{
+    ViewData["Title"] = "Tài khoản";
+}
+
+<section class="account-page">
+    <div class="container">
+        <div class="not-logged-in" id="notLoggedIn">
+            <div class="login-prompt">
+                <div class="prompt-icon">🔐</div>
+                <h2>Vui lòng đăng nhập</h2>
+                <p>Đăng nhập để xem thông tin tài khoản và đơn hàng</p>
+                <div class="prompt-buttons">
+                    <a href="/DangNhap?returnUrl=/TaiKhoan" class="btn btn-primary">Đăng nhập</a>
+                    <a href="/DangKy" class="btn btn-outline">Đăng ký</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="account-content" id="accountContent" style="display:none;">
+            <h1>👤 Tài khoản của tôi</h1>
+            <div class="account-layout">
+                <div class="account-sidebar">
+                    <div class="user-card">
+                        <div class="user-avatar">👤</div>
+                        <h3 id="userName">Khách hàng</h3>
+                        <p id="userEmail"></p>
+                    </div>
+                    <nav class="account-nav">
+                        <a href="#profile" class="nav-item active" data-tab="profile">📋 Thông tin</a>
+                        <a href="#orders" class="nav-item" data-tab="orders">📦 Đơn hàng</a>
+                        <a href="#" class="nav-item logout" onclick="logout()">🚪 Đăng xuất</a>
+                    </nav>
+                </div>
+                <div class="account-main">
+                    <div class="tab-content active" id="tab-profile">
+                        <div class="content-card">
+                            <h2>Thông tin cá nhân</h2>
+                            <form id="profileForm" onsubmit="saveProfile(event)">
+                                <div class="form-group">
+                                    <label>Họ tên</label>
+                                    <input type="text" id="profileName" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Điện thoại</label>
+                                    <input type="tel" id="profilePhone" />
+                                </div>
+                                <div class="form-group">
+                                    <label>Email</label>
+                                    <input type="email" id="profileEmail" readonly />
+                                </div>
+                                <button type="submit" class="btn btn-primary">Lưu</button>
+                            </form>
+                        </div>
+                    </div>
+                    <div class="tab-content" id="tab-orders">
+                        <div class="content-card">
+                            <h2>Đơn hàng của tôi</h2>
+                            <div id="ordersList"><p>Đang tải...</p></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+<style>
+.account-page { min-height: 100vh; background: #f8fafc; padding: 40px 20px; }
+.not-logged-in { display: flex; align-items: center; justify-content: center; min-height: 60vh; }
+.login-prompt { background: white; padding: 50px; border-radius: 20px; text-align: center; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 450px; }
+.prompt-icon { font-size: 4rem; margin-bottom: 20px; }
+.login-prompt h2 { margin-bottom: 10px; }
+.login-prompt p { color: #6b7280; margin-bottom: 25px; }
+.prompt-buttons { display: flex; gap: 15px; justify-content: center; }
+.prompt-buttons .btn { padding: 14px 30px; border-radius: 12px; font-weight: 600; text-decoration: none; }
+.btn-primary { background: linear-gradient(135deg, #f97316, #ea580c); color: white; }
+.btn-outline { background: white; color: #f97316; border: 2px solid #f97316; }
+.account-layout { display: grid; grid-template-columns: 280px 1fr; gap: 30px; margin-top: 30px; }
+.user-card { background: white; padding: 30px; border-radius: 16px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 20px; }
+.user-avatar { width: 80px; height: 80px; background: linear-gradient(135deg, #f97316, #ea580c); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto 15px; }
+.account-nav { background: white; border-radius: 16px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.nav-item { display: block; padding: 16px 20px; color: #4b5563; text-decoration: none; border-left: 3px solid transparent; }
+.nav-item:hover { background: #f9fafb; color: #f97316; }
+.nav-item.active { background: #fff7ed; color: #f97316; border-left-color: #f97316; font-weight: 600; }
+.nav-item.logout { color: #ef4444; }
+.content-card { background: white; padding: 30px; border-radius: 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+.content-card h2 { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #f3f4f6; }
+.tab-content { display: none; }
+.tab-content.active { display: block; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 8px; }
+.form-group input { width: 100%; padding: 12px 16px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; }
+.form-group input:focus { outline: none; border-color: #f97316; }
+.order-card { border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; margin-bottom: 15px; }
+.order-card:hover { border-color: #f97316; }
+.order-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
+.order-code { font-weight: 700; color: #f97316; }
+.order-status { padding: 4px 12px; border-radius: 20px; font-size: 0.85rem; background: #fef3c7; color: #d97706; }
+.order-total { font-weight: 700; color: #f97316; }
+@@media (max-width: 768px) { .account-layout { grid-template-columns: 1fr; } }
+</style>
+
+@section Scripts {
+<script>
+let currentUser = null;
+
+function checkLogin() {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user && user.username) {
+        currentUser = user;
+        document.getElementById('notLoggedIn').style.display = 'none';
+        document.getElementById('accountContent').style.display = 'block';
+        document.getElementById('userName').textContent = user.name || user.username;
+        document.getElementById('userEmail').textContent = user.email || '';
+        document.getElementById('profileName').value = user.name || '';
+        document.getElementById('profilePhone').value = user.phone || '';
+        document.getElementById('profileEmail').value = user.email || '';
+        loadOrders();
+        const hash = window.location.hash.replace('#', '');
+        if (hash) switchTab(hash);
+    }
+}
+
+function saveProfile(e) {
+    e.preventDefault();
+    currentUser.name = document.getElementById('profileName').value;
+    currentUser.phone = document.getElementById('profilePhone').value;
+    localStorage.setItem('user', JSON.stringify(currentUser));
+    document.getElementById('userName').textContent = currentUser.name;
+    alert('Đã lưu thông tin!');
+}
+
+async function loadOrders() {
+    const container = document.getElementById('ordersList');
+    if (!currentUser || !currentUser.id) {
+        container.innerHTML = '<p>Chưa có đơn hàng nào</p>';
+        return;
+    }
+    try {
+        const res = await fetch('/api/orders/my?customerId=' + currentUser.id);
+        const data = await res.json();
+        if (data.success && data.data.length > 0) {
+            container.innerHTML = data.data.map(o => `
+                <div class="order-card">
+                    <div class="order-header">
+                        <span class="order-code">${o.code}</span>
+                        <span class="order-status">${o.status}</span>
+                    </div>
+                    <p>Ngày đặt: ${new Date(o.createdAt).toLocaleDateString('vi-VN')}</p>
+                    <p class="order-total">Tổng: ${o.total.toLocaleString()}đ</p>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<p>Chưa có đơn hàng nào</p>';
+        }
+    } catch (e) {
+        container.innerHTML = '<p>Không thể tải đơn hàng</p>';
+    }
+}
+
+document.querySelectorAll('.nav-item[data-tab]').forEach(item => {
+    item.addEventListener('click', function(e) {
+        e.preventDefault();
+        switchTab(this.dataset.tab);
+    });
+});
+
+function switchTab(tab) {
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.querySelector('.nav-item[data-tab="' + tab + '"]')?.classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.getElementById('tab-' + tab)?.classList.add('active');
+}
+
+function logout() {
+    if (confirm('Đăng xuất?')) {
+        localStorage.removeItem('user');
+        localStorage.removeItem('token');
+        window.location.href = '/';
+    }
+}
+
+checkLogin();
+</script>
+}

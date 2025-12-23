@@ -14,8 +14,12 @@ builder.Logging.SetMinimumLevel(LogLevel.Information);
 
 // Add MySQL Database
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+var serverVersion = new MariaDbServerVersion(new Version(10, 4, 0)); // Use 10.4 to disable RETURNING clause
 builder.Services.AddDbContext<MyCayDbContext>(options =>
-    options.UseMySql(connectionString, new MariaDbServerVersion(new Version(10, 6, 0))));
+    options.UseMySql(connectionString, serverVersion, mysqlOptions =>
+    {
+        mysqlOptions.EnableRetryOnFailure(3);
+    }));
 
 // Add JWT Service
 builder.Services.AddSingleton<IJwtService, JwtService>();

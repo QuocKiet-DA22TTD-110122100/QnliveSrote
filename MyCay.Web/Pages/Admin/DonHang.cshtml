@@ -163,36 +163,99 @@
 
 @section Scripts {
 <script>
-const orders = [
-    { id: 'DH20241216001', customer: 'Nguyễn Thị Mai', phone: '0988888881', address: '123 Lê Lợi, Quận 1', subtotal: 146000, shipping: 0, discount: 0, total: 146000, status: 'Hoàn thành', date: '2024-12-16 10:30', payment: 'Tiền mặt', note: '', products: [{name: 'Mì Thập Cẩm No Nê', price: 77000, qty: 1}, {name: 'Tokbokki Phô Mai Sasin', price: 59000, qty: 1}] },
-    { id: 'DH20241216002', customer: 'Trần Văn Hùng', phone: '0988888882', address: '456 Hai Bà Trưng, Quận 3', subtotal: 238000, shipping: 15000, discount: 0, total: 253000, status: 'Đang giao', date: '2024-12-16 11:45', payment: 'Chuyển khoản', note: 'Giao trước 12h', products: [{name: 'Mì Thập Cẩm', price: 69000, qty: 2}, {name: 'Combo Vui Vẻ', price: 69000, qty: 1}] },
-    { id: 'DH20241216003', customer: 'Khách vãng lai', phone: '0999999999', address: '789 CMT8, Quận 10', subtotal: 69000, shipping: 15000, discount: 10000, total: 74000, status: 'Chờ xác nhận', date: '2024-12-16 12:00', payment: 'Tiền mặt', note: 'Không hành', products: [{name: 'Combo Vui Vẻ', price: 69000, qty: 1}] }
-];
-
+let orders = [];
 let currentOrder = null;
+let currentPage = 1;
+let totalOrders = 0;
+
+// Load đơn hàng từ API
+async function loadOrders(page = 1) {
+    const status = document.getElementById('statusFilter').value;
+    try {
+        const url = `/api/orders?page=${page}&pageSize=20${status ? '&status=' + encodeURIComponent(status) : ''}`;
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.success) {
+            orders = data.data.map(o => ({
+                id: o.id,
+                code: o.code,
+                customer: o.customerName,
+                phone: o.phone,
+                address: o.address || '',
+                subtotal: o.subtotal,
+                shipping: o.shippingFee,
+                discount: o.discount,
+                total: o.total,
+                status: o.status,
+                date: formatDate(o.createdAt),
+                payment: o.paymentMethod,
+                paymentStatus: o.paymentStatus,
+                note: o.note
+            }));
+            totalOrders = data.pagination.total;
+            currentPage = page;
+            renderOrders(orders);
+            loadStats();
+        }
+    } catch (err) {
+        console.error('Lỗi load đơn hàng:', err);
+        showToast('Không thể tải đơn hàng!', 'error');
+    }
+}
+
+// Load thống kê
+async function loadStats() {
+    try {
+        const res = await fetch('/api/orders/stats');
+        const data = await res.json();
+        if (data.success) {
+            document.getElementById('pendingCount').textContent = data.data.pending;
+            document.getElementById('shippingCount').textContent = data.data.shipping;
+            document.getElementById('completedCount').textContent = data.data.completed;
+            document.getElementById('cancelledCount').textContent = data.data.cancelled;
+        }
+    } catch (err) {
+        console.error('Lỗi load stats:', err);
+    }
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('vi-VN') + ' ' + d.toLocaleTimeString('vi-VN', {hour: '2-digit', minute: '2-digit'});
+}
 
 function renderOrders(data) {
     const tbody = document.getElementById('ordersTableBody');
+    
+    if (data.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">Chưa có đơn hàng nào</td></tr>';
+        document.getElementById('showingCount').textContent = 0;
+        document.getElementById('totalCount').textContent = 0;
+        return;
+    }
+    
     tbody.innerHTML = data.map(order => `
         <tr>
-            <td><strong>${order.id}</strong></td>
+            <td><strong>${order.code}</strong></td>
             <td>
                 <div>${order.customer}</div>
                 <small style="color: var(--admin-gray);">${order.phone}</small>
             </td>
-            <td style="max-width: 200px;">${order.address}</td>
-            <td class="price">${order.total.toLocaleString()}đ</td>
+            <td style="max-width: 200px;">${order.address || 'N/A'}</td>
+            <td class="price">${Math.round(order.total).toLocaleString()}đ</td>
             <td><span class="order-status ${getStatusClass(order.status)}">${order.status}</span></td>
             <td>${order.date}</td>
             <td class="actions">
-                <button class="action-btn edit" onclick="viewOrder('${order.id}')" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
-                <button class="action-btn delete" onclick="cancelOrder('${order.id}')" title="Hủy đơn"><i class="fas fa-times"></i></button>
+                <button class="action-btn edit" onclick="viewOrder(${order.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
+                <button class="action-btn delete" onclick="cancelOrder(${order.id})" title="Hủy đơn"><i class="fas fa-times"></i></button>
             </td>
         </tr>
     `).join('');
     
     document.getElementById('showingCount').textContent = data.length;
-    document.getElementById('totalCount').textContent = orders.length;
+    document.getElementById('totalCount').textContent = totalOrders;
 }
 
 function getStatusClass(status) {
@@ -210,66 +273,110 @@ function filterOrders() {
     const search = document.getElementById('searchInput').value.toLowerCase();
     const status = document.getElementById('statusFilter').value;
     
+    // Nếu có filter status, gọi lại API
+    if (status) {
+        loadOrders(1);
+        return;
+    }
+    
+    // Filter local nếu chỉ search
     let filtered = orders.filter(o => {
-        const matchSearch = o.id.toLowerCase().includes(search) || o.customer.toLowerCase().includes(search);
-        const matchStatus = !status || o.status === status;
-        return matchSearch && matchStatus;
+        const matchSearch = !search || o.code.toLowerCase().includes(search) || o.customer.toLowerCase().includes(search);
+        return matchSearch;
     });
     
     renderOrders(filtered);
 }
 
-function viewOrder(id) {
-    currentOrder = orders.find(o => o.id === id);
-    if (!currentOrder) return;
-    
-    document.getElementById('modalOrderId').textContent = currentOrder.id;
-    document.getElementById('modalCustomer').textContent = currentOrder.customer;
-    document.getElementById('modalPhone').textContent = currentOrder.phone;
-    document.getElementById('modalAddress').textContent = currentOrder.address;
-    document.getElementById('modalDate').textContent = currentOrder.date;
-    document.getElementById('modalPayment').textContent = currentOrder.payment;
-    document.getElementById('modalNote').textContent = currentOrder.note || 'Không có';
-    document.getElementById('modalStatus').value = currentOrder.status;
-    
-    document.getElementById('modalProducts').innerHTML = currentOrder.products.map(p => `
-        <tr>
-            <td>${p.name}</td>
-            <td>${p.price.toLocaleString()}đ</td>
-            <td>${p.qty}</td>
-            <td>${(p.price * p.qty).toLocaleString()}đ</td>
-        </tr>
-    `).join('');
-    
-    document.getElementById('modalSubtotal').textContent = currentOrder.subtotal.toLocaleString() + 'đ';
-    document.getElementById('modalShipping').textContent = currentOrder.shipping.toLocaleString() + 'đ';
-    document.getElementById('modalDiscount').textContent = '-' + currentOrder.discount.toLocaleString() + 'đ';
-    document.getElementById('modalTotal').textContent = currentOrder.total.toLocaleString() + 'đ';
-    
-    document.getElementById('orderModal').classList.add('show');
+async function viewOrder(id) {
+    try {
+        const res = await fetch(`/api/orders/${id}`);
+        const data = await res.json();
+        
+        if (!data.success) {
+            showToast('Không tìm thấy đơn hàng!', 'error');
+            return;
+        }
+        
+        currentOrder = data.data;
+        
+        document.getElementById('modalOrderId').textContent = currentOrder.code;
+        document.getElementById('modalCustomer').textContent = currentOrder.customerName;
+        document.getElementById('modalPhone').textContent = currentOrder.phone;
+        document.getElementById('modalAddress').textContent = currentOrder.address || 'N/A';
+        document.getElementById('modalDate').textContent = formatDate(currentOrder.createdAt);
+        document.getElementById('modalPayment').textContent = currentOrder.paymentMethod;
+        document.getElementById('modalNote').textContent = currentOrder.note || 'Không có';
+        document.getElementById('modalStatus').value = currentOrder.status;
+        
+        const items = currentOrder.items || [];
+        document.getElementById('modalProducts').innerHTML = items.length > 0 ? items.map(p => `
+            <tr>
+                <td>${p.name}</td>
+                <td>${p.price.toLocaleString()}đ</td>
+                <td>${p.quantity}</td>
+                <td>${(p.price * p.quantity).toLocaleString()}đ</td>
+            </tr>
+        `).join('') : '<tr><td colspan="4" style="text-align:center;">Không có chi tiết</td></tr>';
+        
+        document.getElementById('modalSubtotal').textContent = Math.round(currentOrder.subtotal).toLocaleString() + 'đ';
+        document.getElementById('modalShipping').textContent = Math.round(currentOrder.shippingFee).toLocaleString() + 'đ';
+        document.getElementById('modalDiscount').textContent = '-' + Math.round(currentOrder.discount).toLocaleString() + 'đ';
+        document.getElementById('modalTotal').textContent = Math.round(currentOrder.total).toLocaleString() + 'đ';
+        
+        document.getElementById('orderModal').classList.add('show');
+    } catch (err) {
+        console.error('Lỗi load chi tiết:', err);
+        showToast('Không thể tải chi tiết đơn hàng!', 'error');
+    }
 }
 
 function closeModal() {
     document.getElementById('orderModal').classList.remove('show');
 }
 
-function updateOrderStatus() {
+async function updateOrderStatus() {
     if (!currentOrder) return;
+    
     const newStatus = document.getElementById('modalStatus').value;
-    currentOrder.status = newStatus;
-    renderOrders(orders);
-    closeModal();
-    showToast('Cập nhật trạng thái thành công!', 'success');
+    
+    try {
+        const res = await fetch(`/api/orders/${currentOrder.id}/status`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ status: newStatus })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast('Cập nhật trạng thái thành công!', 'success');
+            closeModal();
+            loadOrders(currentPage);
+        } else {
+            showToast(data.message || 'Lỗi cập nhật!', 'error');
+        }
+    } catch (err) {
+        console.error('Lỗi cập nhật:', err);
+        showToast('Không thể cập nhật trạng thái!', 'error');
+    }
 }
 
-function cancelOrder(id) {
-    if (confirm('Bạn có chắc muốn hủy đơn hàng này?')) {
-        const order = orders.find(o => o.id === id);
-        if (order) {
-            order.status = 'Đã hủy';
-            renderOrders(orders);
+async function cancelOrder(id) {
+    if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
+    
+    try {
+        const res = await fetch(`/api/orders/${id}`, { method: 'DELETE' });
+        const data = await res.json();
+        
+        if (data.success) {
             showToast('Đã hủy đơn hàng!', 'warning');
+            loadOrders(currentPage);
+        } else {
+            showToast(data.message || 'Lỗi hủy đơn!', 'error');
         }
+    } catch (err) {
+        console.error('Lỗi hủy đơn:', err);
+        showToast('Không thể hủy đơn hàng!', 'error');
     }
 }
 
@@ -285,7 +392,7 @@ function showToast(message, type) {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// Init
-renderOrders(orders);
+// Init - Load đơn hàng từ database
+loadOrders();
 </script>
 }

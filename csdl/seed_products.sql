@@ -1,6 +1,15 @@
 ﻿-- Import all products - Run in phpMyAdmin
 SET NAMES utf8mb4;
+
+-- Tắt kiểm tra foreign key
+SET FOREIGN_KEY_CHECKS = 0;
+
+-- Xóa dữ liệu liên quan trước
+DELETE FROM ChiTietDonHang;
+DELETE FROM GioHang;
 DELETE FROM SanPham;
+
+-- Reset AUTO_INCREMENT
 ALTER TABLE SanPham AUTO_INCREMENT = 1;
 INSERT INTO SanPham (MaSPCode, TenSP, MoTa, DonGia, MaDM, HinhAnh, TrangThai, NoiBat, CapDoCay, NgayTao) VALUES ('M00012', 'Mì Thập Cẩm No Nê (Kim Chi/ Soyum/ Sincay)', 'Mì cay Sasin, thịt heo, tôm, cá viên, trứng ngâm tương, thanh cua, chả cá Hàn Quốc, kim chi, nấm, súp lơ, bắp cải tím, ngò gai', 77000, 1, 'MenuItem_M00012.webp', 1, 1, 3, NOW());
 INSERT INTO SanPham (MaSPCode, TenSP, MoTa, DonGia, MaDM, HinhAnh, TrangThai, NoiBat, CapDoCay, NgayTao) VALUES ('MI0008', 'Mì Thập Cẩm (Kim chi/ Soyum/ Sincay)', 'Mì cay Sasin, Thịt bò, tôm, mực, chả cá Hàn Quốc, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai', 69000, 1, 'MenuItem_MI0008.webp', 1, 1, 3, NOW());
@@ -103,3 +112,9 @@ INSERT INTO SanPham (MaSPCode, TenSP, MoTa, DonGia, MaDM, HinhAnh, TrangThai, No
 INSERT INTO SanPham (MaSPCode, TenSP, MoTa, DonGia, MaDM, HinhAnh, TrangThai, NoiBat, CapDoCay, NgayTao) VALUES ('M00107', 'Sprite', 'Sprite', 29000, 10, 'MenuItem_M00107.webp', 1, 0, 0, NOW());
 INSERT INTO SanPham (MaSPCode, TenSP, MoTa, DonGia, MaDM, HinhAnh, TrangThai, NoiBat, CapDoCay, NgayTao) VALUES ('M00108', 'Samurai Dâu', 'Samurai dâu', 29000, 10, 'MenuItem_M00108.webp', 1, 0, 0, NOW());
 
+
+
+-- Bật lại kiểm tra foreign key
+SET FOREIGN_KEY_CHECKS = 1;
+
+SELECT CONCAT('Đã import ', COUNT(*), ' sản phẩm!') AS Result FROM SanPham;

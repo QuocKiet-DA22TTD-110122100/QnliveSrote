@@ -26,167 +26,249 @@ public class ChatbotController : ControllerBase
     {
         try
         {
-            var apiKey = _config["Gemini:ApiKey"];
-            if (string.IsNullOrEmpty(apiKey) || apiKey == "YOUR_GEMINI_API_KEY_HERE")
+            // Ưu tiên GitHub Models API
+            var githubApiKey = _config["GitHubModels:ApiKey"];
+            var model = _config["GitHubModels:Model"] ?? "gpt-4o-mini";
+            
+            if (!string.IsNullOrEmpty(githubApiKey) && !githubApiKey.Contains("api_key"))
             {
-                return Ok(new { reply = "Xin chào! Tôi là trợ lý ảo của Mỳ Cay Sasin. Hiện tại hệ thống đang được cấu hình. Bạn có thể xem thực đơn tại trang Thực đơn nhé! 🍜" });
+                return await ChatWithGitHubModels(request.Message, githubApiKey, model);
             }
 
-            // Get menu data for context
-            var products = await _context.SanPhams
-                .Where(p => p.TrangThai == true)
-                .Select(p => new { p.TenSP, p.DonGia, p.MoTa, p.MaDM })
-                .Take(50)
-                .ToListAsync();
-
-            var menuContext = string.Join("\n", products.Select(p => $"- {p.TenSP}: {p.DonGia:N0}đ - {p.MoTa}"));
-
-            var systemPrompt = $@"Bạn là SASIN - trợ lý ảo thông minh và thân thiện của nhà hàng Mỳ Cay Sasin.
-
-🏪 THÔNG TIN NHÀ HÀNG:
-- Tên: Mỳ Cay Sasin - Thương hiệu mì cay Hàn Quốc hàng đầu
-- Địa chỉ: 123 Đường ABC, Quận 1, TP.HCM
-- Hotline: 0123 456 789
-- Giờ mở cửa: 10:00 - 22:00 hàng ngày (kể cả lễ tết)
-- Đặc trưng: Mì cay Hàn Quốc chính hiệu với 10 cấp độ cay
-
-🌶️ GIẢI THÍCH CẤP ĐỘ CAY:
-- Cấp 1-2: Không cay, phù hợp trẻ em và người không ăn cay
-- Cấp 3-4: Cay nhẹ, hơi tê tê đầu lưỡi
-- Cấp 5-6: Cay vừa, phù hợp đa số người Việt
-- Cấp 7-8: Cay nhiều, dành cho người thích cay
-- Cấp 9-10: Siêu cay, thử thách cho dân ghiền cay
-
-🍜 LOẠI NƯỚC DÙNG:
-- Kim Chi: Vị chua cay đặc trưng, thanh mát
-- Soyum: Vị đậm đà, béo ngậy từ đậu nành
-- Sincay: Vị cay nồng, đậm đà nhất
-
-📋 DANH MỤC SẢN PHẨM:
-1. MÌ CAY - Món signature, chọn cấp độ cay 1-10
-2. MÌ TƯƠNG ĐEN - Không cay, vị ngọt béo
-3. MÌ XÀO - Khô, đậm đà
-4. MÓN KHÁC - Cơm trộn, Tokbokki, Miến
-5. MÓN THÊM MÌ - Topping cho mì
-6. COMBO - Tiết kiệm 10-20%
-7. LẨU - Cho 2 người, đầy đủ topping
-8. MÓN THÊM LẨU - Topping cho lẩu
-9. KHAI VỊ - Ăn vặt, chờ món
-10. GIẢI KHÁT - Nước uống
-
-🔥 MÓN BEST SELLER:
-- Mì Thập Cẩm No Nê: 77,000đ - Đầy đủ topping
-- Mì Hải Sản: 62,000đ - Tôm, mực, cá viên
-- Tokbokki Phô Mai Sasin: 59,000đ - Ngọt cay, phô mai kéo sợi
-- Combo Bạn Thân (2 người): 159,000đ - Tiết kiệm nhất
-
-💰 KHUYẾN MÃI HIỆN TẠI:
-- SASIN10: Giảm 10% đơn từ 100k
-- SASIN20: Giảm 20% đơn từ 200k
-- FREESHIP: Miễn phí ship đơn từ 150k
-
-📦 THỰC ĐƠN CHI TIẾT:
-{menuContext}
-
-📝 QUY TẮC TRẢ LỜI:
-1. Luôn thân thiện, nhiệt tình như nhân viên thật
-2. Trả lời ngắn gọn, dễ hiểu (tối đa 3-4 câu)
-3. Gợi ý món cụ thể với giá tiền
-4. Hỏi thêm về khẩu vị nếu cần (cay/không cay, số người)
-5. Sử dụng emoji phù hợp 🍜🌶️😋
-6. Nếu không biết, hướng dẫn gọi hotline
-7. Luôn kết thúc bằng câu hỏi hoặc gợi ý tiếp theo
-
-❌ KHÔNG LÀM:
-- Không bịa thông tin không có trong menu
-- Không trả lời câu hỏi ngoài phạm vi nhà hàng
-- Không nói xấu đối thủ";
-
-            // Ví dụ hội thoại mẫu để AI học cách trả lời
-            var exampleConversations = @"
-VÍ DỤ HỘI THOẠI:
-
-Khách: Tôi muốn ăn cay vừa
-Sasin: Chào bạn! 😊 Với cấp độ cay vừa (5-6), mình gợi ý:
-• Mì Hải Sản: 62,000đ - tôm, mực, cá viên 🦐
-• Mì Bò Mỹ: 59,000đ - thịt bò mềm, đậm đà 🥩
-Bạn thích hải sản hay thịt bò hơn ạ?
-
-Khách: Combo cho 2 người
-Sasin: Tuyệt vời! 👫 Combo 2 người hot nhất:
-• Combo Bạn Thân: 159,000đ - 2 mì cay + 1 khai vị (tiết kiệm 30k!)
-• Combo No Căng: 179,000đ - 2 mì cay + Tokbokki phô mai
-• Combo Lẩu 2 Người: 225,000đ - lẩu + khai vị
-Bạn muốn ăn mì hay lẩu ạ? 🍜
-
-Khách: Món nào không cay?
-Sasin: Có nhiều món không cay cho bạn nè! 😋
-• Mì Tương Đen: 55-69k - ngọt béo, thơm mè
-• Mì Xào: 62-69k - khô, đậm đà
-• Tokbokki Phô Mai: 59k - ngọt cay nhẹ, phô mai kéo sợi
-Hoặc chọn mì cay cấp 1-2 cũng gần như không cay đâu ạ!
-
-Khách: Best seller là gì?
-Sasin: Đây là top món được yêu thích nhất! 🔥
-1. Mì Thập Cẩm No Nê: 77k - full topping, no. 1 bán chạy
-2. Mì Hải Sản: 62k - tôm mực tươi ngon
-3. Tokbokki Phô Mai: 59k - phô mai kéo sợi siêu ngon
-Bạn muốn thử món nào? 😊";
-
-            var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
-
-            var requestBody = new
+            // Fallback to Gemini
+            var geminiKey = _config["Gemini:ApiKey"];
+            if (!string.IsNullOrEmpty(geminiKey) && geminiKey != "YOUR_GEMINI_API_KEY_HERE")
             {
-                contents = new[]
-                {
-                    new { role = "user", parts = new[] { new { text = systemPrompt + "\n" + exampleConversations + "\n\nBây giờ hãy trả lời khách hàng:\nKhách: " + request.Message } } }
-                },
-                generationConfig = new
-                {
-                    temperature = 0.7,
-                    maxOutputTokens = 500
-                }
-            };
-
-            var json = JsonSerializer.Serialize(requestBody);
-            var content = new StringContent(json, Encoding.UTF8, "application/json");
-
-            var response = await _httpClient.PostAsync(url, content);
-            var responseText = await response.Content.ReadAsStringAsync();
-
-            if (response.IsSuccessStatusCode)
-            {
-                using var doc = JsonDocument.Parse(responseText);
-                var reply = doc.RootElement
-                    .GetProperty("candidates")[0]
-                    .GetProperty("content")
-                    .GetProperty("parts")[0]
-                    .GetProperty("text")
-                    .GetString();
-
-                return Ok(new { reply });
+                return await ChatWithGemini(request.Message, geminiKey);
             }
-            else
-            {
-                return Ok(new { reply = "Xin lỗi, tôi đang gặp sự cố. Bạn có thể xem thực đơn hoặc liên hệ nhân viên để được hỗ trợ nhé! 🙏" });
-            }
+
+            // Fallback response khi không có API key
+            return Ok(new { reply = GetFallbackResponse(request.Message) });
         }
         catch (Exception ex)
         {
+            Console.WriteLine($"Chatbot error: {ex.Message}");
             return Ok(new { reply = "Xin lỗi, có lỗi xảy ra. Vui lòng thử lại sau! 🙏" });
         }
     }
 
+    private async Task<IActionResult> ChatWithGitHubModels(string message, string apiKey, string model)
+    {
+        var systemPrompt = await BuildSystemPrompt();
+        
+        var url = "https://models.inference.ai.azure.com/chat/completions";
+        
+        _httpClient.DefaultRequestHeaders.Clear();
+        _httpClient.DefaultRequestHeaders.Add("Authorization", $"Bearer {apiKey}");
+
+        var requestBody = new
+        {
+            model = model,
+            messages = new[]
+            {
+                new { role = "system", content = systemPrompt },
+                new { role = "user", content = message }
+            },
+            temperature = 0.7,
+            max_tokens = 500
+        };
+
+        var json = JsonSerializer.Serialize(requestBody);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(url, content);
+        var responseText = await response.Content.ReadAsStringAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            using var doc = JsonDocument.Parse(responseText);
+            var reply = doc.RootElement
+                .GetProperty("choices")[0]
+                .GetProperty("message")
+                .GetProperty("content")
+                .GetString();
+
+            return Ok(new { reply });
+        }
+        else
+        {
+            Console.WriteLine($"GitHub Models API error: {responseText}");
+            return Ok(new { reply = GetFallbackResponse(message) });
+        }
+    }
+
+    private async Task<IActionResult> ChatWithGemini(string message, string apiKey)
+    {
+        var systemPrompt = await BuildSystemPrompt();
+        
+        var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+
+        var requestBody = new
+        {
+            contents = new[]
+            {
+                new { role = "user", parts = new[] { new { text = systemPrompt + "\n\nKhách hàng: " + message } } }
+            },
+            generationConfig = new
+            {
+                temperature = 0.7,
+                maxOutputTokens = 500
+            }
+        };
+
+        var json = JsonSerializer.Serialize(requestBody);
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        var response = await _httpClient.PostAsync(url, content);
+        var responseText = await response.Content.ReadAsStringAsync();
+
+        if (response.IsSuccessStatusCode)
+        {
+            using var doc = JsonDocument.Parse(responseText);
+            var reply = doc.RootElement
+                .GetProperty("candidates")[0]
+                .GetProperty("content")
+                .GetProperty("parts")[0]
+                .GetProperty("text")
+                .GetString();
+
+            return Ok(new { reply });
+        }
+        
+        return Ok(new { reply = GetFallbackResponse(message) });
+    }
+
+    private async Task<string> BuildSystemPrompt()
+    {
+        // Lấy dữ liệu sản phẩm theo danh mục từ database
+        var productsWithCategory = await _context.SanPhams
+            .Include(p => p.DanhMuc)
+            .Where(p => p.TrangThai == true)
+            .Select(p => new { 
+                p.TenSP, 
+                p.DonGia, 
+                p.MoTa, 
+                p.CapDoCay,
+                TenDanhMuc = p.DanhMuc != null ? p.DanhMuc.TenDanhMuc : "Khác"
+            })
+            .ToListAsync();
+
+        // Nhóm sản phẩm theo danh mục
+        var groupedProducts = productsWithCategory
+            .GroupBy(p => p.TenDanhMuc)
+            .OrderBy(g => g.Key);
+
+        var menuContext = string.Join("\n\n", groupedProducts.Select(g => 
+            $"📌 {g.Key.ToUpper()}:\n" + 
+            string.Join("\n", g.Select(p => $"  - {p.TenSP}: {p.DonGia:N0}đ{(p.CapDoCay > 0 ? $" (cấp cay {p.CapDoCay})" : "")}{(string.IsNullOrEmpty(p.MoTa) ? "" : $" - {p.MoTa}")}"))));
+
+        // Lấy mã giảm giá đang hoạt động
+        var coupons = await _context.MaGiamGias
+            .Where(c => c.TrangThai == true && c.NgayKetThuc >= DateTime.Now)
+            .Select(c => new { c.MaCode, c.LoaiGiam, c.GiaTri, c.GiamToiDa, c.DonToiThieu, c.MoTa })
+            .Take(10)
+            .ToListAsync();
+
+        var couponContext = coupons.Any() 
+            ? string.Join("\n", coupons.Select(c => {
+                var discount = c.LoaiGiam == "percent" 
+                    ? $"Giảm {c.GiaTri}%{(c.GiamToiDa.HasValue ? $" (tối đa {c.GiamToiDa:N0}đ)" : "")}"
+                    : c.LoaiGiam == "freeship" ? "Miễn phí ship" : $"Giảm {c.GiaTri:N0}đ";
+                return $"- {c.MaCode}: {discount} cho đơn từ {c.DonToiThieu:N0}đ";
+            }))
+            : "Hiện chưa có mã giảm giá";
+
+        // Lấy chi nhánh
+        var branches = await _context.ChiNhanhs
+            .Where(b => b.TrangThai == true)
+            .Select(b => new { b.TenChiNhanh, b.DiaChi, b.SoDienThoai })
+            .ToListAsync();
+
+        var branchContext = branches.Any()
+            ? string.Join("\n", branches.Select(b => $"- {b.TenChiNhanh}: {b.DiaChi} - ĐT: {b.SoDienThoai}"))
+            : "123 Đường ABC, Quận 1, TP.HCM - Hotline: 0123 456 789";
+
+        return $@"Bạn là SASIN - trợ lý ảo thông minh và thân thiện của nhà hàng Mỳ Cay Sasin.
+
+🏪 THÔNG TIN NHÀ HÀNG:
+- Tên: Mỳ Cay Sasin - Thương hiệu mì cay Hàn Quốc
+- Giờ mở cửa: 10:00 - 22:00 hàng ngày
+- Chi nhánh:
+{branchContext}
+
+🌶️ CẤP ĐỘ CAY (1-10) - ÁP DỤNG CHO MÌ CAY:
+- Cấp 1-2: Không cay, phù hợp trẻ em
+- Cấp 3-4: Cay nhẹ
+- Cấp 5-6: Cay vừa, phổ biến nhất
+- Cấp 7-8: Cay nhiều
+- Cấp 9-10: Siêu cay, thử thách
+
+🍜 LOẠI NƯỚC DÙNG MÌ (chọn khi gọi mì cay):
+- Kim Chi: Vị chua cay thanh mát, đặc trưng Hàn Quốc
+- Soyum: Vị béo ngậy từ đậu nành, đậm đà
+- Sincay: Vị cay nồng, đậm đà nhất
+⚠️ LƯU Ý: Đây là nước dùng cho MÌ, KHÔNG PHẢI nước uống!
+
+🥤 NƯỚC UỐNG GIẢI KHÁT (đồ uống):
+- Các loại nước ngọt, trà, nước ép... nằm trong danh mục GIẢI KHÁT
+- Dùng để uống kèm bữa ăn, giải nhiệt
+
+📋 THỰC ĐƠN THEO DANH MỤC:
+{menuContext}
+
+🎁 MÃ GIẢM GIÁ HIỆN TẠI:
+{couponContext}
+
+📝 QUY TẮC TRẢ LỜI:
+1. Thân thiện, nhiệt tình như nhân viên thật
+2. Trả lời ngắn gọn (2-4 câu), có emoji
+3. Gợi ý món cụ thể với giá tiền
+4. Phân biệt rõ: NƯỚC DÙNG MÌ (Kim Chi/Soyum/Sincay) khác với NƯỚC UỐNG (giải khát)
+5. Khi khách hỏi về nước, hỏi rõ họ muốn nước dùng mì hay nước uống
+6. Nếu không biết, hướng dẫn gọi hotline
+7. Kết thúc bằng câu hỏi hoặc gợi ý
+
+❌ KHÔNG:
+- Bịa thông tin không có trong menu
+- Nhầm lẫn nước dùng mì với nước uống giải khát
+- Trả lời ngoài phạm vi nhà hàng";
+    }
+
+    private string GetFallbackResponse(string message)
+    {
+        var lowerMessage = message.ToLower();
+        
+        if (lowerMessage.Contains("menu") || lowerMessage.Contains("thực đơn") || lowerMessage.Contains("món"))
+            return "Chào bạn! 😊 Bạn có thể xem thực đơn đầy đủ tại trang Thực đơn nhé. Chúng tôi có mì cay, mì tương đen, lẩu và nhiều món ngon khác! 🍜";
+        
+        if (lowerMessage.Contains("giá") || lowerMessage.Contains("bao nhiêu"))
+            return "Giá món ăn dao động từ 35,000đ - 250,000đ tùy món. Bạn xem chi tiết tại trang Thực đơn nhé! 💰";
+        
+        if (lowerMessage.Contains("cay"))
+            return "Chúng tôi có 10 cấp độ cay! Cấp 1-2 không cay, 5-6 cay vừa, 9-10 siêu cay. Bạn thích cấp mấy? 🌶️";
+        
+        if (lowerMessage.Contains("địa chỉ") || lowerMessage.Contains("ở đâu"))
+            return "Bạn có thể xem địa chỉ chi nhánh tại trang Giới thiệu. Hoặc gọi hotline để được hỗ trợ nhé! 📍";
+        
+        if (lowerMessage.Contains("đặt") || lowerMessage.Contains("order"))
+            return "Bạn có thể đặt hàng trực tiếp trên website! Thêm món vào giỏ hàng và thanh toán nhé. 🛒";
+        
+        if (lowerMessage.Contains("khuyến mãi") || lowerMessage.Contains("giảm giá") || lowerMessage.Contains("mã"))
+            return "Xem các ưu đãi mới nhất tại trang Ưu đãi nhé! Chúng tôi thường xuyên có mã giảm giá hấp dẫn. 🎁";
+
+        return "Xin chào! 😊 Tôi là SASIN - trợ lý của Mỳ Cay Sasin. Tôi có thể giúp bạn xem thực đơn, tư vấn món ăn, hoặc hỗ trợ đặt hàng. Bạn cần gì ạ? 🍜";
+    }
+
     [HttpGet("suggestions")]
-    public async Task<IActionResult> GetSuggestions()
+    public IActionResult GetSuggestions()
     {
         var suggestions = new[]
         {
             "Gợi ý món best seller",
-            "Tôi muốn ăn cay vừa",
+            "Tôi muốn ăn cay vừa", 
             "Combo cho 2 người",
             "Món nào không cay?",
-            "Giới thiệu về lẩu"
+            "Có mã giảm giá không?"
         };
         return Ok(suggestions);
     }

@@ -90,7 +90,18 @@ namespace MyCay.Web.Api
 
             try
             {
-                var orderCode = $"DH{DateTime.Now:yyyyMMddHHmmss}";
+                // Tạo mã đơn hàng duy nhất: DH + timestamp + 4 số ngẫu nhiên
+                var random = new Random();
+                var randomSuffix = random.Next(1000, 9999);
+                var orderCode = $"DH{DateTime.Now:yyyyMMddHHmmss}{randomSuffix}";
+                
+                // Kiểm tra trùng mã (hiếm khi xảy ra nhưng đảm bảo an toàn)
+                while (await _context.DonHangs.AnyAsync(d => d.MaDHCode == orderCode))
+                {
+                    randomSuffix = random.Next(1000, 9999);
+                    orderCode = $"DH{DateTime.Now:yyyyMMddHHmmss}{randomSuffix}";
+                }
+                
                 var donHang = new MyCay.Domain.Entities.DonHang
                 {
                     MaDHCode = orderCode,
@@ -113,15 +124,17 @@ namespace MyCay.Web.Api
                 await _context.SaveChangesAsync();
 
                 // Thêm chi tiết đơn hàng
-                if (request.Items != null)
+                if (request.Items != null && request.Items.Count > 0)
                 {
+                    _logger.LogInformation("Saving {Count} items for order {OrderCode}", request.Items.Count, orderCode);
                     foreach (var item in request.Items)
                     {
+                        _logger.LogInformation("Item: {Name}, ProductId: {ProductId}, Qty: {Qty}", item.Name, item.ProductId, item.Quantity);
                         var chiTiet = new MyCay.Domain.Entities.ChiTietDonHang
                         {
                             MaDH = donHang.MaDH,
                             MaSP = item.ProductId,
-                            TenSP = item.Name,
+                            TenSP = item.Name ?? "Sản phẩm",
                             SoLuong = item.Quantity,
                             DonGia = item.Price,
                             CapDoCay = item.SpicyLevel,
@@ -172,6 +185,51 @@ namespace MyCay.Web.Api
             await _context.SaveChangesAsync();
 
             return Ok(new { success = true, message = "Đã hủy đơn hàng" });
+        }
+
+        // GET: api/orders/search?code=DH... (Tra cứu đơn hàng bằng mã)
+        [HttpGet("search")]
+        public async Task<IActionResult> SearchOrder([FromQuery] string code)
+        {
+            if (string.IsNullOrEmpty(code))
+                return BadRequest(new { success = false, message = "Vui lòng nhập mã đơn hàng" });
+
+            var order = await _context.DonHangs.Include(d => d.KhachHang)
+                .Where(d => d.MaDHCode == code || d.MaDH.ToString() == code)
+                .Select(d => new OrderDto
+                {
+                    Id = d.MaDH,
+                    Code = d.MaDHCode ?? $"DH{d.MaDH:D6}",
+                    CustomerName = d.TenKhach ?? (d.KhachHang != null ? d.KhachHang.HoTen : "Khách vãng lai"),
+                    Phone = d.SDTKhach ?? "",
+                    Address = d.DiaChiGiao,
+                    Subtotal = d.TamTinh,
+                    ShippingFee = d.PhiGiaoHang,
+                    Discount = d.GiamGia,
+                    Total = d.TongTien,
+                    PaymentMethod = d.PhuongThucThanhToan ?? "Tiền mặt",
+                    PaymentStatus = d.TrangThaiThanhToan ?? "Chưa thanh toán",
+                    Note = d.GhiChu,
+                    Status = d.TrangThai ?? "Chờ xác nhận",
+                    CreatedAt = d.NgayDat ?? DateTime.Now
+                }).FirstOrDefaultAsync();
+
+            if (order == null)
+                return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
+
+            // Lấy chi tiết đơn hàng
+            order.Items = await _context.ChiTietDonHangs.Where(c => c.MaDH == order.Id)
+                .Select(c => new OrderItemDto
+                {
+                    ProductId = c.MaSP,
+                    Name = c.TenSP,
+                    Price = (int)c.DonGia,
+                    Quantity = c.SoLuong,
+                    SpicyLevel = c.CapDoCay,
+                    BrothType = c.LoaiNuocDung
+                }).ToListAsync();
+
+            return Ok(new { success = true, data = order });
         }
 
         // GET: api/orders/stats
