@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using MyCay.Infrastructure.Data;
+using MyCay.Web.Services;
 
 namespace MyCay.Web.Api
 {
@@ -10,11 +11,13 @@ namespace MyCay.Web.Api
     {
         private readonly MyCayDbContext _context;
         private readonly ILogger<OrdersController> _logger;
+        private readonly IEmailService _emailService;
 
-        public OrdersController(MyCayDbContext context, ILogger<OrdersController> logger)
+        public OrdersController(MyCayDbContext context, ILogger<OrdersController> logger, IEmailService emailService)
         {
             _context = context;
             _logger = logger;
+            _emailService = emailService;
         }
 
         // GET: api/orders
@@ -69,13 +72,31 @@ namespace MyCay.Web.Api
             if (order == null)
                 return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
 
-            // Lấy chi tiết đơn hàng
-            order.Items = await _context.ChiTietDonHangs.Where(c => c.MaDH == id)
-                .Select(c => new OrderItemDto
+            // Lấy chi tiết đơn hàng với hình ảnh sản phẩm
+            order.Items = await _context.ChiTietDonHangs
+                .Where(c => c.MaDH == id)
+                .Join(_context.SanPhams, c => c.MaSP, p => p.MaSP, (c, p) => new { c, p })
+                .Select(x => new OrderItemDto
                 {
-                    ProductId = c.MaSP, Name = c.TenSP, Price = (int)c.DonGia,
-                    Quantity = c.SoLuong, SpicyLevel = c.CapDoCay, BrothType = c.LoaiNuocDung
+                    ProductId = x.c.MaSP, 
+                    Name = x.c.TenSP, 
+                    Price = (int)x.c.DonGia,
+                    Quantity = x.c.SoLuong, 
+                    SpicyLevel = x.c.CapDoCay, 
+                    BrothType = x.c.LoaiNuocDung,
+                    Image = x.p.HinhAnh
                 }).ToListAsync();
+
+            // Fallback nếu không join được (sản phẩm đã bị xóa)
+            if (order.Items == null || order.Items.Count == 0)
+            {
+                order.Items = await _context.ChiTietDonHangs.Where(c => c.MaDH == id)
+                    .Select(c => new OrderItemDto
+                    {
+                        ProductId = c.MaSP, Name = c.TenSP, Price = (int)c.DonGia,
+                        Quantity = c.SoLuong, SpicyLevel = c.CapDoCay, BrothType = c.LoaiNuocDung
+                    }).ToListAsync();
+            }
 
             return Ok(new { success = true, data = order });
         }
@@ -158,6 +179,31 @@ namespace MyCay.Web.Api
                 }
 
                 _logger.LogInformation("Đơn hàng mới: {OrderCode}", orderCode);
+                
+                // Gửi email xác nhận đơn hàng (async, không block response)
+                if (!string.IsNullOrEmpty(request.Email))
+                {
+                    _ = Task.Run(async () =>
+                    {
+                        try
+                        {
+                            // Load lại đơn hàng với chi tiết để gửi email
+                            var orderForEmail = await _context.DonHangs
+                                .Include(d => d.ChiTietDonHangs)
+                                .FirstOrDefaultAsync(d => d.MaDH == donHang.MaDH);
+                            
+                            if (orderForEmail != null)
+                            {
+                                await _emailService.SendOrderConfirmationAsync(orderForEmail, request.Email, request.CustomerName);
+                            }
+                        }
+                        catch (Exception emailEx)
+                        {
+                            _logger.LogError(emailEx, "Failed to send order confirmation email");
+                        }
+                    });
+                }
+                
                 return Ok(new { success = true, message = "Đặt hàng thành công!", data = new { orderId = donHang.MaDH, orderCode } });
             }
             catch (Exception ex)
@@ -171,14 +217,21 @@ namespace MyCay.Web.Api
         [HttpPut("{id}/status")]
         public async Task<IActionResult> UpdateOrderStatus(int id, [FromBody] UpdateStatusRequest request)
         {
-            var order = await _context.DonHangs.FindAsync(id);
+            var order = await _context.DonHangs.Include(d => d.KhachHang).FirstOrDefaultAsync(d => d.MaDH == id);
             if (order == null)
                 return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
 
+            var oldStatus = order.TrangThai;
             order.TrangThai = request.Status;
             order.NgayCapNhat = DateTime.Now;
             if (request.Status == "Hoàn thành") order.TrangThaiThanhToan = "Đã thanh toán";
             await _context.SaveChangesAsync();
+
+            // Gửi email thông báo cập nhật trạng thái
+            if (oldStatus != request.Status && order.KhachHang?.Email != null)
+            {
+                _ = _emailService.SendOrderStatusUpdateAsync(order, order.KhachHang.Email, request.Status);
+            }
 
             return Ok(new { success = true, message = "Cập nhật trạng thái thành công" });
         }
@@ -228,17 +281,35 @@ namespace MyCay.Web.Api
             if (order == null)
                 return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
 
-            // Lấy chi tiết đơn hàng
-            order.Items = await _context.ChiTietDonHangs.Where(c => c.MaDH == order.Id)
-                .Select(c => new OrderItemDto
+            // Lấy chi tiết đơn hàng với hình ảnh
+            order.Items = await _context.ChiTietDonHangs
+                .Where(c => c.MaDH == order.Id)
+                .Join(_context.SanPhams, c => c.MaSP, p => p.MaSP, (c, p) => new { c, p })
+                .Select(x => new OrderItemDto
                 {
-                    ProductId = c.MaSP,
-                    Name = c.TenSP,
-                    Price = (int)c.DonGia,
-                    Quantity = c.SoLuong,
-                    SpicyLevel = c.CapDoCay,
-                    BrothType = c.LoaiNuocDung
+                    ProductId = x.c.MaSP,
+                    Name = x.c.TenSP,
+                    Price = (int)x.c.DonGia,
+                    Quantity = x.c.SoLuong,
+                    SpicyLevel = x.c.CapDoCay,
+                    BrothType = x.c.LoaiNuocDung,
+                    Image = x.p.HinhAnh
                 }).ToListAsync();
+
+            // Fallback nếu không join được
+            if (order.Items == null || order.Items.Count == 0)
+            {
+                order.Items = await _context.ChiTietDonHangs.Where(c => c.MaDH == order.Id)
+                    .Select(c => new OrderItemDto
+                    {
+                        ProductId = c.MaSP,
+                        Name = c.TenSP,
+                        Price = (int)c.DonGia,
+                        Quantity = c.SoLuong,
+                        SpicyLevel = c.CapDoCay,
+                        BrothType = c.LoaiNuocDung
+                    }).ToListAsync();
+            }
 
             return Ok(new { success = true, data = order });
         }
@@ -309,6 +380,7 @@ namespace MyCay.Web.Api
         public int SpicyLevel { get; set; }
         public string? BrothType { get; set; }
         public string? Note { get; set; }
+        public string? Image { get; set; }
     }
 
     public class CreateOrderRequest
@@ -316,6 +388,7 @@ namespace MyCay.Web.Api
         public int? CustomerId { get; set; }
         public string CustomerName { get; set; } = "";
         public string Phone { get; set; } = "";
+        public string? Email { get; set; }
         public string? Address { get; set; }
         public decimal Subtotal { get; set; }
         public decimal ShippingFee { get; set; }

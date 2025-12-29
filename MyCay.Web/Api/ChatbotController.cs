@@ -29,20 +29,24 @@ public class ChatbotController : ControllerBase
             // Ưu tiên GitHub Models API
             var githubApiKey = _config["GitHubModels:ApiKey"];
             var model = _config["GitHubModels:Model"] ?? "gpt-4o-mini";
+            Console.WriteLine($"GitHub key: {githubApiKey?.Substring(0, Math.Min(10, githubApiKey?.Length ?? 0))}...");
             
-            if (!string.IsNullOrEmpty(githubApiKey) && !githubApiKey.Contains("api_key"))
+            if (!string.IsNullOrEmpty(githubApiKey) && !githubApiKey.Contains("YOUR_"))
             {
+                Console.WriteLine($"Using GitHub Models API with model: {model}");
                 return await ChatWithGitHubModels(request.Message, githubApiKey, model);
             }
 
-            // Fallback to Gemini
+            // Fallback to Gemini API
             var geminiKey = _config["Gemini:ApiKey"];
-            if (!string.IsNullOrEmpty(geminiKey) && geminiKey != "YOUR_GEMINI_API_KEY_HERE")
+            if (!string.IsNullOrEmpty(geminiKey) && !geminiKey.Contains("YOUR_") && !geminiKey.Contains("api_key"))
             {
+                Console.WriteLine("Using Gemini API");
                 return await ChatWithGemini(request.Message, geminiKey);
             }
 
             // Fallback response khi không có API key
+            Console.WriteLine("Using fallback response");
             return Ok(new { reply = GetFallbackResponse(request.Message) });
         }
         catch (Exception ex)
@@ -101,7 +105,7 @@ public class ChatbotController : ControllerBase
     {
         var systemPrompt = await BuildSystemPrompt();
         
-        var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key={apiKey}";
+        var url = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key={apiKey}";
 
         var requestBody = new
         {
@@ -119,8 +123,10 @@ public class ChatbotController : ControllerBase
         var json = JsonSerializer.Serialize(requestBody);
         var content = new StringContent(json, Encoding.UTF8, "application/json");
 
+        Console.WriteLine("Calling Gemini API...");
         var response = await _httpClient.PostAsync(url, content);
         var responseText = await response.Content.ReadAsStringAsync();
+        Console.WriteLine($"Gemini response status: {response.StatusCode}");
 
         if (response.IsSuccessStatusCode)
         {
@@ -135,6 +141,7 @@ public class ChatbotController : ControllerBase
             return Ok(new { reply });
         }
         
+        Console.WriteLine($"Gemini API error: {responseText}");
         return Ok(new { reply = GetFallbackResponse(message) });
     }
 
@@ -273,25 +280,47 @@ Cách gợi ý tự nhiên:
     {
         var lowerMessage = message.ToLower();
         
+        // Best seller / gợi ý
+        if (lowerMessage.Contains("best") || lowerMessage.Contains("ngon nhất") || lowerMessage.Contains("gợi ý") || lowerMessage.Contains("nên ăn"))
+            return "Món best seller của quán là Mì Cay Hải Sản (79,000đ) và Mì Tương Đen Thịt Bò (65,000đ)! 🔥 Nếu thích cay, thử Mì Cay Bò Mỹ cấp 5-6 nhé! 🌶️";
+        
         if (lowerMessage.Contains("menu") || lowerMessage.Contains("thực đơn") || lowerMessage.Contains("món"))
-            return "Chào bạn! 😊 Bạn có thể xem thực đơn đầy đủ tại trang Thực đơn nhé. Chúng tôi có mì cay, mì tương đen, lẩu và nhiều món ngon khác! 🍜";
+            return "Chào bạn! 😊 Chúng tôi có Mì Cay (từ 45,000đ), Mì Tương Đen (từ 55,000đ), Lẩu (từ 159,000đ), và nhiều món khai vị ngon! Bạn muốn xem loại nào? 🍜";
         
         if (lowerMessage.Contains("giá") || lowerMessage.Contains("bao nhiêu"))
-            return "Giá món ăn dao động từ 35,000đ - 250,000đ tùy món. Bạn xem chi tiết tại trang Thực đơn nhé! 💰";
+            return "Giá món ăn: Mì Cay 45-89k, Mì Tương Đen 55-75k, Lẩu 159-259k, Khai vị 25-55k. Bạn muốn biết giá món nào cụ thể? 💰";
         
-        if (lowerMessage.Contains("cay"))
-            return "Chúng tôi có 10 cấp độ cay! Cấp 1-2 không cay, 5-6 cay vừa, 9-10 siêu cay. Bạn thích cấp mấy? 🌶️";
+        if (lowerMessage.Contains("cay") || lowerMessage.Contains("cấp"))
+            return "Chúng tôi có 10 cấp độ cay! 🌶️\n- Cấp 1-2: Không cay (cho trẻ em)\n- Cấp 3-4: Cay nhẹ\n- Cấp 5-6: Cay vừa (phổ biến nhất)\n- Cấp 7-10: Siêu cay!\nBạn thích cấp mấy?";
         
-        if (lowerMessage.Contains("địa chỉ") || lowerMessage.Contains("ở đâu"))
-            return "Bạn có thể xem địa chỉ chi nhánh tại trang Giới thiệu. Hoặc gọi hotline để được hỗ trợ nhé! 📍";
+        if (lowerMessage.Contains("không cay") || lowerMessage.Contains("ko cay"))
+            return "Món không cay có: Mì Tương Đen (55-75k), Mì Phô Mai, Cơm Cuộn Kimbap, Tokbokki Phô Mai! 😋 Hoặc gọi Mì Cay cấp 1-2 cũng không cay đâu!";
         
-        if (lowerMessage.Contains("đặt") || lowerMessage.Contains("order"))
-            return "Bạn có thể đặt hàng trực tiếp trên website! Thêm món vào giỏ hàng và thanh toán nhé. 🛒";
+        if (lowerMessage.Contains("địa chỉ") || lowerMessage.Contains("ở đâu") || lowerMessage.Contains("chi nhánh"))
+            return "📍 Mỳ Cay Sasin có nhiều chi nhánh! Xem địa chỉ tại trang Giới thiệu hoặc gọi hotline 0123 456 789 nhé!";
         
-        if (lowerMessage.Contains("khuyến mãi") || lowerMessage.Contains("giảm giá") || lowerMessage.Contains("mã"))
-            return "Xem các ưu đãi mới nhất tại trang Ưu đãi nhé! Chúng tôi thường xuyên có mã giảm giá hấp dẫn. 🎁";
+        if (lowerMessage.Contains("đặt") || lowerMessage.Contains("order") || lowerMessage.Contains("mua"))
+            return "Đặt hàng dễ lắm! 🛒 Chọn món → Thêm vào giỏ → Thanh toán. Đơn từ 100k được freeship! Bạn muốn gọi món gì?";
+        
+        if (lowerMessage.Contains("khuyến mãi") || lowerMessage.Contains("giảm giá") || lowerMessage.Contains("mã") || lowerMessage.Contains("voucher"))
+            return "🎁 Mã giảm giá hot: WELCOME10 giảm 10%, FREESHIP miễn ship đơn từ 100k! Xem thêm tại trang Ưu đãi nhé!";
+        
+        if (lowerMessage.Contains("combo") || lowerMessage.Contains("2 người") || lowerMessage.Contains("nhóm"))
+            return "Combo 2 người gợi ý: 2 Mì Cay Hải Sản + 1 Kimbap + 2 nước = khoảng 200k! 👫 Hoặc gọi Lẩu Hải Sản (199k) ăn chung nhé!";
+        
+        if (lowerMessage.Contains("nước") || lowerMessage.Contains("uống") || lowerMessage.Contains("giải khát"))
+            return "🥤 Nước uống: Coca/Pepsi 15k, Trà Đào 25k, Nước Gạo Hàn Quốc 30k (giải cay cực tốt!). Bạn muốn gọi gì?";
+        
+        if (lowerMessage.Contains("khai vị") || lowerMessage.Contains("ăn kèm"))
+            return "Khai vị ngon: Cánh Gà Chiên (45k), Xúc Xích Phô Mai (35k), Há Cảo Chiên (40k), Kimbap (35k)! 😋";
+        
+        if (lowerMessage.Contains("lẩu"))
+            return "🍲 Lẩu Sasin siêu ngon! Lẩu Kim Chi 159k, Lẩu Hải Sản 199k, Lẩu Bò Mỹ 259k. Ăn 2-4 người, có nhiều topping thêm!";
+        
+        if (lowerMessage.Contains("chào") || lowerMessage.Contains("hello") || lowerMessage.Contains("hi"))
+            return "Xin chào bạn! 😊 Tôi là SASIN - trợ lý của Mỳ Cay Sasin. Hôm nay bạn muốn ăn gì? Mì cay, mì tương đen hay lẩu? 🍜";
 
-        return "Xin chào! 😊 Tôi là SASIN - trợ lý của Mỳ Cay Sasin. Tôi có thể giúp bạn xem thực đơn, tư vấn món ăn, hoặc hỗ trợ đặt hàng. Bạn cần gì ạ? 🍜";
+        return "Xin chào! 😊 Tôi là SASIN - trợ lý của Mỳ Cay Sasin. Tôi có thể giúp bạn:\n- Xem thực đơn & giá\n- Gợi ý món ngon\n- Thông tin khuyến mãi\n- Hỗ trợ đặt hàng\nBạn cần gì ạ? 🍜";
     }
 
     [HttpGet("suggestions")]

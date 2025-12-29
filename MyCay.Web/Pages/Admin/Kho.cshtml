@@ -1,4 +1,5 @@
 @page
+@model KhoModel
 @{
     ViewData["Title"] = "Quản lý Kho";
     Layout = "_AdminLayout";
@@ -211,13 +212,19 @@ async function init() {
 }
 
 async function loadBranches() {
-    const res = await fetch('/api/branch');
-    branches = await res.json();
-    
-    const select = document.getElementById('branchFilter');
-    branches.forEach(b => {
-        select.innerHTML += `<option value="${b.maCN}">${b.tenChiNhanh}</option>`;
-    });
+    try {
+        const res = await fetch('/api/branch');
+        const result = await res.json();
+        branches = result.success ? result.data : (Array.isArray(result) ? result : []);
+        
+        const select = document.getElementById('branchFilter');
+        branches.forEach(b => {
+            select.innerHTML += `<option value="${b.maCN}">${b.tenChiNhanh}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading branches:', e);
+        branches = [];
+    }
 }
 
 async function loadMaterials() {

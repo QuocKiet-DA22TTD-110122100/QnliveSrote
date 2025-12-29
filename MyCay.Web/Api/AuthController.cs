@@ -257,6 +257,204 @@ namespace MyCay.Web.Api
             return Ok(new { success = true, message = "Đăng xuất thành công" });
         }
 
+        // =====================================================
+        // QUẢN LÝ TÀI KHOẢN (Admin)
+        // =====================================================
+
+        // GET: api/auth/accounts - Lấy danh sách tài khoản
+        [HttpGet("accounts")]
+        public async Task<IActionResult> GetAccounts()
+        {
+            try
+            {
+                var accountsRaw = await _context.TaiKhoans
+                    .Include(t => t.VaiTro)
+                    .ToListAsync();
+                
+                var accounts = accountsRaw.Select(t => new
+                {
+                    maTK = t.MaTK,
+                    tenDangNhap = t.TenDangNhap,
+                    email = t.Email,
+                    vaiTro = NormalizeRole(t.VaiTro?.TenVaiTro ?? "customer"),
+                    trangThai = t.TrangThai,
+                    ngayTao = t.NgayTao,
+                    lanDangNhapCuoi = t.LanDangNhapCuoi,
+                    maNV = _context.NhanViens.Where(n => n.MaTK == t.MaTK).Select(n => (int?)n.MaNV).FirstOrDefault(),
+                    tenNhanVien = _context.NhanViens.Where(n => n.MaTK == t.MaTK).Select(n => n.HoTen).FirstOrDefault(),
+                    maKH = _context.KhachHangs.Where(k => k.MaTK == t.MaTK).Select(k => (int?)k.MaKH).FirstOrDefault(),
+                    tenKhachHang = _context.KhachHangs.Where(k => k.MaTK == t.MaTK).Select(k => k.HoTen).FirstOrDefault()
+                })
+                .OrderByDescending(t => t.ngayTao)
+                .ToList();
+                return Ok(new { success = true, data = accounts });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi lấy danh sách tài khoản");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
+        }
+
+        // POST: api/auth/accounts - Tạo tài khoản mới
+        [HttpPost("accounts")]
+        public async Task<IActionResult> CreateAccount([FromBody] AccountRequest request)
+        {
+            if (string.IsNullOrEmpty(request.TenDangNhap) || string.IsNullOrEmpty(request.MatKhau))
+                return BadRequest(new { success = false, message = "Vui lòng điền đầy đủ thông tin" });
+
+            try
+            {
+                // Kiểm tra trùng username
+                if (await _context.TaiKhoans.AnyAsync(t => t.TenDangNhap == request.TenDangNhap))
+                    return BadRequest(new { success = false, message = "Tên đăng nhập đã tồn tại" });
+
+                // Lấy vai trò
+                var vaiTro = await _context.VaiTros.FirstOrDefaultAsync(v => 
+                    v.TenVaiTro.ToLower() == request.VaiTro.ToLower() ||
+                    NormalizeRole(v.TenVaiTro) == request.VaiTro.ToLower());
+
+                var taiKhoan = new MyCay.Domain.Entities.TaiKhoan
+                {
+                    TenDangNhap = request.TenDangNhap,
+                    MatKhau = GetMD5Hash(request.MatKhau),
+                    Email = request.Email,
+                    MaVaiTro = vaiTro?.MaVaiTro ?? 4, // Default: KhachHang
+                    TrangThai = request.TrangThai,
+                    NgayTao = DateTime.Now
+                };
+
+                _context.TaiKhoans.Add(taiKhoan);
+                await _context.SaveChangesAsync();
+
+                // Liên kết nhân viên/khách hàng nếu có
+                if (request.MaNV.HasValue)
+                {
+                    var nv = await _context.NhanViens.FindAsync(request.MaNV.Value);
+                    if (nv != null) { nv.MaTK = taiKhoan.MaTK; await _context.SaveChangesAsync(); }
+                }
+                if (request.MaKH.HasValue)
+                {
+                    var kh = await _context.KhachHangs.FindAsync(request.MaKH.Value);
+                    if (kh != null) { kh.MaTK = taiKhoan.MaTK; await _context.SaveChangesAsync(); }
+                }
+
+                return Ok(new { success = true, message = "Tạo tài khoản thành công", data = new { maTK = taiKhoan.MaTK } });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi tạo tài khoản");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
+        }
+
+        // PUT: api/auth/accounts/{id} - Cập nhật tài khoản
+        [HttpPut("accounts/{id}")]
+        public async Task<IActionResult> UpdateAccount(int id, [FromBody] AccountRequest request)
+        {
+            try
+            {
+                var taiKhoan = await _context.TaiKhoans.FindAsync(id);
+                if (taiKhoan == null)
+                    return NotFound(new { success = false, message = "Không tìm thấy tài khoản" });
+
+                // Kiểm tra trùng username (nếu đổi)
+                if (request.TenDangNhap != taiKhoan.TenDangNhap && 
+                    await _context.TaiKhoans.AnyAsync(t => t.TenDangNhap == request.TenDangNhap))
+                    return BadRequest(new { success = false, message = "Tên đăng nhập đã tồn tại" });
+
+                taiKhoan.TenDangNhap = request.TenDangNhap;
+                taiKhoan.Email = request.Email;
+                taiKhoan.TrangThai = request.TrangThai;
+
+                // Cập nhật mật khẩu nếu có
+                if (!string.IsNullOrEmpty(request.MatKhau))
+                    taiKhoan.MatKhau = GetMD5Hash(request.MatKhau);
+
+                // Cập nhật vai trò
+                var vaiTro = await _context.VaiTros.FirstOrDefaultAsync(v => 
+                    v.TenVaiTro.ToLower() == request.VaiTro.ToLower() ||
+                    NormalizeRole(v.TenVaiTro) == request.VaiTro.ToLower());
+                if (vaiTro != null) taiKhoan.MaVaiTro = vaiTro.MaVaiTro;
+
+                await _context.SaveChangesAsync();
+
+                return Ok(new { success = true, message = "Cập nhật thành công" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi cập nhật tài khoản");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
+        }
+
+        // PUT: api/auth/accounts/{id}/toggle-status - Khóa/Mở khóa tài khoản
+        [HttpPut("accounts/{id}/toggle-status")]
+        public async Task<IActionResult> ToggleAccountStatus(int id)
+        {
+            try
+            {
+                var taiKhoan = await _context.TaiKhoans.FindAsync(id);
+                if (taiKhoan == null)
+                    return NotFound(new { success = false, message = "Không tìm thấy tài khoản" });
+
+                taiKhoan.TrangThai = !taiKhoan.TrangThai;
+                await _context.SaveChangesAsync();
+
+                return Ok(new { success = true, message = taiKhoan.TrangThai ? "Đã mở khóa tài khoản" : "Đã khóa tài khoản" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi toggle status");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
+        }
+
+        // PUT: api/auth/accounts/{id}/reset-password - Đặt lại mật khẩu
+        [HttpPut("accounts/{id}/reset-password")]
+        public async Task<IActionResult> ResetPassword(int id, [FromBody] ResetPasswordRequest request)
+        {
+            if (string.IsNullOrEmpty(request.MatKhau) || request.MatKhau.Length < 6)
+                return BadRequest(new { success = false, message = "Mật khẩu phải có ít nhất 6 ký tự" });
+
+            try
+            {
+                var taiKhoan = await _context.TaiKhoans.FindAsync(id);
+                if (taiKhoan == null)
+                    return NotFound(new { success = false, message = "Không tìm thấy tài khoản" });
+
+                taiKhoan.MatKhau = GetMD5Hash(request.MatKhau);
+                await _context.SaveChangesAsync();
+
+                return Ok(new { success = true, message = "Đặt lại mật khẩu thành công" });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi reset password");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
+        }
+
+        // GET: api/auth/staff - Lấy danh sách nhân viên (để liên kết tài khoản)
+        [HttpGet("staff")]
+        public async Task<IActionResult> GetStaffList()
+        {
+            try
+            {
+                var staff = await _context.NhanViens
+                    .Where(n => n.TrangThai == true)
+                    .Select(n => new { n.MaNV, n.HoTen, n.ChucVu, n.MaTK })
+                    .ToListAsync();
+
+                return Ok(new { success = true, data = staff });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Lỗi lấy danh sách nhân viên");
+                return StatusCode(500, new { success = false, message = "Lỗi hệ thống" });
+            }
+        }
+
         private string GetMD5Hash(string input)
         {
             using var md5 = MD5.Create();
@@ -295,5 +493,21 @@ namespace MyCay.Web.Api
         public string Email { get; set; } = "";
         public string? Phone { get; set; }
         public string Password { get; set; } = "";
+    }
+
+    public class AccountRequest
+    {
+        public string TenDangNhap { get; set; } = "";
+        public string? Email { get; set; }
+        public string? MatKhau { get; set; }
+        public string VaiTro { get; set; } = "customer";
+        public bool TrangThai { get; set; } = true;
+        public int? MaNV { get; set; }
+        public int? MaKH { get; set; }
+    }
+
+    public class ResetPasswordRequest
+    {
+        public string MatKhau { get; set; } = "";
     }
 }

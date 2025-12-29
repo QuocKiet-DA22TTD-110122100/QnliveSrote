@@ -1,0 +1,32 @@
+@startuml AD_XuLyDonHang
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - XỬ LÝ ĐƠN HÀNG (ADMIN)**
+
+start
+:Xem đơn hàng mới;
+:Chọn đơn cần xử lý;
+
+if (Xác nhận?) then (Có)
+  :Cập nhật: Đang xử lý;
+  :Chuẩn bị đơn hàng;
+  :Cập nhật: Đang giao;
+  :Giao hàng;
+  
+  if (Giao thành công?) then (Có)
+    :Cập nhật: Hoàn thành;
+  else (Không)
+    :Cập nhật: Giao thất bại;
+  endif
+else (Hủy)
+  :Nhập lý do hủy;
+  :Cập nhật: Đã hủy;
+endif
+
+:Thông báo khách hàng;
+stop
+
+@enduml

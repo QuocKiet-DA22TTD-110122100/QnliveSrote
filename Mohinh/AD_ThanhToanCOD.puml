@@ -1,0 +1,18 @@
+@startuml AD_ThanhToanCOD
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - THANH TOÁN COD**
+
+start
+:Chọn "Thanh toán khi nhận hàng";
+:Xác nhận đơn hàng;
+:Tạo đơn hàng;
+:Trạng thái: Chờ xác nhận;
+:Gửi email xác nhận;
+:Đặt hàng thành công;
+stop
+
+@enduml

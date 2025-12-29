@@ -1,0 +1,25 @@
+@startuml AD_DangNhap
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - ĐĂNG NHẬP**
+
+start
+:Nhập Email/SĐT;
+:Nhập Mật khẩu;
+:Nhấn "Đăng nhập";
+
+if (Thông tin hợp lệ?) then (Có)
+  :Tạo JWT Token;
+  :Lưu session;
+  :Chuyển trang chủ;
+  stop
+else (Không)
+  :Hiển thị lỗi;
+  :Nhập lại;
+  stop
+endif
+
+@enduml

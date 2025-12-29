@@ -1,0 +1,24 @@
+@startuml AD_TimKiemSanPham
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - TÌM KIẾM SẢN PHẨM**
+
+start
+:Nhập từ khóa tìm kiếm;
+:Chọn danh mục (tùy chọn);
+:Nhấn "Tìm kiếm";
+:Truy vấn database;
+
+if (Có kết quả?) then (Có)
+  :Hiển thị danh sách SP;
+  :Sắp xếp theo tiêu chí;
+else (Không)
+  :Thông báo không tìm thấy;
+  :Gợi ý sản phẩm khác;
+endif
+stop
+
+@enduml

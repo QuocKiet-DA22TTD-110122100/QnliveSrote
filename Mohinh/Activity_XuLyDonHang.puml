@@ -1,0 +1,84 @@
+@startuml Activity_XuLyDonHang
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - XỬ LÝ ĐƠN HÀNG (ADMIN)**\nHệ thống Mỳ Cay Sasin
+
+|Admin|
+start
+:Đăng nhập hệ thống Admin;
+
+|Hệ thống|
+:Xác thực quyền Admin;
+:Hiển thị Dashboard;
+:Thông báo đơn hàng mới;
+
+|Admin|
+:Xem danh sách đơn hàng;
+:Chọn đơn hàng cần xử lý;
+
+|Hệ thống|
+:Hiển thị chi tiết đơn hàng;
+
+|Admin|
+if (Xác nhận đơn hàng?) then (Xác nhận)
+  :Nhấn "Xác nhận đơn";
+  
+  |Hệ thống|
+  :Cập nhật trạng thái: "Đang xử lý";
+  :Gửi thông báo cho khách hàng;
+  
+  |Admin|
+  :Chuẩn bị đơn hàng;
+  :Nhấn "Giao hàng";
+  
+  |Hệ thống|
+  :Cập nhật trạng thái: "Đang giao";
+  :Gửi thông báo cho khách hàng;
+  
+  |Shipper|
+  :Nhận đơn giao hàng;
+  :Giao hàng cho khách;
+  
+  if (Giao thành công?) then (Thành công)
+    :Xác nhận đã giao;
+    
+    |Hệ thống|
+    :Cập nhật trạng thái: "Hoàn thành";
+    :Gửi email cảm ơn khách hàng;
+    :Cập nhật thống kê doanh thu;
+    
+  else (Thất bại)
+    :Báo cáo lý do thất bại;
+    
+    |Hệ thống|
+    :Cập nhật trạng thái: "Giao thất bại";
+    :Thông báo cho Admin;
+    
+    |Admin|
+    :Liên hệ khách hàng;
+    :Sắp xếp giao lại;
+  endif
+  
+else (Hủy)
+  |Admin|
+  :Nhập lý do hủy;
+  :Nhấn "Hủy đơn";
+  
+  |Hệ thống|
+  :Cập nhật trạng thái: "Đã hủy";
+  :Hoàn tiền (nếu đã thanh toán);
+  :Gửi thông báo cho khách hàng;
+endif
+
+|Hệ thống|
+:Lưu lịch sử đơn hàng;
+
+stop
+
+@enduml

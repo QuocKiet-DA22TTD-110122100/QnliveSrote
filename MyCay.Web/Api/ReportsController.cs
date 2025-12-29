@@ -58,16 +58,16 @@ namespace MyCay.Web.Api
         {
             var products = new[]
             {
-                new { rank = 1, name = "Mì Thập Cẩm No Nê", sold = 89, revenue = 6853000 },
-                new { rank = 2, name = "Mì Thập Cẩm", sold = 76, revenue = 5244000 },
-                new { rank = 3, name = "Combo Vui Vẻ", sold = 65, revenue = 4485000 },
-                new { rank = 4, name = "Tokbokki Phô Mai Sasin", sold = 58, revenue = 3422000 },
-                new { rank = 5, name = "Mì Hải Sản", sold = 52, revenue = 3224000 },
-                new { rank = 6, name = "Mì Bò Mỹ", sold = 48, revenue = 2832000 },
-                new { rank = 7, name = "Kimbap Sasin", sold = 45, revenue = 1575000 },
-                new { rank = 8, name = "Lẩu Sincay Hải Sản", sold = 32, revenue = 6368000 },
-                new { rank = 9, name = "Phô Mai Que", sold = 28, revenue = 1092000 },
-                new { rank = 10, name = "Nước Gạo Hàn Quốc", sold = 25, revenue = 875000 }
+                new { rank = 1, name = "Mì Thập Cẩm No Nê", quantity = 89, revenue = 6853000 },
+                new { rank = 2, name = "Mì Thập Cẩm", quantity = 76, revenue = 5244000 },
+                new { rank = 3, name = "Combo Vui Vẻ", quantity = 65, revenue = 4485000 },
+                new { rank = 4, name = "Tokbokki Phô Mai Sasin", quantity = 58, revenue = 3422000 },
+                new { rank = 5, name = "Mì Hải Sản", quantity = 52, revenue = 3224000 },
+                new { rank = 6, name = "Mì Bò Mỹ", quantity = 48, revenue = 2832000 },
+                new { rank = 7, name = "Kimbap Sasin", quantity = 45, revenue = 1575000 },
+                new { rank = 8, name = "Lẩu Sincay Hải Sản", quantity = 32, revenue = 6368000 },
+                new { rank = 9, name = "Phô Mai Que", quantity = 28, revenue = 1092000 },
+                new { rank = 10, name = "Nước Gạo Hàn Quốc", quantity = 25, revenue = 875000 }
             };
 
             return Ok(new { success = true, data = products.Take(limit) });
@@ -77,17 +77,12 @@ namespace MyCay.Web.Api
         [HttpGet("category-revenue")]
         public IActionResult GetCategoryRevenue()
         {
-            var categories = new[]
+            return Ok(new
             {
-                new { name = "Mì Cay", revenue = 12500000, percent = 45 },
-                new { name = "Combo", revenue = 5500000, percent = 20 },
-                new { name = "Lẩu Hàn Quốc", revenue = 4200000, percent = 15 },
-                new { name = "Khai Vị", revenue = 2800000, percent = 10 },
-                new { name = "Giải Khát", revenue = 1900000, percent = 7 },
-                new { name = "Khác", revenue = 800000, percent = 3 }
-            };
-
-            return Ok(new { success = true, data = categories });
+                success = true,
+                labels = new[] { "Mì Cay", "Combo", "Lẩu Hàn Quốc", "Khai Vị", "Giải Khát", "Khác" },
+                values = new[] { 12500000, 5500000, 4200000, 2800000, 1900000, 800000 }
+            });
         }
 
         // GET: api/reports/store-performance
@@ -118,6 +113,79 @@ namespace MyCay.Web.Api
             };
 
             return Ok(new { success = true, data = hours });
+        }
+
+        // =====================================================
+        // THỐNG KÊ CHI TIẾT
+        // =====================================================
+
+        // GET: api/reports/stats - Thống kê tổng quan theo kỳ
+        [HttpGet("stats")]
+        public IActionResult GetStats([FromQuery] string period = "week")
+        {
+            // Mock data - trong thực tế sẽ query từ database
+            var stats = period switch
+            {
+                "today" => new { totalRevenue = 3450000m, totalOrders = 24, avgOrderValue = 143750m, newCustomers = 5, revenueChange = 12.5, ordersChange = 8.3 },
+                "week" => new { totalRevenue = 25100000m, totalOrders = 156, avgOrderValue = 160897m, newCustomers = 28, revenueChange = 15.2, ordersChange = 10.5 },
+                "month" => new { totalRevenue = 84600000m, totalOrders = 512, avgOrderValue = 165234m, newCustomers = 89, revenueChange = 18.7, ordersChange = 14.2 },
+                _ => new { totalRevenue = 980000000m, totalOrders = 5840, avgOrderValue = 167808m, newCustomers = 1250, revenueChange = 22.5, ordersChange = 18.9 }
+            };
+
+            return Ok(new { success = true, data = stats });
+        }
+
+        // GET: api/reports/revenue-chart - Biểu đồ doanh thu
+        [HttpGet("revenue-chart")]
+        public IActionResult GetRevenueChart([FromQuery] string period = "week")
+        {
+            var data = period switch
+            {
+                "today" => new { 
+                    labels = new[] { "8h", "9h", "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h" }, 
+                    revenue = new[] { 0, 150000, 280000, 520000, 680000, 450000, 320000, 180000, 250000, 380000, 620000, 750000, 580000, 270000 },
+                    orders = new[] { 0, 1, 2, 4, 5, 3, 2, 1, 2, 3, 5, 6, 4, 2 }
+                },
+                "week" => new { 
+                    labels = new[] { "T2", "T3", "T4", "T5", "T6", "T7", "CN" }, 
+                    revenue = new[] { 2800000, 3200000, 2900000, 3500000, 4100000, 5200000, 3400000 },
+                    orders = new[] { 18, 21, 19, 23, 27, 34, 22 }
+                },
+                "month" => new { 
+                    labels = new[] { "Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4" }, 
+                    revenue = new[] { 18500000, 21200000, 19800000, 25100000 },
+                    orders = new[] { 115, 132, 123, 156 }
+                },
+                _ => new { 
+                    labels = new[] { "T1", "T2", "T3", "T4", "T5", "T6", "T7", "T8", "T9", "T10", "T11", "T12" }, 
+                    revenue = new[] { 65000000, 72000000, 68000000, 75000000, 82000000, 78000000, 85000000, 92000000, 88000000, 95000000, 102000000, 98000000 },
+                    orders = new[] { 405, 450, 425, 468, 512, 487, 531, 575, 550, 593, 637, 612 }
+                }
+            };
+
+            return Ok(data);
+        }
+
+        // GET: api/reports/order-status - Phân bố đơn hàng theo trạng thái
+        [HttpGet("order-status")]
+        public IActionResult GetOrderStatus()
+        {
+            return Ok(new
+            {
+                labels = new[] { "Chờ xác nhận", "Đang chuẩn bị", "Đang giao", "Hoàn thành", "Đã hủy" },
+                values = new[] { 12, 8, 5, 125, 6 }
+            });
+        }
+
+        // GET: api/reports/hourly-orders - Đơn hàng theo giờ
+        [HttpGet("hourly-orders")]
+        public IActionResult GetHourlyOrders()
+        {
+            return Ok(new
+            {
+                labels = new[] { "10h", "11h", "12h", "13h", "14h", "15h", "16h", "17h", "18h", "19h", "20h", "21h" },
+                values = new[] { 3, 8, 15, 12, 6, 4, 5, 9, 18, 22, 16, 8 }
+            });
         }
     }
 }

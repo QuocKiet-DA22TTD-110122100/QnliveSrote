@@ -19,11 +19,15 @@ namespace MyCay.Web.Api
 
         // GET: api/products
         [HttpGet]
-        public async Task<IActionResult> GetProducts([FromQuery] int? categoryId, [FromQuery] string? search, [FromQuery] int page = 1, [FromQuery] int pageSize = 20)
+        public async Task<IActionResult> GetProducts([FromQuery] int? categoryId, [FromQuery] string? search, [FromQuery] int page = 1, [FromQuery] int pageSize = 20, [FromQuery] bool includeInactive = false)
         {
             try
             {
-                var query = _context.SanPhams.Include(s => s.DanhMuc).Where(s => s.TrangThai == true);
+                var query = _context.SanPhams.Include(s => s.DanhMuc).AsQueryable();
+                
+                // Chỉ lọc sản phẩm active nếu không yêu cầu includeInactive
+                if (!includeInactive)
+                    query = query.Where(s => s.TrangThai == true);
 
                 if (categoryId.HasValue)
                     query = query.Where(s => s.MaDM == categoryId.Value);
@@ -45,7 +49,8 @@ namespace MyCay.Web.Api
                         CategoryId = s.MaDM ?? 0,
                         CategoryName = s.DanhMuc != null ? s.DanhMuc.TenDanhMuc : null,
                         SpicyLevel = s.CapDoCay,
-                        IsFeatured = s.NoiBat
+                        IsFeatured = s.NoiBat,
+                        IsActive = s.TrangThai
                     }).ToListAsync();
 
                 return Ok(new { success = true, data = items, pagination = new { page, pageSize, total, totalPages = (int)Math.Ceiling((double)total / pageSize) } });
@@ -193,11 +198,24 @@ namespace MyCay.Web.Api
         public string? Description { get; set; }
         public int Price { get; set; }
         public int? SalePrice { get; set; }
-        public string? Image { get; set; }
+        private string? _image;
+        public string? Image 
+        { 
+            get => _image;
+            set => _image = FormatImageUrl(value);
+        }
         public int CategoryId { get; set; }
         public string? CategoryName { get; set; }
         public int SpicyLevel { get; set; }
         public bool IsFeatured { get; set; }
+        public bool IsActive { get; set; } = true;
+        
+        private static string? FormatImageUrl(string? img)
+        {
+            if (string.IsNullOrEmpty(img)) return "/images/products/MenuItem_MI0001.webp";
+            if (img.StartsWith("http") || img.StartsWith("/images/") || img.StartsWith("/")) return img;
+            return "/images/products/" + img;
+        }
     }
 
     public class CreateProductRequest

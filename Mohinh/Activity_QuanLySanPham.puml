@@ -1,0 +1,103 @@
+@startuml Activity_QuanLySanPham
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - QUẢN LÝ SẢN PHẨM (ADMIN)**\nHệ thống Mỳ Cay Sasin
+
+|Admin|
+start
+:Đăng nhập Admin Panel;
+:Chọn menu "Sản phẩm";
+
+|Hệ thống|
+:Hiển thị danh sách sản phẩm;
+:Hiển thị bộ lọc (danh mục, trạng thái);
+
+|Admin|
+switch (Chọn thao tác?)
+case (Thêm mới)
+  :Nhấn "Thêm sản phẩm";
+  
+  |Hệ thống|
+  :Hiển thị form thêm sản phẩm;
+  
+  |Admin|
+  :Nhập mã sản phẩm;
+  :Chọn danh mục;
+  :Nhập tên sản phẩm;
+  :Nhập mô tả;
+  :Nhập giá bán;
+  :Nhập giá khuyến mãi (nếu có);
+  :Chọn cấp độ cay (0-7);
+  :Upload hình ảnh;
+  :Chọn trạng thái (Đang bán/Ngừng bán);
+  :Đánh dấu nổi bật (nếu cần);
+  :Nhấn "Lưu";
+  
+  |Hệ thống|
+  :Validate dữ liệu;
+  
+  if (Dữ liệu hợp lệ?) then (Hợp lệ)
+    :Lưu sản phẩm vào database;
+    :Thông báo thành công;
+  else (Không hợp lệ)
+    :Hiển thị lỗi;
+    |Admin|
+    :Sửa thông tin;
+  endif
+
+case (Sửa)
+  :Chọn sản phẩm cần sửa;
+  :Nhấn nút "Sửa";
+  
+  |Hệ thống|
+  :Hiển thị form với dữ liệu hiện tại;
+  
+  |Admin|
+  :Chỉnh sửa thông tin;
+  :Nhấn "Cập nhật";
+  
+  |Hệ thống|
+  :Validate dữ liệu;
+  :Cập nhật database;
+  :Thông báo thành công;
+
+case (Xóa)
+  :Chọn sản phẩm cần xóa;
+  :Nhấn nút "Xóa";
+  
+  |Hệ thống|
+  :Hiển thị xác nhận xóa;
+  
+  |Admin|
+  if (Xác nhận xóa?) then (Có)
+    |Hệ thống|
+    :Soft delete (đánh dấu TrangThai = false);
+    :Thông báo đã xóa;
+  else (Không)
+    :Hủy thao tác;
+  endif
+
+case (Tìm kiếm)
+  :Nhập từ khóa tìm kiếm;
+  :Chọn bộ lọc (danh mục, trạng thái);
+  
+  |Hệ thống|
+  :Lọc và hiển thị kết quả;
+
+endswitch
+
+|Hệ thống|
+:Cập nhật danh sách sản phẩm;
+
+|Admin|
+:Xem kết quả;
+
+stop
+
+@enduml

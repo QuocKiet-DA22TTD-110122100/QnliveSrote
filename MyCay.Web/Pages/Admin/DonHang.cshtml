@@ -96,12 +96,12 @@
 
 <!-- Order Detail Modal -->
 <div class="modal-overlay" id="orderModal">
-    <div class="modal" style="max-width: 700px;">
+    <div class="modal" style="max-width: 700px; overflow: visible;">
         <div class="modal-header">
             <h3>Chi tiết đơn hàng <span id="modalOrderId"></span></h3>
             <button class="modal-close" onclick="closeModal()">&times;</button>
         </div>
-        <div class="modal-body">
+        <div class="modal-body" style="overflow-y: auto; max-height: 65vh;">
             <div class="order-detail-grid">
                 <div class="order-info-section">
                     <h4>Thông tin khách hàng</h4>
@@ -134,20 +134,26 @@
                     <tr style="font-weight: bold;"><td colspan="3">Tổng cộng</td><td id="modalTotal"></td></tr>
                 </tfoot>
             </table>
-            <div class="form-group" style="margin-top: 20px;">
-                <label>Cập nhật trạng thái</label>
-                <select id="modalStatus" class="form-control">
-                    <option value="Chờ xác nhận">Chờ xác nhận</option>
-                    <option value="Đang chuẩn bị">Đang chuẩn bị</option>
-                    <option value="Đang giao">Đang giao</option>
-                    <option value="Hoàn thành">Hoàn thành</option>
-                    <option value="Đã hủy">Đã hủy</option>
+            
+            <!-- Status Update Section - Tách riêng để dễ click -->
+            <div class="status-update-section" style="margin-top: 25px; padding: 20px; background: #f9fafb; border-radius: 12px; border: 2px solid #e5e7eb;">
+                <label style="display: block; margin-bottom: 12px; font-weight: 700; color: #1f2937; font-size: 1rem;">
+                    <i class="fas fa-edit" style="color: #f97316; margin-right: 8px;"></i>Cập nhật trạng thái đơn hàng
+                </label>
+                <select id="modalStatus" name="modalStatus" style="width: 100%; padding: 14px 18px; border: 2px solid #d1d5db; border-radius: 10px; font-size: 1rem; font-weight: 500; background-color: #ffffff; color: #1f2937; cursor: pointer; -webkit-appearance: menulist; -moz-appearance: menulist; appearance: menulist;">
+                    <option value="Chờ xác nhận">🕐 Chờ xác nhận</option>
+                    <option value="Đang chuẩn bị">👨‍🍳 Đang chuẩn bị</option>
+                    <option value="Đang giao">🚚 Đang giao</option>
+                    <option value="Hoàn thành">✅ Hoàn thành</option>
+                    <option value="Đã hủy">❌ Đã hủy</option>
                 </select>
             </div>
         </div>
         <div class="modal-footer">
             <button class="btn btn-secondary" onclick="closeModal()">Đóng</button>
-            <button class="btn btn-primary" onclick="updateOrderStatus()">Cập nhật</button>
+            <button class="btn btn-primary" onclick="updateOrderStatus()">
+                <i class="fas fa-save"></i> Cập nhật trạng thái
+            </button>
         </div>
     </div>
 </div>
@@ -159,6 +165,24 @@
 .order-info-section p { margin: 5px 0; font-size: 0.9rem; }
 .data-table tfoot td { padding: 10px 20px; text-align: right; }
 .data-table tfoot tr:last-child { background: var(--admin-light); }
+
+/* Status Update Section */
+.status-update-section select {
+    transition: all 0.3s ease;
+}
+.status-update-section select:hover {
+    border-color: #f97316 !important;
+    background-color: #fff7ed !important;
+}
+.status-update-section select:focus {
+    outline: none;
+    border-color: #f97316 !important;
+    box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.15);
+}
+
+@@media (max-width: 768px) {
+    .order-detail-grid { grid-template-columns: 1fr; }
+}
 </style>
 
 @section Scripts {

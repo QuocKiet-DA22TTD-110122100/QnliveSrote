@@ -1,0 +1,74 @@
+@startuml Activity_DanhGiaSanPham
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - ĐÁNH GIÁ SẢN PHẨM**\nHệ thống Mỳ Cay Sasin
+
+|Khách hàng|
+start
+:Đăng nhập tài khoản;
+:Xem lịch sử đơn hàng;
+:Chọn đơn hàng đã hoàn thành;
+
+|Hệ thống|
+:Hiển thị chi tiết đơn hàng;
+:Kiểm tra trạng thái đơn hàng;
+
+if (Đơn hàng đã hoàn thành?) then (Có)
+  :Hiển thị nút "Đánh giá";
+  
+  |Khách hàng|
+  :Nhấn "Đánh giá sản phẩm";
+  
+  |Hệ thống|
+  :Hiển thị form đánh giá;
+  
+  |Khách hàng|
+  :Chọn số sao (1-5);
+  :Nhập nội dung đánh giá;
+  :Upload hình ảnh (tùy chọn);
+  :Nhấn "Gửi đánh giá";
+  
+  |Hệ thống|
+  :Validate nội dung;
+  
+  if (Nội dung hợp lệ?) then (Hợp lệ)
+    :Lưu đánh giá vào database;
+    :Cập nhật điểm trung bình sản phẩm;
+    :Thông báo đánh giá thành công;
+    
+    |Admin|
+    :Nhận thông báo đánh giá mới;
+    :Kiểm tra nội dung;
+    
+    if (Nội dung phù hợp?) then (Phù hợp)
+      :Duyệt đánh giá;
+      
+      |Hệ thống|
+      :Hiển thị đánh giá công khai;
+      
+    else (Không phù hợp)
+      :Ẩn/Xóa đánh giá;
+      :Gửi thông báo cho khách hàng;
+    endif
+    
+  else (Không hợp lệ)
+    :Hiển thị lỗi;
+    
+    |Khách hàng|
+    :Sửa nội dung;
+  endif
+  
+else (Không)
+  :Thông báo chưa thể đánh giá;
+  :Yêu cầu hoàn thành đơn hàng trước;
+endif
+
+stop
+
+@enduml

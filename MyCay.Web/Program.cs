@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using MyCay.Infrastructure.Data;
 using MyCay.Web.Services;
+using MyCay.Web.Middleware;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -23,6 +24,9 @@ builder.Services.AddDbContext<MyCayDbContext>(options =>
 
 // Add JWT Service
 builder.Services.AddSingleton<IJwtService, JwtService>();
+
+// Add Email Service
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 // Add JWT Authentication
 var jwtKey = builder.Configuration["Jwt:SecretKey"] ?? "MyCaySasin_DefaultKey_2024_32Chars!";
@@ -62,6 +66,18 @@ builder.Services.AddCors(options =>
     });
 });
 
+// Add Swagger
+builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new Microsoft.OpenApi.Models.OpenApiInfo
+    {
+        Title = "MyCay API",
+        Version = "v1",
+        Description = "API cho hệ thống quản lý bán hàng Mỳ Cay Sasin"
+    });
+});
+
 // Add Session support
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
@@ -76,19 +92,27 @@ var app = builder.Build();
 // Serve static files (for CSS/JS)
 app.UseStaticFiles();
 
+// Enable Swagger in Development
+if (app.Environment.IsDevelopment())
+{
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "MyCay API v1");
+        c.RoutePrefix = "swagger";
+    });
+}
+
+// Global exception handling
+app.UseExceptionHandling();
+
+// Request logging with timing
+app.UseRequestLogging();
+
 app.UseCors("AllowAll");
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseSession();
-
-// Add request logging middleware
-app.Use(async (context, next) =>
-{
-    var logger = context.RequestServices.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("📥 {Method} {Path}", context.Request.Method, context.Request.Path);
-    await next();
-    logger.LogInformation("📤 {Method} {Path} → {StatusCode}", context.Request.Method, context.Request.Path, context.Response.StatusCode);
-});
 
 app.MapRazorPages();
 app.MapControllers();

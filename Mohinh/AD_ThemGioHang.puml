@@ -1,0 +1,25 @@
+@startuml AD_ThemGioHang
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - THÊM VÀO GIỎ HÀNG**
+
+start
+:Xem thực đơn;
+:Chọn sản phẩm;
+:Chọn số lượng;
+:Nhấn "Thêm vào giỏ";
+
+if (Đã có trong giỏ?) then (Có)
+  :Cập nhật số lượng;
+else (Không)
+  :Thêm sản phẩm mới;
+endif
+
+:Cập nhật tổng tiền;
+:Hiển thị thông báo;
+stop
+
+@enduml

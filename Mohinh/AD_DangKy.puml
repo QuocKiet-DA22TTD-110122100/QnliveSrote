@@ -1,0 +1,31 @@
+@startuml AD_DangKy
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - ĐĂNG KÝ TÀI KHOẢN**
+
+start
+:Nhập Họ tên;
+:Nhập Email;
+:Nhập Số điện thoại;
+:Nhập Mật khẩu;
+:Nhấn "Đăng ký";
+
+if (Dữ liệu hợp lệ?) then (Có)
+  if (Email đã tồn tại?) then (Có)
+    :Thông báo đã tồn tại;
+    stop
+  else (Không)
+    :Tạo tài khoản;
+    :Gửi email xác nhận;
+    :Đăng ký thành công;
+    stop
+  endif
+else (Không)
+  :Hiển thị lỗi;
+  stop
+endif
+
+@enduml

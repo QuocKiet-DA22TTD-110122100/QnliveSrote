@@ -1,0 +1,103 @@
+@startuml Activity_DangKyDangNhap
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - ĐĂNG KÝ & ĐĂNG NHẬP**\nHệ thống Mỳ Cay Sasin
+
+|Người dùng|
+start
+:Truy cập trang web;
+
+if (Có tài khoản?) then (Có)
+  :Nhấn "Đăng nhập";
+  :Nhập Email/SĐT;
+  :Nhập Mật khẩu;
+  
+  |Hệ thống|
+  :Kiểm tra thông tin đăng nhập;
+  
+  if (Thông tin hợp lệ?) then (Hợp lệ)
+    :Tạo JWT Token;
+    :Lưu session;
+    
+    |Người dùng|
+    :Đăng nhập thành công;
+    :Chuyển đến trang chủ;
+    
+  else (Không hợp lệ)
+    :Hiển thị lỗi;
+    
+    |Người dùng|
+    if (Quên mật khẩu?) then (Có)
+      :Nhấn "Quên mật khẩu";
+      :Nhập Email;
+      
+      |Hệ thống|
+      :Gửi link đặt lại mật khẩu;
+      
+      |Người dùng|
+      :Kiểm tra email;
+      :Nhấn link đặt lại;
+      :Nhập mật khẩu mới;
+      
+      |Hệ thống|
+      :Cập nhật mật khẩu;
+      :Thông báo thành công;
+      
+    else (Không)
+      :Nhập lại thông tin;
+    endif
+  endif
+  
+else (Không)
+  :Nhấn "Đăng ký";
+  :Nhập Họ tên;
+  :Nhập Email;
+  :Nhập Số điện thoại;
+  :Nhập Mật khẩu;
+  :Xác nhận Mật khẩu;
+  
+  |Hệ thống|
+  :Validate dữ liệu;
+  
+  if (Dữ liệu hợp lệ?) then (Hợp lệ)
+    if (Email/SĐT đã tồn tại?) then (Đã tồn tại)
+      :Thông báo tài khoản đã tồn tại;
+      
+      |Người dùng|
+      :Chọn đăng nhập hoặc sửa thông tin;
+      
+    else (Chưa tồn tại)
+      :Tạo tài khoản mới;
+      :Mã hóa mật khẩu (BCrypt);
+      :Lưu vào database;
+      :Gửi email xác nhận;
+      
+      |Người dùng|
+      :Kiểm tra email;
+      :Xác nhận tài khoản;
+      
+      |Hệ thống|
+      :Kích hoạt tài khoản;
+      :Tự động đăng nhập;
+      
+      |Người dùng|
+      :Đăng ký thành công;
+    endif
+    
+  else (Không hợp lệ)
+    :Hiển thị lỗi validation;
+    
+    |Người dùng|
+    :Sửa thông tin;
+  endif
+endif
+
+stop
+
+@enduml

@@ -150,28 +150,68 @@ let products = [];
 let currentPage = 1;
 const itemsPerPage = 10;
 
-// Load products from JSON
+// Load products from API
 async function loadProducts() {
     try {
-        const response = await fetch('/data/products.json');
-        const data = await response.json();
-        products = data.map((p, i) => ({
-            id: i + 1,
-            code: p.code || `SP${String(i+1).padStart(4, '0')}`,
-            name: p.name,
-            desc: p.description,
-            price: p.price,
-            salePrice: null,
-            image: p.image,
-            categoryId: getCategoryId(p.name),
-            spicy: getSpicyLevel(p.name),
-            status: 1,
-            featured: i < 5
+        // Admin cần xem tất cả sản phẩm, kể cả ngừng bán
+        // Thêm timestamp để tránh cache
+        const response = await fetch('/api/products?includeInactive=true&pageSize=1000&_t=' + Date.now());
+        const result = await response.json();
+        console.log('API response:', result);
+        
+        // Xử lý nhiều format response có thể có
+        let items = [];
+        if (Array.isArray(result)) {
+            items = result;
+        } else if (result && Array.isArray(result.data)) {
+            items = result.data;
+        }
+        
+        products = items.map((p, i) => ({
+            id: p.id || p.maSP,
+            code: p.code || p.maSPCode || `SP${String(i+1).padStart(4, '0')}`,
+            name: p.name || p.tenSP,
+            desc: p.description || p.moTa,
+            price: p.price || p.donGia,
+            salePrice: p.salePrice || p.giaKhuyenMai,
+            image: p.image || p.hinhAnh,
+            categoryId: p.categoryId || p.maDM,
+            spicy: p.spicyLevel || p.capDoCay || 0,
+            status: p.isActive !== undefined ? (p.isActive ? 1 : 0) : 1,
+            featured: p.isFeatured || p.noiBat
         }));
         renderProducts();
-        renderCategoryFilters();
+        loadCategories();
     } catch (e) {
         console.error('Error loading products:', e);
+        showToast('Lỗi tải dữ liệu sản phẩm!', 'error');
+    }
+}
+
+// Load categories from API
+async function loadCategories() {
+    try {
+        const response = await fetch('/api/products/categories');
+        const result = await response.json();
+        // API trả về { success, data } - lấy array từ result.data
+        const data = result.data || result || [];
+        categoriesData = Array.isArray(data) ? data : [];
+        
+        const select = document.getElementById('categoryFilter');
+        const formSelect = document.getElementById('productCategory');
+        
+        // Clear existing options except first
+        select.innerHTML = '<option value="">Tất cả danh mục</option>';
+        formSelect.innerHTML = '<option value="">Chọn danh mục</option>';
+        
+        categoriesData.forEach(c => {
+            select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+            formSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
+        });
+    } catch (e) {
+        console.error('Error loading categories:', e);
+        // Fallback to static categories
+        renderCategoryFilters();
     }
 }
 
@@ -193,6 +233,8 @@ function getSpicyLevel(name) {
     return 0;
 }
 
+let categoriesData = [];
+
 function renderCategoryFilters() {
     const select = document.getElementById('categoryFilter');
     const formSelect = document.getElementById('productCategory');
@@ -200,6 +242,16 @@ function renderCategoryFilters() {
         select.innerHTML += `<option value="${c.id}">${c.name}</option>`;
         formSelect.innerHTML += `<option value="${c.id}">${c.name}</option>`;
     });
+}
+
+function getCategoryName(categoryId) {
+    // Try from API data first
+    const cat = categoriesData.find(c => c.id === categoryId);
+    if (cat) return cat.name;
+    
+    // Fallback to static
+    const staticCat = categories.find(c => c.id === categoryId);
+    return staticCat?.name || '-';
 }
 
 function renderProducts() {
@@ -218,27 +270,40 @@ function renderProducts() {
     const paged = filtered.slice(start, start + itemsPerPage);
     
     const tbody = document.getElementById('productsTableBody');
-    tbody.innerHTML = paged.map(p => `
+    tbody.innerHTML = paged.map(p => {
+        // Xử lý đường dẫn hình ảnh
+        let imgSrc = '/images/products/MenuItem_M00012.webp'; // Default
+        if (p.image) {
+            if (p.image.startsWith('http')) {
+                imgSrc = p.image;
+            } else if (p.image.startsWith('/')) {
+                imgSrc = p.image;
+            } else {
+                imgSrc = '/images/products/' + p.image;
+            }
+        }
+        
+        return `
         <tr>
             <td>
                 <div class="product-cell">
-                    <img src="/images/products/${p.image || 'default.webp'}" class="product-img" onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                    <img src="${imgSrc}" class="product-img" onerror="this.src='/images/products/MenuItem_M00012.webp'" />
                     <div>
                         <div class="product-name">${p.name}</div>
                         <div class="product-code">${p.code || ''}</div>
                     </div>
                 </div>
             </td>
-            <td>${categories.find(c => c.id === p.categoryId)?.name || '-'}</td>
+            <td>${getCategoryName(p.categoryId)}</td>
             <td class="price">${p.price.toLocaleString()}đ</td>
-            <td>${'🌶️'.repeat(p.spicy) || '-'}</td>
+            <td>${p.spicy > 0 ? '🌶️'.repeat(Math.min(p.spicy, 7)) : '-'}</td>
             <td><span class="status-badge ${p.status ? 'active' : 'inactive'}">${p.status ? 'Đang bán' : 'Ngừng bán'}</span></td>
             <td class="actions">
                 <button class="action-btn edit" onclick="editProduct(${p.id})" title="Sửa"><i class="fas fa-edit"></i></button>
                 <button class="action-btn delete" onclick="deleteProduct(${p.id})" title="Xóa"><i class="fas fa-trash"></i></button>
             </td>
         </tr>
-    `).join('');
+    `}).join('');
     
     document.getElementById('showingCount').textContent = paged.length;
     document.getElementById('totalCount').textContent = filtered.length;

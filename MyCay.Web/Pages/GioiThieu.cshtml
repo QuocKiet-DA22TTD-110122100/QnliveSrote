@@ -1,11 +1,12 @@
-﻿@page
+@page
 @model GioiThieuModel
 @{
     ViewData["Title"] = "Gioi thieu";
 }
 
 <section class="about-hero">
-    <div class="container">
+    <div class="about-hero-overlay"></div>
+    <div class="about-hero-content">
         <h1>Ve My Cay Sasin</h1>
         <p>Huong vi Han Quoc chinh hieu</p>
     </div>
@@ -13,7 +14,48 @@
 
 <section class="about-story">
     <div class="container">
-        <h2>Cau chuyen cua chung toi</h2>
-        <p>My Cay Sasin duoc thanh lap vao nam 2023.</p>
+        <div class="story-grid">
+            <div class="story-content">
+                <span class="section-badge">Cau chuyen cua chung toi</span>
+                <h2>Khoi nguon tu dam me am thuc Han Quoc</h2>
+                <p>My Cay Sasin duoc thanh lap vao nam 2023 voi mong muon mang den cho thuc khach Viet Nam nhung mon mi cay Han Quoc chinh hieu.</p>
+                <div class="story-stats">
+                    <div class="stat-item">
+                        <span class="stat-number">3+</span>
+                        <span class="stat-label">Chi nhanh</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">100+</span>
+                        <span class="stat-label">Mon an</span>
+                    </div>
+                    <div class="stat-item">
+                        <span class="stat-number">50K+</span>
+                        <span class="stat-label">Khach hang</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="about-contact">
+    <div class="container">
+        <div class="section-header">
+            <h2 class="section-title">Lien he voi chung toi</h2>
+        </div>
+        <div class="contact-grid">
+            <div class="contact-item">
+                <h3>Dia chi</h3>
+                <p>123 Duong ABC, Quan 1, TP.HCM</p>
+            </div>
+            <div class="contact-item">
+                <h3>Hotline</h3>
+                <p>1900 1234</p>
+            </div>
+            <div class="contact-item">
+                <h3>Email</h3>
+                <p>info@mycaysasin.vn</p>
+            </div>
+        </div>
     </div>
 </section>

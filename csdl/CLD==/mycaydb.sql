@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Máy chủ: 127.0.0.1
--- Thời gian đã tạo: Th12 23, 2025 lúc 03:59 AM
+-- Thời gian đã tạo: Th12 23, 2025 lúc 09:43 AM
 -- Phiên bản máy phục vụ: 10.4.32-MariaDB
 -- Phiên bản PHP: 8.0.30
 
@@ -104,7 +104,13 @@ INSERT INTO `chitietdonhang` (`MaCTDH`, `MaDH`, `MaSP`, `TenSP`, `SoLuong`, `Don
 (7, 4, 6, 'Mì Bò Trứng (Kim chi/ Soyum/ Sincay)', 2, 65000.00, 3, 'Soyum', NULL),
 (8, 5, 1, 'Mon 1', 1, 50000.00, 0, NULL, NULL),
 (9, 6, 2, 'Mon 2', 1, 60000.00, 0, NULL, NULL),
-(10, 7, 5, 'Mì Bò Mỹ (Kim chi/ Soyum/ Sincay)', 2, 59000.00, 6, 'Soyum', NULL);
+(10, 7, 5, 'Mì Bò Mỹ (Kim chi/ Soyum/ Sincay)', 2, 59000.00, 6, 'Soyum', NULL),
+(11, 30, 21, 'Cơm Trộn Thịt Bò Mỹ', 1, 62000.00, 0, NULL, NULL),
+(12, 29, 21, 'Cơm Trộn Thịt Bò Mỹ', 1, 62000.00, 0, NULL, NULL),
+(13, 29, 19, 'Mì Tương Hàn Mandu', 1, 52000.00, 0, NULL, NULL),
+(14, 30, 19, 'Mì Tương Hàn Mandu', 1, 52000.00, 0, NULL, NULL),
+(15, 29, 16, 'Mì Xào Sasin', 3, 65000.00, 0, NULL, NULL),
+(16, 30, 16, 'Mì Xào Sasin', 3, 65000.00, 0, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -258,7 +264,9 @@ INSERT INTO `donhang` (`MaDH`, `MaDHCode`, `MaKH`, `TenKhach`, `SDTKhach`, `DiaC
 (4, 'DH202512222125118018', 4, 'Nguyễn Thị Mai', '0986784565', 'Khóm 3 phường 5', '2025-12-22 21:25:11', NULL, 276000.00, 0.00, 0.00, 276000.00, 'Tiền mặt (COD)', 'Chưa thanh toán', 'Chờ xác nhận', 'đối', NULL, NULL, NULL, NULL, NULL, NULL),
 (5, 'DH202512222126128339', 1, 'Test 1', '0901111111', 'Address 1', '2025-12-22 21:26:12', NULL, 50000.00, 15000.00, 0.00, 65000.00, 'Tien mat', 'Chưa thanh toán', 'Chờ xác nhận', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
 (6, 'DH202512222126122826', 2, 'Test 2', '0902222222', 'Address 2', '2025-12-22 21:26:12', NULL, 60000.00, 15000.00, 0.00, 75000.00, 'Tien mat', 'Chưa thanh toán', 'Chờ xác nhận', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
-(7, 'DH202512222150535176', 4, 'Nguyễn Thị Mai', '0551889988', 'khom 3', '2025-12-22 21:50:53', NULL, 118000.00, 0.00, 0.00, 118000.00, 'Tiền mặt (COD)', 'Chưa thanh toán', 'Chờ xác nhận', '', NULL, NULL, NULL, NULL, NULL, NULL);
+(7, 'DH202512222150535176', 4, 'Nguyễn Thị Mai', '0551889988', 'khom 3', '2025-12-22 21:50:53', NULL, 118000.00, 0.00, 0.00, 118000.00, 'Tiền mặt (COD)', 'Chưa thanh toán', 'Chờ xác nhận', '', NULL, NULL, NULL, NULL, NULL, NULL),
+(29, 'DH202512231008278492', NULL, 'Mai Này', '0967835145', 'khom 3 truong cho', '2025-12-23 10:08:29', NULL, 309000.00, 0.00, 0.00, 309000.00, 'Tiền mặt (COD)', 'Chưa thanh toán', 'Chờ xác nhận', '', NULL, NULL, NULL, NULL, NULL, NULL),
+(30, 'DH202512231008289379', NULL, 'Mai Này', '0967835145', 'khom 3 truong cho', '2025-12-23 10:08:29', NULL, 309000.00, 0.00, 0.00, 309000.00, 'Tiền mặt (COD)', 'Chưa thanh toán', 'Chờ xác nhận', '', NULL, NULL, NULL, NULL, NULL, NULL);
 
 -- --------------------------------------------------------
 
@@ -520,7 +528,7 @@ INSERT INTO `sanpham` (`MaSP`, `MaSPCode`, `TenSP`, `MoTa`, `DonGia`, `GiaKhuyen
 (11, 'M00015', 'Mì Trộn Tương Đen Heo Cuộn', 'Mì cay Sasin, heo cuộn, cá viên, cà rốt, ớt chuông, hành tây, hành baro', 69000.00, NULL, 'MenuItem_M00015.webp', 2, 0, 0, 1, '2025-12-20 11:01:25', NULL),
 (12, 'M00016', 'Mì Trộn Tương Đen Bò Mỹ', 'Mì cay Sasin, thịt bò, cá viên, chả cá Hàn Quốc, hành tây, ớt chuông, cà rốt, hành baro, mè', 65000.00, NULL, 'MenuItem_M00016.webp', 2, 0, 0, 1, '2025-12-20 11:01:25', NULL),
 (13, 'M00014', 'Mì Trộn Tương Đen Gà', 'Mì cay Sasin, gà, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè', 59000.00, NULL, 'MenuItem_M00014.webp', 2, 0, 0, 1, '2025-12-20 11:01:25', NULL),
-(14, 'M00013', 'Mì Trộn Tương Đen Mandu', 'Mì cay Sasin, mandu, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè', 55000.00, NULL, 'MenuItem_M00013.webp', 2, 0, 0, 1, '2025-12-20 11:01:25', NULL),
+(14, 'M00013', 'Mì Trộn Tương Đen Mandu', 'Mì cay Sasin, mandu, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè', 55000.00, NULL, 'MenuItem_M00014.webp', 2, 0, 0, 1, '2025-12-20 11:01:25', NULL),
 (15, 'M00130', 'Mì Xào Hải Sản', 'Mì cay Sasin, tôm, mực, chả cá HQ, cá viên, ớt chuông, hành tây, cải bó xôi, nấm, mè', 69000.00, NULL, 'MenuItem_M00130.webp', 3, 0, 0, 1, '2025-12-20 11:01:25', NULL),
 (16, 'M00131', 'Mì Xào Sasin', 'Mì cay Sasin, thịt heo, xúc xích, cá viên, súp lơ, ớt chuông, hành tây, cải bó xôi, nấm', 65000.00, NULL, 'MenuItem_M00131.webp', 3, 0, 0, 1, '2025-12-20 11:01:25', NULL),
 (17, 'M00132', 'Mì Trộn Xốt Phô Mai', 'Mì cay Sasin, gà, phô mai, xốt kem, cà rốt, hành baro', 62000.00, NULL, 'MenuItem_M00132.webp', 3, 0, 0, 1, '2025-12-20 11:01:26', NULL),
@@ -541,7 +549,7 @@ INSERT INTO `sanpham` (`MaSP`, `MaSPCode`, `TenSP`, `MoTa`, `DonGia`, `GiaKhuyen
 (32, 'M00033', 'Cá Viên Thêm', '어육 완자', 15000.00, NULL, 'MenuItem_M00033.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (33, 'M00036', 'Xúc xích', '소시지', 15000.00, NULL, 'MenuItem_M00036.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (34, 'M00138', 'Bắp Bò', '소사태', 19000.00, NULL, 'MenuItem_M00138.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
-(35, 'M00031', 'Bò Thêm', '소고기', 19000.00, NULL, 'MenuItem_M00031.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
+(35, 'M00031', 'Bò Thêm', '소고기', 19000.00, NULL, 'MenuItem_M00138.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (36, 'M00140', 'Combo Xiên Que', '계피 꼬치 콤보', 12000.00, NULL, 'MenuItem_M00140.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (37, 'M00112', 'Mì Nấu Thêm', '라면', 19000.00, NULL, 'MenuItem_M00112.webp', 5, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (38, 'M00141', 'Combo Vui Vẻ (1 người)', '1 Món tự chọn, món áp dụng: Mì cá/ Mì đùi gà/ Mì gogi/ Mì xúc xích cá viên/ Mì bò Mỹ 1 Ly Coca-cola/ Sprite size L', 69000.00, NULL, 'MenuItem_M00141.webp', 6, 0, 1, 1, '2025-12-20 11:01:26', NULL),
@@ -569,7 +577,7 @@ INSERT INTO `sanpham` (`MaSP`, `MaSPCode`, `TenSP`, `MoTa`, `DonGia`, `GiaKhuyen
 (60, 'M00066', 'Chả Cá Hàn Quốc', '어묵', 25000.00, NULL, 'MenuItem_M00066.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (61, 'M00058', 'Xúc Xích Thêm', '소시지', 25000.00, NULL, 'MenuItem_M00058.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (62, 'M00053', 'Thanh Cua', '게맛살', 25000.00, NULL, 'MenuItem_M00053.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
-(63, 'M00137', 'Bắp Bò', '소사태', 25000.00, NULL, 'MenuItem_M00137.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
+(63, 'M00137', 'Bắp Bò', '소사태', 25000.00, NULL, 'MenuItem_M00138.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (64, 'M00054', 'Bò Thêm', '소고기', 25000.00, NULL, 'MenuItem_M00054.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (65, 'M00059', 'Mandu', '만두', 25000.00, NULL, 'MenuItem_M00059.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (66, 'M00051', 'Tokbokki Phô Mai', '치즈 떡볶이', 25000.00, NULL, 'MenuItem_M00051.webp', 8, 0, 0, 1, '2025-12-20 11:01:26', NULL),
@@ -581,21 +589,21 @@ INSERT INTO `sanpham` (`MaSP`, `MaSPCode`, `TenSP`, `MoTa`, `DonGia`, `GiaKhuyen
 (72, 'M00135', 'Combo khai vị phô mai', 'Phô mai que, phô mai viên, viên thanh cua phô mai', 49000.00, NULL, 'MenuItem_M00135.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (73, 'M00134', 'Kimbap Sasin', '12 cuộn', 59000.00, NULL, 'MenuItem_M00134.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (74, 'M00133', 'Kimbap Sasin', '6 cuộn', 35000.00, NULL, 'MenuItem_M00133.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
-(75, 'M00069', 'Kimbap Chiên', '바삭한 김밥튀김', 45000.00, NULL, 'MenuItem_M00069.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
+(75, 'M00069', 'Kimbap Chiên', '바삭한 김밥튀김', 45000.00, NULL, 'MenuItem_M00133.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (76, 'M00071', 'Mandu Chiên Xốt Cay', '칠리 소스를 곁들인 튀김 만두', 35000.00, NULL, 'MenuItem_M00071.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (77, 'M00074', 'Bánh Bạch Tuộc', '타코야키', 39000.00, NULL, 'MenuItem_M00074.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (78, 'M00127', 'Chân Gà Xốt Hàn', 'Chân Gà Xốt Hàn', 49000.00, NULL, 'MenuItem_M00127.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (79, 'M00079', 'Sụn Gà Bắp Chiên Giòn', '버삭한 옥수수 닭 오돌뼈', 45000.00, NULL, 'MenuItem_M00079.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (80, 'M00078', 'Đùi Gà Giòn', '닭 다리 후라이드', 39000.00, NULL, 'MenuItem_M00078.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (81, 'M00080', 'Viên Thanh Cua Phô Mai', '크랩스틱 치즈볼', 45000.00, NULL, 'MenuItem_M00080.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
-(82, 'M00075', 'Xiên Bánh Cá Hầm', '어묵', 42000.00, NULL, 'MenuItem_M00075.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
+(82, 'M00075', 'Xiên Bánh Cá Hầm', '어묵', 42000.00, NULL, 'MenuItem_M00066.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (83, 'M00077', 'Salad Xốt Mè Rang', '+ Gà Fillet 12.000 VNĐ', 35000.00, NULL, 'MenuItem_M00077.webp', 9, 2, 0, 1, '2025-12-20 11:01:26', NULL),
 (84, 'M00085', 'Nước Gạo Hàn Quốc', '달콤한 쌀 음료', 35000.00, NULL, 'MenuItem_M00085.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (85, 'M00097', 'Nước Gạo Hoa Anh Đào', '사쿠라 찹쌀 음료', 35000.00, NULL, 'MenuItem_M00097.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (86, 'M00082', 'Soda Dâu Dưa Lưới', '딸기 메론 소다', 35000.00, NULL, 'MenuItem_M00082.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (87, 'M00083', 'Soda Dừa Dứa Đác Thơm', '파인애플 코코넛 소다와 사탕야자 씨앗', 35000.00, NULL, 'MenuItem_M00083.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (88, 'M00084', 'Soda Thơm Lừng', '멜론 파인애플 소다', 35000.00, NULL, 'MenuItem_M00084.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
-(89, 'M00115', 'Sting', 'Sting lon', 29000.00, NULL, 'MenuItem_M00115.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
+(89, 'M00115', 'Sting', 'Sting lon', 29000.00, NULL, 'MenuItem_M00106.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (90, 'M00087', 'Trà Dâu Đào', '딸기 히비스커스 홍차', 29000.00, NULL, 'MenuItem_M00087.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (91, 'M00086', 'Trà Đào Sasin', '복숭아 홍차', 29000.00, NULL, 'MenuItem_M00086.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
 (92, 'M00089', 'Trà Sữa Trân Châu Sasin', '밀크 티', 29000.00, NULL, 'MenuItem_M00089.webp', 10, 0, 0, 1, '2025-12-20 11:01:26', NULL),
@@ -637,7 +645,7 @@ INSERT INTO `taikhoan` (`MaTK`, `TenDangNhap`, `MatKhau`, `Email`, `TrangThai`, 
 (5, 'admin2', 'e10adc3949ba59abbe56e057f20f883e', 'admin2@mycaysasin.vn', 1, 1, '2025-12-20 10:12:34', NULL),
 (6, 'quanly2', 'e10adc3949ba59abbe56e057f20f883e', 'quanly2@mycaysasin.vn', 1, 2, '2025-12-20 10:12:34', NULL),
 (7, 'quanly3', 'e10adc3949ba59abbe56e057f20f883e', 'quanly3@mycaysasin.vn', 1, 2, '2025-12-20 10:12:35', NULL),
-(8, 'nhanvien2', 'e10adc3949ba59abbe56e057f20f883e', 'nhanvien2@mycaysasin.vn', 1, 3, '2025-12-20 10:12:35', NULL),
+(8, 'nhanvien2', 'e10adc3949ba59abbe56e057f20f883e', 'nhanvien2@mycaysasin.vn', 1, 3, '2025-12-20 10:12:35', '2025-12-23 13:25:04'),
 (9, 'nhanvien3', 'e10adc3949ba59abbe56e057f20f883e', 'nhanvien3@mycaysasin.vn', 1, 3, '2025-12-20 10:12:35', NULL),
 (10, 'nhanvien4', 'e10adc3949ba59abbe56e057f20f883e', 'nhanvien4@mycaysasin.vn', 1, 3, '2025-12-20 10:12:35', NULL),
 (11, 'khachhang2', 'e10adc3949ba59abbe56e057f20f883e', 'khach2@gmail.com', 1, 4, '2025-12-20 10:12:35', '2025-12-23 09:07:56'),
@@ -881,7 +889,7 @@ ALTER TABLE `chinhanh`
 -- AUTO_INCREMENT cho bảng `chitietdonhang`
 --
 ALTER TABLE `chitietdonhang`
-  MODIFY `MaCTDH` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
+  MODIFY `MaCTDH` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 
 --
 -- AUTO_INCREMENT cho bảng `congthuc`
@@ -911,7 +919,7 @@ ALTER TABLE `danhmuc`
 -- AUTO_INCREMENT cho bảng `donhang`
 --
 ALTER TABLE `donhang`
-  MODIFY `MaDH` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `MaDH` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=31;
 
 --
 -- AUTO_INCREMENT cho bảng `giohang`

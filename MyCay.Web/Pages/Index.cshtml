@@ -4,71 +4,98 @@
     ViewData["Title"] = "Trang chủ";
 }
 
-<!-- Hero Section -->
-<section class="hero">
-    <div class="hero-overlay"></div>
-    <div class="hero-content">
-        <span class="hero-badge">
-            <span class="badge-icon">🌶️</span>
-            Món cay #1 Việt Nam
-        </span>
-        <h1 class="hero-title">
-            Mỳ Cay
-            <span class="hero-title-accent">sasin</span>
-        </h1>
-        <p class="hero-subtitle">
-            Hương vị Hàn Quốc chính hiệu • Cay từ cấp 0-7 • Giao hàng 30 phút
-        </p>
-        <div class="hero-buttons">
-            <a href="/ThucDon" class="btn btn-primary">
-                <i class="fas fa-shopping-cart"></i>
-                Đặt món ngay
-            </a>
-            <a href="/ThucDon" class="btn btn-secondary">
-                Xem thực đơn
-            </a>
+<!-- Hero Section - Redesigned -->
+<section class="hero-new">
+    <div class="hero-bg-overlay"></div>
+    <div class="hero-container">
+        <div class="hero-main">
+            <div class="hero-content-new">
+                <span class="hero-badge-new">
+                    <span class="badge-fire">🔥</span>
+                    Món cay #1 Việt Nam
+                </span>
+                <h1 class="hero-title-new">
+                    Mỳ Cay Sasin
+                    <span class="hero-subtitle-line">Hương vị cay nồng, giao tận nơi chỉ 30 phút!</span>
+                </h1>
+                
+                <!-- Countdown Timer -->
+                <div class="hero-countdown">
+                    <span class="countdown-label">⏰ Ưu đãi kết thúc sau:</span>
+                    <div class="countdown-timer" id="countdownTimer">
+                        <div class="countdown-item"><span id="countHours">23</span><small>Giờ</small></div>
+                        <div class="countdown-item"><span id="countMins">59</span><small>Phút</small></div>
+                        <div class="countdown-item"><span id="countSecs">59</span><small>Giây</small></div>
+                    </div>
+                </div>
+                
+                <div class="hero-buttons-new">
+                    <a href="/ThucDon" class="btn-hero-primary">
+                        <i class="fas fa-shopping-cart"></i>
+                        Đặt món ngay
+                        <span class="btn-badge">-15%</span>
+                    </a>
+                    <a href="/ThucDon" class="btn-hero-secondary">
+                        <i class="fas fa-utensils"></i>
+                        Xem thực đơn
+                    </a>
+                </div>
+                
+                <div class="hero-trust">
+                    <div class="trust-item">
+                        <i class="fas fa-star"></i>
+                        <span>4.9/5 (2,500+ đánh giá)</span>
+                    </div>
+                    <div class="trust-item">
+                        <i class="fas fa-truck"></i>
+                        <span>Miễn phí ship >200k</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Promo Card - Sticky -->
+            <div class="hero-promo-card" id="promoCard">
+                <div class="promo-card-inner">
+                    <div class="promo-icon">🎁</div>
+                    <div class="promo-content">
+                        <span class="promo-label">ƯU ĐÃI ĐẾN</span>
+                        <span class="promo-percent">15%</span>
+                        <span class="promo-desc">Cho đơn đầu tiên</span>
+                        <span class="promo-code">Mã: <strong>NEWUSER15</strong></span>
+                        <span class="promo-expiry"><i class="fas fa-clock"></i> HSD: 31/12/2025</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Hero Images Grid -->
+        <div class="hero-images-grid">
+            <div class="hero-image-card">
+                <img src="/images/products/cuahnag.webp" alt="Cửa hàng mỳ cay" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
+                <div class="image-overlay">
+                    <h3>Mì Cay Hàn Quốc</h3>
+                    <p>Cay nồng đúng chuẩn 7 cấp độ</p>
+                    <a href="/ThucDon" class="btn-small">Xem menu</a>
+                </div>
+            </div>
+            <div class="hero-image-card">
+                <img src="/images/products/khonggiangwweb.webp" alt="Không gian quán" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
+                <div class="image-overlay">
+                    <h3>Phục vụ tận tình</h3>
+                    <p>Hãy thử ngay</p>
+                    <a href="/ThucDon" class="btn-small">Thử ngay</a>
+                </div>
+            </div>
         </div>
     </div>
-</section>
-
-<!-- Khám phá Mỳ Cay Sasin Section -->
-<section class="discover-section">
-    <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Khám phá Mỳ Cay Sasin</h2>
-            <p class="section-subtitle">Không gian hiện đại, phục vụ tận tâm, ưu đãi hấp dẫn</p>
-        </div>
-        <div class="discover-grid">
-            <div class="discover-card">
-                <div class="discover-image">
-                    <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=600&h=400&fit=crop" alt="Không gian hiện đại" onerror="this.src='/images/products/MenuItem_M00012.webp'">
-                    <div class="discover-overlay">
-                        <h3>Không gian hiện đại</h3>
-                        <p>Thiết kế trẻ trung, năng động</p>
-                    </div>
-                </div>
-            </div>
-            <div class="discover-card">
-                <div class="discover-image">
-                    <img src="https://images.unsplash.com/photo-1414235077428-338989a2e8c0?w=600&h=400&fit=crop" alt="Phục vụ tận tâm" onerror="this.src='/images/products/MenuItem_MI0008.webp'">
-                    <div class="discover-overlay">
-                        <h3>Phục vụ tận tâm</h3>
-                        <p>Đội ngũ nhân viên chuyên nghiệp</p>
-                    </div>
-                </div>
-            </div>
-            <div class="discover-card">
-                <a href="/UuDai" class="discover-link">
-                    <div class="discover-image promo-card">
-                        <div class="discover-overlay highlight">
-                            <span class="promo-text">ƯU ĐÃI ĐẾN</span>
-                            <span class="promo-percent">15%</span>
-                            <p>Nhiều chương trình khuyến mãi</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </div>
+    
+    <!-- Full-width CTA -->
+    <div class="hero-cta-bar">
+        <a href="/ThucDon" class="hero-cta-btn">
+            <i class="fas fa-shopping-cart"></i>
+            Đặt món ngay - Giảm 15% đơn đầu tiên
+            <i class="fas fa-arrow-right"></i>
+        </a>
     </div>
 </section>
 
@@ -100,110 +127,32 @@
     </div>
 </section>
 
-<!-- Popular Dishes Section -->
-<section class="popular-dishes">
+<!-- Popular Dishes Section - Redesigned -->
+<section class="popular-dishes-new">
     <div class="container">
-        <div class="section-header">
-            <h2 class="section-title">Món ăn nổi bật</h2>
-            <p class="section-subtitle">Những món được yêu thích nhất tại Mỳ Cay Sasin</p>
-        </div>
-        <div class="dishes-grid">
-            <!-- Featured Dish 1 - Mì Thập Cẩm No Nê -->
-            <div class="dish-card featured">
-                <div class="dish-image">
-                    <img src="~/images/products/MenuItem_M00012.webp" alt="Mì Thập Cẩm No Nê">
-                    <div class="dish-overlay">
-                        <span class="dish-tag">Best Seller</span>
-                    </div>
-                </div>
-                <div class="dish-content">
-                    <h3 class="dish-name">Mì Thập Cẩm No Nê</h3>
-                    <p class="dish-desc">Mì cay Sasin, thịt heo, tôm, cá viên, trứng ngâm tương, thanh cua, chả cá Hàn Quốc, kim chi</p>
-                    <div class="dish-footer">
-                        <span class="dish-price">77.000đ</span>
-                        <button class="btn-add-cart">Đặt ngay</button>
-                    </div>
-                </div>
+        <div class="section-header-new">
+            <div class="section-title-group">
+                <h2 class="section-title">Món ăn nổi bật</h2>
+                <p class="section-subtitle">Những món được yêu thích nhất tại Mỳ Cay Sasin</p>
             </div>
-
-            <!-- Featured Dish 2 - Tokbokki Phô Mai Sasin -->
-            <div class="dish-card featured">
-                <div class="dish-image">
-                    <img src="~/images/products/MenuItem_MI0006.webp" alt="Tokbokki Phô Mai Sasin">
-                    <div class="dish-overlay">
-                        <span class="dish-tag">Hot</span>
-                    </div>
-                </div>
-                <div class="dish-content">
-                    <h3 class="dish-name">Tokbokki Phô Mai Sasin</h3>
-                    <p class="dish-desc">Tokbokki, xúc xích, chả cá Hàn Quốc, bắp cải, nấm, hành baro, phô mai</p>
-                    <div class="dish-footer">
-                        <span class="dish-price">59.000đ</span>
-                        <button class="btn-add-cart">Đặt ngay</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dish 3 - Mì Hải Sản -->
-            <div class="dish-card">
-                <div class="dish-image">
-                    <img src="~/images/products/MenuItem_M00018.webp" alt="Mì Hải Sản">
-                </div>
-                <div class="dish-content">
-                    <h3 class="dish-name">Mì Hải Sản</h3>
-                    <p class="dish-desc">Mì cay Sasin, tôm, mực, chả cá Hàn Quốc, cá viên, kim chi, súp lơ</p>
-                    <div class="dish-footer">
-                        <span class="dish-price">62.000đ</span>
-                        <button class="btn-add-cart">Đặt ngay</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dish 4 - Mì Trộn Tương Đen Mandu -->
-            <div class="dish-card">
-                <div class="dish-image">
-                    <img src="~/images/products/MenuItem_M00013.webp" alt="Mì Trộn Tương Đen Mandu">
-                </div>
-                <div class="dish-content">
-                    <h3 class="dish-name">Mì Trộn Tương Đen Mandu</h3>
-                    <p class="dish-desc">Mì cay Sasin, mandu, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè</p>
-                    <div class="dish-footer">
-                        <span class="dish-price">55.000đ</span>
-                        <button class="btn-add-cart">Đặt ngay</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dish 5 - Mì Bò Mỹ -->
-            <div class="dish-card">
-                <div class="dish-image">
-                    <img src="~/images/products/MenuItem_M00021.webp" alt="Mì Bò Mỹ">
-                </div>
-                <div class="dish-content">
-                    <h3 class="dish-name">Mì Bò Mỹ</h3>
-                    <p class="dish-desc">Mì cay Sasin, thịt bò, xúc xích, cá viên, kim chi, súp lơ, nấm</p>
-                    <div class="dish-footer">
-                        <span class="dish-price">59.000đ</span>
-                        <button class="btn-add-cart">Đặt ngay</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Dish 6 - Kimbap Sasin -->
-            <div class="dish-card">
-                <div class="dish-image">
-                    <img src="~/images/products/MenuItem_M00133.webp" alt="Kimbap Sasin">
-                </div>
-                <div class="dish-content">
-                    <h3 class="dish-name">Kimbap Sasin</h3>
-                    <p class="dish-desc">Cơm cuộn rong biển Hàn Quốc - 6 cuộn</p>
-                    <div class="dish-footer">
-                        <span class="dish-price">35.000đ</span>
-                        <button class="btn-add-cart">Đặt ngay</button>
-                    </div>
-                </div>
+            <!-- Filter Tabs -->
+            <div class="filter-tabs">
+                <button class="filter-tab active" data-filter="all">Tất cả</button>
+                <button class="filter-tab" data-filter="hot">🔥 Hot</button>
+                <button class="filter-tab" data-filter="promo">🎁 Ưu đãi</button>
+                <button class="filter-tab" data-filter="new">✨ Mới</button>
             </div>
         </div>
+        
+        <!-- Products Carousel -->
+        <div class="dishes-carousel-wrapper">
+            <button class="carousel-btn prev" onclick="scrollDishes(-1)"><i class="fas fa-chevron-left"></i></button>
+            <div class="dishes-carousel" id="popularDishes">
+                <div class="loading-placeholder">Đang tải món ăn...</div>
+            </div>
+            <button class="carousel-btn next" onclick="scrollDishes(1)"><i class="fas fa-chevron-right"></i></button>
+        </div>
+        
         <div class="section-cta">
             <a href="/ThucDon" class="btn btn-outline">Xem tất cả thực đơn <i class="fas fa-arrow-right"></i></a>
         </div>
@@ -220,7 +169,7 @@
         <div class="categories-grid">
             <a href="/ThucDon" class="category-card" onclick="filterCategory('mi-cay')">
                 <div class="category-image">
-                    <img src="~/images/products/BannerMyCay.webp" alt="Mì Cay" onerror="this.src='https://placehold.co/400x300/fff5f0/f97316?text=🍜+Mì+Cay'">
+                    <img src="~/images/products/BannerMyCay.webp" alt="Mì Cay" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
                 </div>
                 <div class="category-content">
                     <h3>Mì Cay</h3>
@@ -229,7 +178,7 @@
             </a>
             <a href="/ThucDon" class="category-card">
                 <div class="category-image">
-                    <img src="~/images/products/BannerTuongDen.webp" alt="Mì Tương Đen" onerror="this.src='https://placehold.co/400x300/fff5f0/f97316?text=🥢+Mì+Tương+Đen'">
+                    <img src="~/images/products/BannerTuongDen.webp" alt="Mì Tương Đen" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
                 </div>
                 <div class="category-content">
                     <h3>Mì Tương Đen</h3>
@@ -238,7 +187,7 @@
             </a>
             <a href="/ThucDon" class="category-card">
                 <div class="category-image">
-                    <img src="~/images/products/BanerLau.webp" alt="Lẩu Hàn Quốc" onerror="this.src='https://placehold.co/400x300/fff5f0/f97316?text=🍲+Lẩu'">
+                    <img src="~/images/products/BanerLau.webp" alt="Lẩu Hàn Quốc" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
                 </div>
                 <div class="category-content">
                     <h3>Lẩu Hàn Quốc</h3>
@@ -247,7 +196,7 @@
             </a>
             <a href="/ThucDon" class="category-card">
                 <div class="category-image">
-                    <img src="~/images/products/BannnerMOnthem.webp" alt="Khai Vị" onerror="this.src='https://placehold.co/400x300/fff5f0/f97316?text=🍟+Khai+Vị'">
+                    <img src="~/images/products/BannnerMOnthem.webp" alt="Khai Vị" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
                 </div>
                 <div class="category-content">
                     <h3>Khai Vị</h3>
@@ -256,7 +205,7 @@
             </a>
             <a href="/ThucDon" class="category-card">
                 <div class="category-image">
-                    <img src="~/images/products/Bannernuoc.webp" alt="Giải Khát" onerror="this.src='https://placehold.co/400x300/fff5f0/f97316?text=🥤+Giải+Khát'">
+                    <img src="~/images/products/Bannernuoc.webp" alt="Giải Khát" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
                 </div>
                 <div class="category-content">
                     <h3>Giải Khát</h3>
@@ -265,7 +214,7 @@
             </a>
             <a href="/ThucDon" class="category-card">
                 <div class="category-image">
-                    <img src="~/images/products/banerCombo.webp" alt="Combo" onerror="this.src='https://placehold.co/400x300/fff5f0/f97316?text=🎁+Combo'">
+                    <img src="~/images/products/banerCombo.webp" alt="Combo" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
                 </div>
                 <div class="category-content">
                     <h3>Combo Tiết Kiệm</h3>
@@ -370,3 +319,840 @@
         </div>
     </div>
 </section>
+
+<!-- Product Detail Modal -->
+<div class="modal-overlay" id="productModal">
+    <div class="modal product-modal">
+        <button class="modal-close" onclick="closeProductModal()">&times;</button>
+        <div class="modal-body">
+            <div class="product-modal-image">
+                <img id="modalProductImage" src="" alt="">
+            </div>
+            <div class="product-modal-info">
+                <h2 id="modalProductName"></h2>
+                <p id="modalProductDesc" class="product-desc"></p>
+                <div class="product-price" id="modalProductPrice"></div>
+                
+                <div class="product-options">
+                    <div class="option-group">
+                        <label>Cấp độ cay</label>
+                        <div class="spicy-options" id="spicyOptions">
+                            <button type="button" class="spicy-btn active" data-level="0">0</button>
+                            <button type="button" class="spicy-btn" data-level="1">1</button>
+                            <button type="button" class="spicy-btn" data-level="2">2</button>
+                            <button type="button" class="spicy-btn" data-level="3">3</button>
+                            <button type="button" class="spicy-btn" data-level="4">4</button>
+                            <button type="button" class="spicy-btn" data-level="5">5</button>
+                            <button type="button" class="spicy-btn" data-level="6">6</button>
+                            <button type="button" class="spicy-btn" data-level="7">7</button>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <label>Số lượng</label>
+                        <div class="quantity-control">
+                            <button type="button" class="qty-btn" onclick="changeQty(-1)">-</button>
+                            <input type="number" id="modalQuantity" value="1" min="1" max="10" readonly>
+                            <button type="button" class="qty-btn" onclick="changeQty(1)">+</button>
+                        </div>
+                    </div>
+                    <div class="option-group">
+                        <label>Ghi chú</label>
+                        <input type="text" id="modalNote" placeholder="Ví dụ: Ít hành, thêm rau..." class="note-input">
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary btn-block" onclick="addToCartFromModal()">
+                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Toast Notification -->
+<div id="toast" class="toast"></div>
+
+@section Scripts {
+<script>
+// Countdown Timer
+function startCountdown() {
+    const endTime = new Date();
+    endTime.setHours(23, 59, 59, 999);
+    
+    function updateTimer() {
+        const now = new Date();
+        const diff = endTime - now;
+        
+        if (diff <= 0) {
+            endTime.setDate(endTime.getDate() + 1);
+            return;
+        }
+        
+        const hours = Math.floor(diff / (1000 * 60 * 60));
+        const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+        const secs = Math.floor((diff % (1000 * 60)) / 1000);
+        
+        document.getElementById('countHours').textContent = String(hours).padStart(2, '0');
+        document.getElementById('countMins').textContent = String(mins).padStart(2, '0');
+        document.getElementById('countSecs').textContent = String(secs).padStart(2, '0');
+    }
+    
+    updateTimer();
+    setInterval(updateTimer, 1000);
+}
+startCountdown();
+
+// Carousel scroll
+function scrollDishes(direction) {
+    const carousel = document.getElementById('popularDishes');
+    const scrollAmount = 320;
+    carousel.scrollBy({ left: direction * scrollAmount, behavior: 'smooth' });
+}
+
+// Session ID for cart
+function getSessionId() {
+    let sid = localStorage.getItem('cartSessionId');
+    if (!sid) {
+        sid = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+        localStorage.setItem('cartSessionId', sid);
+    }
+    return sid;
+}
+
+// Get user info from localStorage
+function getUserInfo() {
+    const token = localStorage.getItem('token');
+    const userStr = localStorage.getItem('user');
+    if (token && userStr) {
+        try { return JSON.parse(userStr); } catch { return null; }
+    }
+    return null;
+}
+
+let currentProduct = null;
+let selectedSpicyLevel = 0;
+
+// Hàm xử lý đường dẫn hình ảnh
+function getImageUrl(img) {
+    if (!img) return '/images/products/MenuItem_MI0001.webp';
+    if (img.startsWith('http')) return img;
+    if (img.startsWith('/images/')) return img;
+    if (img.startsWith('/')) return img;
+    return '/images/products/' + img;
+}
+
+// Load popular products from API
+async function loadPopularProducts() {
+    try {
+        const res = await fetch('/api/products?pageSize=8');
+        const data = await res.json();
+        
+        if (data.success && data.data.length > 0) {
+            const container = document.getElementById('popularDishes');
+            container.innerHTML = data.data.map((p, i) => {
+                const imgSrc = getImageUrl(p.image);
+                const productData = encodeURIComponent(JSON.stringify(p));
+                const tags = i === 0 ? 'Best Seller' : (i === 1 ? 'Hot' : (i === 2 ? 'Mới' : ''));
+                const rating = (4.5 + Math.random() * 0.5).toFixed(1);
+                const reviews = Math.floor(100 + Math.random() * 400);
+                
+                return `
+                <div class="dish-card-new">
+                    <div class="dish-image-new">
+                        <img src="${imgSrc}" alt="${p.name}" onerror="this.src='/images/products/MenuItem_MI0001.webp'">
+                        ${tags ? `<span class="dish-tag-new ${tags === 'Best Seller' ? 'bestseller' : (tags === 'Hot' ? 'hot' : 'new')}">${tags}</span>` : ''}
+                        <button class="quick-add-btn" data-product="${productData}" onclick="openProductFromBtn(this)">
+                            <i class="fas fa-plus"></i>
+                        </button>
+                    </div>
+                    <div class="dish-content-new">
+                        <div class="dish-rating">
+                            <i class="fas fa-star"></i>
+                            <span>${rating}</span>
+                            <span class="rating-count">(${reviews})</span>
+                        </div>
+                        <h3 class="dish-name-new">${p.name}</h3>
+                        <p class="dish-desc-new">${(p.description || '').substring(0, 50)}${p.description && p.description.length > 50 ? '...' : ''}</p>
+                        <div class="dish-footer-new">
+                            <span class="dish-price-new">${formatPrice(p.price)}đ</span>
+                            <button class="btn-add-cart-new" data-product="${productData}" onclick="openProductFromBtn(this)">
+                                <i class="fas fa-cart-plus"></i> Thêm
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `}).join('');
+        } else {
+            document.getElementById('popularDishes').innerHTML = '<p class="no-data">Chưa có sản phẩm</p>';
+        }
+    } catch (e) {
+        console.error('Error loading products:', e);
+        document.getElementById('popularDishes').innerHTML = '<p class="error">Không thể tải sản phẩm. Vui lòng thử lại sau.</p>';
+    }
+}
+
+// Mở modal từ button
+function openProductFromBtn(btn) {
+    const productData = btn.getAttribute('data-product');
+    const product = JSON.parse(decodeURIComponent(productData));
+    openProductModal(product);
+}
+
+function formatPrice(n) {
+    return Math.round(n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// Open product modal
+function openProductModal(product) {
+    currentProduct = product;
+    selectedSpicyLevel = 0;
+    
+    const imgSrc = getImageUrl(product.image);
+    document.getElementById('modalProductImage').src = imgSrc;
+    document.getElementById('modalProductImage').onerror = function() { this.src = '/images/products/MenuItem_MI0001.webp'; };
+    document.getElementById('modalProductName').textContent = product.name;
+    document.getElementById('modalProductDesc').textContent = product.description || '';
+    document.getElementById('modalProductPrice').textContent = formatPrice(product.price) + 'đ';
+    document.getElementById('modalQuantity').value = 1;
+    document.getElementById('modalNote').value = '';
+    
+    // Reset spicy level
+    document.querySelectorAll('.spicy-btn').forEach(btn => btn.classList.remove('active'));
+    document.querySelector('.spicy-btn[data-level="0"]').classList.add('active');
+    
+    document.getElementById('productModal').classList.add('show');
+}
+
+function closeProductModal() {
+    document.getElementById('productModal').classList.remove('show');
+    currentProduct = null;
+}
+
+// Spicy level selection
+document.querySelectorAll('.spicy-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        document.querySelectorAll('.spicy-btn').forEach(b => b.classList.remove('active'));
+        this.classList.add('active');
+        selectedSpicyLevel = parseInt(this.dataset.level);
+    });
+});
+
+// Quantity control
+function changeQty(delta) {
+    const input = document.getElementById('modalQuantity');
+    let val = parseInt(input.value) + delta;
+    if (val < 1) val = 1;
+    if (val > 10) val = 10;
+    input.value = val;
+}
+
+// Add to cart from modal
+async function addToCartFromModal() {
+    if (!currentProduct) return;
+    
+    const user = getUserInfo();
+    const quantity = parseInt(document.getElementById('modalQuantity').value);
+    const note = document.getElementById('modalNote').value;
+    
+    const payload = {
+        productId: currentProduct.id,
+        quantity: quantity,
+        spicyLevel: selectedSpicyLevel,
+        note: note,
+        sessionId: getSessionId()
+    };
+    
+    if (user && user.id) {
+        payload.customerId = user.id;
+    }
+    
+    try {
+        const res = await fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const data = await res.json();
+        if (data.success) {
+            showToast(`Đã thêm ${currentProduct.name} vào giỏ hàng!`, 'success');
+            closeProductModal();
+            updateCartCount();
+        } else {
+            showToast(data.message || 'Có lỗi xảy ra', 'error');
+        }
+    } catch (e) {
+        console.error('Error adding to cart:', e);
+        showToast('Lỗi kết nối server', 'error');
+    }
+}
+
+// Update cart count in header
+async function updateCartCount() {
+    try {
+        const user = getUserInfo();
+        let url = `/api/cart?sessionId=${getSessionId()}`;
+        if (user && user.id) url += `&customerId=${user.id}`;
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        
+        if (data.success) {
+            const count = data.data.reduce((sum, item) => sum + item.quantity, 0);
+            const badge = document.querySelector('.cart-count');
+            if (badge) {
+                badge.textContent = count;
+                badge.style.display = count > 0 ? 'flex' : 'none';
+            }
+        }
+    } catch (e) {
+        console.error('Error updating cart count:', e);
+    }
+}
+
+// Toast notification
+function showToast(message, type = 'info') {
+    const toast = document.getElementById('toast');
+    toast.textContent = message;
+    toast.className = 'toast ' + type + ' show';
+    setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+// Close modal on overlay click
+document.getElementById('productModal').addEventListener('click', function(e) {
+    if (e.target === this) closeProductModal();
+});
+
+// Init
+loadPopularProducts();
+updateCartCount();
+</script>
+
+<style>
+/* ========== NEW HERO STYLES ========== */
+.hero-new {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+    position: relative;
+    padding-top: 120px;
+    overflow: hidden;
+}
+.hero-bg-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/images/products/BannerMyCay.webp') center/cover;
+    opacity: 0.15;
+}
+.hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    position: relative;
+    z-index: 1;
+}
+.hero-main {
+    display: grid;
+    grid-template-columns: 1fr 350px;
+    gap: 40px;
+    align-items: start;
+    margin-bottom: 40px;
+}
+.hero-content-new {
+    color: white;
+}
+.hero-badge-new {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(249, 115, 22, 0.2);
+    border: 1px solid rgba(249, 115, 22, 0.3);
+    padding: 8px 16px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    margin-bottom: 20px;
+}
+.badge-fire { font-size: 1.2rem; }
+.hero-title-new {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.1;
+    margin-bottom: 20px;
+}
+.hero-subtitle-line {
+    display: block;
+    font-size: 1.3rem;
+    font-weight: 400;
+    color: rgba(255,255,255,0.8);
+    margin-top: 15px;
+}
+
+/* Countdown */
+.hero-countdown {
+    background: rgba(255,255,255,0.1);
+    backdrop-filter: blur(10px);
+    padding: 15px 25px;
+    border-radius: 15px;
+    display: inline-flex;
+    align-items: center;
+    gap: 20px;
+    margin-bottom: 30px;
+}
+.countdown-label {
+    font-size: 0.9rem;
+    color: rgba(255,255,255,0.8);
+}
+.countdown-timer {
+    display: flex;
+    gap: 10px;
+}
+.countdown-item {
+    background: rgba(249, 115, 22, 0.3);
+    padding: 8px 12px;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 50px;
+}
+.countdown-item span {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #f97316;
+}
+.countdown-item small {
+    font-size: 0.7rem;
+    color: rgba(255,255,255,0.7);
+}
+
+/* Hero Buttons */
+.hero-buttons-new {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 30px;
+    flex-wrap: wrap;
+}
+.btn-hero-primary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: linear-gradient(135deg, #FF6B35, #E55A2B);
+    color: white;
+    text-decoration: none;
+    padding: 16px 32px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 1.1rem;
+    box-shadow: 0 8px 30px rgba(249, 115, 22, 0.4);
+    transition: all 0.3s;
+    animation: pulse-btn 2s infinite;
+}
+.btn-hero-primary:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 12px 40px rgba(249, 115, 22, 0.5);
+}
+.btn-badge {
+    background: #fef3c7;
+    color: #d97706;
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 15px;
+}
+@@keyframes pulse-btn {
+    0%, 100% { box-shadow: 0 8px 30px rgba(249, 115, 22, 0.4); }
+    50% { box-shadow: 0 8px 40px rgba(249, 115, 22, 0.6); }
+}
+.btn-hero-secondary {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: rgba(255,255,255,0.1);
+    border: 2px solid rgba(255,255,255,0.3);
+    color: white;
+    text-decoration: none;
+    padding: 14px 28px;
+    border-radius: 30px;
+    font-weight: 600;
+    transition: all 0.3s;
+}
+.btn-hero-secondary:hover {
+    background: rgba(255,255,255,0.2);
+    border-color: rgba(255,255,255,0.5);
+}
+
+/* Trust Items */
+.hero-trust {
+    display: flex;
+    gap: 25px;
+    flex-wrap: wrap;
+}
+.trust-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: rgba(255,255,255,0.8);
+    font-size: 0.9rem;
+}
+.trust-item i { color: #f97316; }
+
+/* Promo Card */
+.hero-promo-card {
+    position: sticky;
+    top: 140px;
+}
+.promo-card-inner {
+    background: linear-gradient(135deg, #FF6B35, #E55A2B);
+    border-radius: 20px;
+    padding: 30px;
+    text-align: center;
+    color: white;
+    box-shadow: 0 20px 60px rgba(249, 115, 22, 0.3);
+}
+.promo-icon { font-size: 3rem; margin-bottom: 15px; }
+.promo-content { display: flex; flex-direction: column; gap: 5px; }
+.promo-label { font-size: 0.9rem; opacity: 0.9; }
+.promo-percent { font-size: 4rem; font-weight: 800; line-height: 1; }
+.promo-desc { font-size: 1rem; margin-top: 10px; }
+.promo-code {
+    background: rgba(255,255,255,0.2);
+    padding: 10px 20px;
+    border-radius: 10px;
+    margin-top: 15px;
+    font-size: 0.95rem;
+}
+.promo-code strong { font-size: 1.1rem; }
+.promo-expiry {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-top: 10px;
+}
+
+/* Hero Images Grid */
+.hero-images-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+.hero-image-card {
+    position: relative;
+    border-radius: 20px;
+    overflow: hidden;
+    height: 250px;
+}
+.hero-image-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+    filter: brightness(0.9) saturate(1.1);
+}
+.hero-image-card:hover img { transform: scale(1.1); }
+.image-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 25px;
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
+    color: white;
+}
+.image-overlay h3 { font-size: 1.2rem; margin-bottom: 5px; }
+.image-overlay p { font-size: 0.85rem; opacity: 0.8; margin-bottom: 10px; }
+.btn-small {
+    display: inline-block;
+    padding: 8px 16px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 20px;
+    color: white;
+    text-decoration: none;
+    font-size: 0.85rem;
+    transition: background 0.2s;
+}
+.btn-small:hover { background: #f97316; }
+
+/* Hero CTA Bar */
+.hero-cta-bar {
+    background: linear-gradient(90deg, #f97316, #ea580c);
+    padding: 20px;
+    text-align: center;
+    margin-top: 40px;
+}
+.hero-cta-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 15px;
+    color: white;
+    text-decoration: none;
+    font-size: 1.2rem;
+    font-weight: 600;
+    animation: bounce-x 1s infinite;
+}
+@@keyframes bounce-x {
+    0%, 100% { transform: translateX(0); }
+    50% { transform: translateX(5px); }
+}
+
+/* ========== POPULAR DISHES NEW ========== */
+.popular-dishes-new {
+    padding: 80px 0;
+    background: #fafafa;
+}
+.section-header-new {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 40px;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+.section-title-group .section-title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+}
+.section-title-group .section-subtitle {
+    color: #6b7280;
+    font-size: 1rem;
+}
+
+/* Filter Tabs */
+.filter-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.filter-tab {
+    padding: 10px 20px;
+    background: white;
+    border: 2px solid #e5e7eb;
+    border-radius: 25px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.filter-tab:hover {
+    border-color: #f97316;
+    color: #f97316;
+}
+.filter-tab.active {
+    background: #f97316;
+    border-color: #f97316;
+    color: white;
+}
+
+/* Dishes Carousel */
+.dishes-carousel-wrapper {
+    position: relative;
+    margin: 0 -10px;
+}
+.carousel-btn {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+}
+.carousel-btn:hover {
+    background: #f97316;
+    color: white;
+}
+.carousel-btn.prev { left: -25px; }
+.carousel-btn.next { right: -25px; }
+.dishes-carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    padding: 10px;
+    scrollbar-width: none;
+}
+.dishes-carousel::-webkit-scrollbar { display: none; }
+
+/* Dish Card New */
+.dish-card-new {
+    flex: 0 0 280px;
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+}
+.dish-card-new:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+}
+.dish-image-new {
+    position: relative;
+    height: 180px;
+    overflow: hidden;
+}
+.dish-image-new img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s;
+}
+.dish-card-new:hover .dish-image-new img { transform: scale(1.1); }
+.dish-tag-new {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: white;
+}
+.dish-tag-new.bestseller { background: #ef4444; }
+.dish-tag-new.hot { background: #f97316; }
+.dish-tag-new.new { background: #10b981; }
+.quick-add-btn {
+    position: absolute;
+    bottom: 12px;
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    background: white;
+    border: none;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    cursor: pointer;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s;
+}
+.dish-card-new:hover .quick-add-btn {
+    opacity: 1;
+    transform: translateY(0);
+}
+.quick-add-btn:hover {
+    background: #f97316;
+    color: white;
+}
+.dish-content-new {
+    padding: 20px;
+}
+.dish-rating {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-bottom: 10px;
+    font-size: 0.85rem;
+}
+.dish-rating i { color: #fbbf24; }
+.dish-rating span { font-weight: 600; color: #1f2937; }
+.rating-count { color: #9ca3af; font-weight: 400; }
+.dish-name-new {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 8px;
+    line-height: 1.3;
+}
+.dish-desc-new {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 15px;
+    line-height: 1.5;
+}
+.dish-footer-new {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.dish-price-new {
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: #f97316;
+}
+.btn-add-cart-new {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    border-radius: 25px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-add-cart-new:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+}
+
+/* Responsive */
+@@media (max-width: 1024px) {
+    .hero-main { grid-template-columns: 1fr; }
+    .hero-promo-card { position: static; }
+    .hero-title-new { font-size: 2.5rem; }
+    .carousel-btn { display: none; }
+}
+@@media (max-width: 640px) {
+    .hero-new { padding-top: 100px; }
+    .hero-title-new { font-size: 2rem; }
+    .hero-subtitle-line { font-size: 1rem; }
+    .hero-countdown { flex-direction: column; gap: 10px; }
+    .hero-buttons-new { flex-direction: column; }
+    .btn-hero-primary, .btn-hero-secondary { width: 100%; justify-content: center; }
+    .hero-images-grid { grid-template-columns: 1fr; }
+    .section-header-new { flex-direction: column; align-items: flex-start; }
+    .filter-tabs { width: 100%; overflow-x: auto; flex-wrap: nowrap; }
+}
+
+/* Product Modal Styles */
+.modal-overlay { display: none; position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.6); z-index: 1000; align-items: center; justify-content: center; padding: 20px; }
+.modal-overlay.show { display: flex; }
+.product-modal { background: white; border-radius: 20px; max-width: 800px; width: 100%; max-height: 90vh; overflow: hidden; position: relative; }
+.product-modal .modal-close { position: absolute; top: 15px; right: 15px; background: rgba(0,0,0,0.5); color: white; border: none; width: 36px; height: 36px; border-radius: 50%; font-size: 24px; cursor: pointer; z-index: 10; }
+.product-modal .modal-body { display: grid; grid-template-columns: 1fr 1fr; }
+.product-modal-image { background: #f8f8f8; }
+.product-modal-image img { width: 100%; height: 100%; object-fit: cover; min-height: 400px; }
+.product-modal-info { padding: 30px; display: flex; flex-direction: column; gap: 20px; }
+.product-modal-info h2 { font-size: 1.5rem; color: #1f2937; margin: 0; }
+.product-desc { color: #6b7280; font-size: 0.95rem; line-height: 1.6; }
+.product-price { font-size: 1.5rem; font-weight: 700; color: #f97316; }
+.product-options { display: flex; flex-direction: column; gap: 15px; }
+.option-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
+.spicy-options { display: flex; gap: 8px; flex-wrap: wrap; }
+.spicy-btn { width: 40px; height: 40px; border: 2px solid #e5e7eb; border-radius: 10px; background: white; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+.spicy-btn:hover { border-color: #f97316; }
+.spicy-btn.active { background: #f97316; color: white; border-color: #f97316; }
+.quantity-control { display: flex; align-items: center; gap: 10px; }
+.qty-btn { width: 40px; height: 40px; border: 2px solid #e5e7eb; border-radius: 10px; background: white; font-size: 1.2rem; cursor: pointer; }
+.qty-btn:hover { border-color: #f97316; color: #f97316; }
+.quantity-control input { width: 60px; height: 40px; text-align: center; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 1rem; font-weight: 600; }
+.note-input { width: 100%; padding: 12px; border: 2px solid #e5e7eb; border-radius: 10px; font-size: 0.95rem; }
+.note-input:focus { border-color: #f97316; outline: none; }
+.btn-block { width: 100%; padding: 15px; font-size: 1.1rem; }
+
+/* Toast */
+.toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%) translateY(100px); background: #1f2937; color: white; padding: 15px 30px; border-radius: 10px; z-index: 2000; opacity: 0; transition: all 0.3s; }
+.toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.toast.success { background: #10b981; }
+.toast.error { background: #ef4444; }
+
+/* Loading */
+.loading-placeholder { text-align: center; padding: 60px; color: #6b7280; grid-column: 1 / -1; }
+
+@@media (max-width: 768px) {
+    .product-modal .modal-body { grid-template-columns: 1fr; }
+    .product-modal-image img { min-height: 250px; }
+    .product-modal-info { padding: 20px; }
+}
+</style>
+}

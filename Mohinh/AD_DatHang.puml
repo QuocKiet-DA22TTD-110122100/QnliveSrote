@@ -1,0 +1,26 @@
+@startuml AD_DatHang
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - ĐẶT HÀNG**
+
+start
+:Xem giỏ hàng;
+:Nhấn "Thanh toán";
+
+if (Đã đăng nhập?) then (Có)
+  :Lấy thông tin KH;
+else (Không)
+  :Yêu cầu đăng nhập;
+endif
+
+:Nhập địa chỉ giao hàng;
+:Chọn phương thức thanh toán;
+:Xác nhận đơn hàng;
+:Tạo đơn hàng;
+:Gửi email xác nhận;
+stop
+
+@enduml

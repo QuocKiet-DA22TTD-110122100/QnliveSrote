@@ -1,0 +1,27 @@
+@startuml AD_QuenMatKhau
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - QUÊN MẬT KHẨU**
+
+start
+:Nhấn "Quên mật khẩu";
+:Nhập Email;
+:Nhấn "Gửi";
+
+if (Email tồn tại?) then (Có)
+  :Tạo token reset;
+  :Gửi email link reset;
+  :Nhấn link trong email;
+  :Nhập mật khẩu mới;
+  :Xác nhận mật khẩu;
+  :Cập nhật mật khẩu;
+  :Thông báo thành công;
+else (Không)
+  :Thông báo email không tồn tại;
+endif
+stop
+
+@enduml

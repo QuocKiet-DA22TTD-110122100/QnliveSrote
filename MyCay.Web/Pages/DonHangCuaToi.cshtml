@@ -155,7 +155,25 @@ async function viewOrder(id) {
         const data = await res.json();
         if (data.success) {
             const o = data.data;
-            const items = o.items ? o.items.map(i => `<div style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid #f3f4f6;"><span>${i.name} x${i.quantity}</span><span>${formatPrice(i.price * i.quantity)}đ</span></div>`).join('') : '';
+            const items = o.items ? o.items.map(i => {
+                // Xử lý đường dẫn hình ảnh
+                let imgSrc = '/images/products/MenuItem_M00012.webp';
+                if (i.image) {
+                    if (i.image.startsWith('http') || i.image.startsWith('/')) {
+                        imgSrc = i.image;
+                    } else {
+                        imgSrc = '/images/products/' + i.image;
+                    }
+                }
+                return `<div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f3f4f6;">
+                    <img src="${imgSrc}" alt="${i.name}" style="width:50px;height:50px;object-fit:cover;border-radius:8px;" onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                    <div style="flex:1;">
+                        <div style="font-weight:600;">${i.name}</div>
+                        <div style="color:#6b7280;font-size:0.9rem;">x${i.quantity}</div>
+                    </div>
+                    <span style="font-weight:600;color:#f97316;">${formatPrice(i.price * i.quantity)}đ</span>
+                </div>`;
+            }).join('') : '';
             document.getElementById('orderDetail').innerHTML = `
                 <h2 style="text-align:center;color:#f97316;margin-bottom:20px;">${o.code}</h2>
                 <p><strong>Trạng thái:</strong> <span class="order-status ${getStatusClass(o.status)}">${o.status}</span></p>
