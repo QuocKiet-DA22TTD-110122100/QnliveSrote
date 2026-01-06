@@ -1,0 +1,802 @@
+﻿[
+    {
+        "code":  "M00012",
+        "name":  "Mì Thập Cẩm No Nê (Kim Chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, thịt heo, tôm, cá viên, trứng ngâm tương, thanh cua, chả cá Hàn Quốc, kim chi, nấm, súp lơ, bắp cải tím, ngò gai",
+        "price":  "77,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00012.webp"
+    },
+    {
+        "code":  "MI0008",
+        "name":  "Mì Thập Cẩm (Kim chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, Thịt bò, tôm, mực, chả cá Hàn Quốc, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai",
+        "price":  "69,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_MI0008.webp"
+    },
+    {
+        "code":  "M00018",
+        "name":  "Mì Hải Sản (Kim chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, tôm, mực, chả cá Hàn Quốc, cá viên, kim chi, súp lơ, ngò gai, nấm, bắp cải tím.\r\n",
+        "price":  "62,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00018.webp"
+    },
+    {
+        "code":  "MI0005",
+        "name":  "Mì Hải Sản Thanh Cua (Kim chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, Tôm, thanh cua, chả cá Hàn Quốc, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai",
+        "price":  "62,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_MI0005.webp"
+    },
+    {
+        "code":  "M00021",
+        "name":  "Mì Bò Mỹ (Kim chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, thịt bò, xúc xích, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai",
+        "price":  "59,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00021.webp"
+    },
+    {
+        "code":  "M00022",
+        "name":  "Mì Bò Trứng (Kim chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, thịt bò, trứng lòng đào, xúc xích, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai",
+        "price":  "65,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00022.webp"
+    },
+    {
+        "code":  "M00109",
+        "name":  "Mì Đùi Gà (Kim chi/ Soyum/ Sincay)",
+        "description":  "Mì cay Sasin, đùi gà, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai, chả cá Hàn Quốc",
+        "price":  "59,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00109.webp"
+    },
+    {
+        "code":  "MI0004",
+        "name":  "Mì Kim Chi Cá",
+        "description":  "Mì cay Sasin, phi lê cá, nấm, cá viên, kim chi, súp lơ, bắp cải tím, ngò gai",
+        "price":  "49,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_MI0004.webp"
+    },
+    {
+        "code":  "M00027",
+        "name":  "Mì Kim Chi Gogi",
+        "description":  "Mì cay Sasin, thịt heo, xúc xích, kim chi, cá viên, kim chi, súp lơ, nấm, bắp cải tím, ngò gai",
+        "price":  "49,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00027.webp"
+    },
+    {
+        "code":  "M00011",
+        "name":  "Mì Kim Chi Xúc Xích Cá Viên",
+        "description":  "Mì cay Sasin, xúc xích, kim chi, nấm, cá viên, súp lơ, bắp cải tím, chả cá Hàn Quốc, ngò gai",
+        "price":  "39,000VN\u0026#x110;",
+        "category":  "Mi Cay",
+        "image":  "MenuItem_M00011.webp"
+    },
+    {
+        "code":  "M00015",
+        "name":  "Mì Trộn Tương Đen Heo Cuộn",
+        "description":  "Mì cay Sasin, heo cuộn, cá viên, cà rốt, ớt chuông, hành tây, hành baro",
+        "price":  "69,000VN\u0026#x110;",
+        "category":  "Mi Tuong Den",
+        "image":  "MenuItem_M00015.webp"
+    },
+    {
+        "code":  "M00016",
+        "name":  "Mì Trộn Tương Đen Bò Mỹ",
+        "description":  "Mì cay Sasin, thịt bò, cá viên, chả cá Hàn Quốc, hành tây, ớt chuông, cà rốt, hành baro, mè",
+        "price":  "65,000VN\u0026#x110;",
+        "category":  "Mi Tuong Den",
+        "image":  "MenuItem_M00016.webp"
+    },
+    {
+        "code":  "M00014",
+        "name":  "Mì Trộn Tương Đen Gà",
+        "description":  "Mì cay Sasin, gà, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè",
+        "price":  "59,000VN\u0026#x110;",
+        "category":  "Mi Tuong Den",
+        "image":  "MenuItem_M00014.webp"
+    },
+    {
+        "code":  "M00013",
+        "name":  "Mì Trộn Tương Đen Mandu",
+        "description":  "Mì cay Sasin, mandu, cá viên, hành tây, ớt chuông, cà rốt, hành baro, mè",
+        "price":  "55,000VN\u0026#x110;",
+        "category":  "Mi Tuong Den",
+        "image":  "MenuItem_M00013.webp"
+    },
+    {
+        "code":  "M00130",
+        "name":  "Mì Xào Hải Sản",
+        "description":  "Mì cay Sasin, tôm, mực, chả cá HQ, cá viên, ớt chuông, hành tây, cải bó xôi, nấm, mè",
+        "price":  "69,000VN\u0026#x110;",
+        "category":  "Mi Xao",
+        "image":  "MenuItem_M00130.webp"
+    },
+    {
+        "code":  "M00131",
+        "name":  "Mì Xào Sasin",
+        "description":  "Mì cay Sasin, thịt heo, xúc xích, cá viên, súp lơ, ớt chuông, hành tây, cải bó xôi, nấm",
+        "price":  "65,000VN\u0026#x110;",
+        "category":  "Mi Xao",
+        "image":  "MenuItem_M00131.webp"
+    },
+    {
+        "code":  "M00132",
+        "name":  "Mì Trộn Xốt Phô Mai",
+        "description":  "Mì cay Sasin, gà, phô mai, xốt kem, cà rốt, hành baro",
+        "price":  "62,000VN\u0026#x110;",
+        "category":  "Mi Xao",
+        "image":  "MenuItem_M00132.webp"
+    },
+    {
+        "code":  "M00129",
+        "name":  "Miến Trộn Ngũ Sắc Hàn Quốc",
+        "description":  "Miến, thịt bò, xúc xích, nấm, ớt chuông, cà rốt, hành tây, hành baro, cải bó xôi, chả cá HQ, mè",
+        "price":  "65,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_M00129.webp"
+    },
+    {
+        "code":  "MI0002",
+        "name":  "Mì Tương Hàn Mandu",
+        "description":  "Mì cay Sasin, manudu, xúc xích, súp lơ,cải thảo, nấm, hành baro",
+        "price":  "52,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_MI0002.webp"
+    },
+    {
+        "code":  "MI0001",
+        "name":  "Mì Tương Hàn Thịt Heo Cuộn",
+        "description":  "Mì cay Sasin, heo cuộn, cải thảo, trứng ngâm tương, súp lơ, nấm, hành baro",
+        "price":  "65,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_MI0001.webp"
+    },
+    {
+        "code":  "M00028",
+        "name":  "Cơm Trộn Thịt Bò Mỹ",
+        "description":  "Cơm, thịt bò, trứng, nấm, kim chi, rong biển, cà rốt, cải bó xôi, mè, ngò gai",
+        "price":  "62,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_M00028.webp"
+    },
+    {
+        "code":  "M00020",
+        "name":  "Cơm và Canh Kim Chi",
+        "description":  "Cơm, thịt heo, chả cá Hàn Quốc, cá viên, kim chi, nấm, súp lơ, ớt chuông, hành tây, ngò gai",
+        "price":  "62,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_M00020.webp"
+    },
+    {
+        "code":  "MI0003",
+        "name":  "Tokbok-cheese Bò Mỹ",
+        "description":  "Tokbokki, thịt bò, xúc xích, cá viên, phô mai, hành baro, mè",
+        "price":  "62,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_MI0003.webp"
+    },
+    {
+        "code":  "MI0006",
+        "name":  "Tokbokki Phô Mai Sasin",
+        "description":  "Tokbokki, xúc xích, chả cá Hàn Quốc, bắp cải, nấm, hành baro, phô mai",
+        "price":  "59,000VN\u0026#x110;",
+        "category":  "Mon Khac",
+        "image":  "MenuItem_MI0006.webp"
+    },
+    {
+        "code":  "M00030",
+        "name":  "Trứng Ngâm Tương",
+        "description":  "마약 계란",
+        "price":  "12,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00030.webp"
+    },
+    {
+        "code":  "M00139",
+        "name":  "Bông Cải Xanh",
+        "description":  "브로콜리",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00139.webp"
+    },
+    {
+        "code":  "M00034",
+        "name":  "Bắp Cải Tím",
+        "description":  "적채",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00034.webp"
+    },
+    {
+        "code":  "M00113",
+        "name":  "Nấm Kim Châm Thêm",
+        "description":  "에노키타케",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00113.webp"
+    },
+    {
+        "code":  "M00035",
+        "name":  "Mực",
+        "description":  "오징어",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00035.webp"
+    },
+    {
+        "code":  "M00032",
+        "name":  "Tôm Thêm",
+        "description":  "새우",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00032.webp"
+    },
+    {
+        "code":  "M00029",
+        "name":  "Thịt Heo Cuộn",
+        "description":  "차슈",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00029.webp"
+    },
+    {
+        "code":  "M00033",
+        "name":  "Cá Viên Thêm",
+        "description":  "어육 완자",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00033.webp"
+    },
+    {
+        "code":  "M00036",
+        "name":  "Xúc xích",
+        "description":  "소시지",
+        "price":  "15,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00036.webp"
+    },
+    {
+        "code":  "M00138",
+        "name":  "Bắp Bò",
+        "description":  "소사태",
+        "price":  "19,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00138.webp"
+    },
+    {
+        "code":  "M00031",
+        "name":  "Bò Thêm",
+        "description":  "소고기",
+        "price":  "19,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00031.webp"
+    },
+    {
+        "code":  "M00140",
+        "name":  "Combo Xiên Que",
+        "description":  "계피 꼬치 콤보",
+        "price":  "12,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00140.webp"
+    },
+    {
+        "code":  "M00112",
+        "name":  "Mì Nấu Thêm",
+        "description":  "라면",
+        "price":  "19,000VN\u0026#x110;",
+        "category":  "Mon Them Mi",
+        "image":  "MenuItem_M00112.webp"
+    },
+    {
+        "code":  "M00141",
+        "name":  "Combo Vui Vẻ (1 người)",
+        "description":  "1 Món tự chọn, món áp dụng: Mì cá/ Mì đùi gà/ Mì gogi/ Mì xúc xích cá viên/ Mì bò Mỹ\r\n1 Ly Coca-cola/ Sprite size L",
+        "price":  "69,000VN\u0026#x110;",
+        "category":  "Combo",
+        "image":  "MenuItem_M00141.webp"
+    },
+    {
+        "code":  "M00142",
+        "name":  "Combo Gây Mê (1 người)",
+        "description":  "1 Món tự chọn, món áp dụng: Miến xào/ Mì xào Sasin/ Mì xào hải sản/ Cơm và canh kim chi\r\n1 Ly Coca-cola/ Sprite size L",
+        "price":  "79,000VN\u0026#x110;",
+        "category":  "Combo",
+        "image":  "MenuItem_M00142.webp"
+    },
+    {
+        "code":  "M00143",
+        "name":  "Combo Bạn Thân (2 người)",
+        "description":  "2 Món tự chọn thuộc nhóm mì cay, không bao gồm mì thập cẩm no nê\r\n1 phân khai vị tự. chọn: Bánh bạch tuộc/ Phô mai viên/ Khoai tây chiên/ Phô mai que/ Kimbap Sasin (6 cuộn)",
+        "price":  "159,000VN\u0026#x110;",
+        "category":  "Combo",
+        "image":  "MenuItem_M00143.webp"
+    },
+    {
+        "code":  "M00144",
+        "name":  "Combo No Căng (2 người)",
+        "description":  "2 Món tự chọn thuộc nhóm mì cay không bao gồm mì thập cẩm no nê\r\n1 Tokbokki phô mai Sasin",
+        "price":  "179,000VN\u0026#x110;",
+        "category":  "Combo",
+        "image":  "MenuItem_M00144.webp"
+    },
+    {
+        "code":  "M00145",
+        "name":  "Combo Gia Đình (3 người)",
+        "description":  "2 Món tự chọn thuộc nhóm mì cay, không bao gồm mì thập cẩm no nê.\r\n1 Món bất kỳ trong nhóm: Mì tương đen/ Mì xào/ Món chính khác\r\n1 Phần khai vị tự chọn: Bánh bạch tuộc/ Phô mai viên/ Khoai Tây Chiên/ Phô mai que/ Kimbap Sasin (6 cuộn)",
+        "price":  "219,000VN\u0026#x110;",
+        "category":  "Combo",
+        "image":  "MenuItem_M00145.webp"
+    },
+    {
+        "code":  "M00146",
+        "name":  "Combo Lẩu 2 Người",
+        "description":  "Lẩu (Hải sản/ Bò Mỹ)\r\n1 Phần khai vị tự chọn: Bánh bạch tuộc/ Phô mai viên/ Khoai tây. chiên/ Phô mai que/ Kimbap Sasin (6 cuộn)",
+        "price":  "225,000VN\u0026#x110;",
+        "category":  "Combo",
+        "image":  "MenuItem_M00146.webp"
+    },
+    {
+        "code":  "M00117",
+        "name":  "Lẩu Sincay Hải Sản (2 Người)",
+        "description":  "Mì cay Sasin, thịt bò, bò viên, cá viên, chả cá Hàn Quốc, chả cá sợi, kim chi, nấm kim châm, súp lơ, bắp cải tím",
+        "price":  "199,000VN\u0026#x110;",
+        "category":  "Lau Han Quoc",
+        "image":  "MenuItem_M00117.webp"
+    },
+    {
+        "code":  "M00037",
+        "name":  "Lẩu Sincay Bò Mỹ (2 Người)",
+        "description":  "Mì cay Sasin, thịt bò, bò viên, cá viên, chả cá Hàn Quốc, chả cá sợi, kim chi, nấm kim châm, súp lơ, bắp cải tím.",
+        "price":  "209,000VN\u0026#x110;",
+        "category":  "Lau Han Quoc",
+        "image":  "MenuItem_M00037.webp"
+    },
+    {
+        "code":  "M00136",
+        "name":  "Lẩu Kim Chi Bò Mỹ (2 Người)",
+        "description":  "Mì cay Sasin, thịt bò, bò viên, cá viên, chả cá Hàn Quốc, chả cá sợi, kim chi, nấm kim châm, súp lơ, bắp cải tím",
+        "price":  "209,000VN\u0026#x110;",
+        "category":  "Lau Han Quoc",
+        "image":  "MenuItem_M00136.webp"
+    },
+    {
+        "code":  "M00038",
+        "name":  "Lẩu Kim Chi Hải Sản (2 Người)",
+        "description":  "Mì cay Sasin, tôm, mực, cá viên, kim chi, nấm kim châm, súp lơ, bắp cải tím",
+        "price":  "209,000VN\u0026#x110;",
+        "category":  "Lau Han Quoc",
+        "image":  "MenuItem_M00038.webp"
+    },
+    {
+        "code":  "M00116",
+        "name":  "Lẩu Soyum Hải Sản (2 Người)",
+        "description":  "Mì cay Sasin, tôm, mực, cá viên, kim chi, nấm kim châm, súp lơ, bắp cải tím",
+        "price":  "209,000VN\u0026#x110;",
+        "category":  "Lau Han Quoc",
+        "image":  "MenuItem_M00116.webp"
+    },
+    {
+        "code":  "M00119",
+        "name":  "Lẩu Soyum Bò Mỹ (2 Người)",
+        "description":  "Mì cay Sasin, thịt bò, bò viên, cá viên, chả cá Hàn Quốc, chả cá sợi, kim chi, nấm kim châm, súp lơ, bắp cải tím",
+        "price":  "209,000VN\u0026#x110;",
+        "category":  "Lau Han Quoc",
+        "image":  "MenuItem_M00119.webp"
+    },
+    {
+        "code":  "M00068",
+        "name":  "Trứng Gà (1 Quả)",
+        "description":  "계란 1개",
+        "price":  "9,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00068.webp"
+    },
+    {
+        "code":  "M00065",
+        "name":  "Mì Gói",
+        "description":  "라면",
+        "price":  "12,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00065.webp"
+    },
+    {
+        "code":  "M00060",
+        "name":  "Nấm Kim Châm Thêm",
+        "description":  "에노키타케",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00060.webp"
+    },
+    {
+        "code":  "M00063",
+        "name":  "Cải Thảo",
+        "description":  "배추",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00063.webp"
+    },
+    {
+        "code":  "M00062",
+        "name":  "Bông Cải Xanh",
+        "description":  "브로콜리",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00062.webp"
+    },
+    {
+        "code":  "M00048",
+        "name":  "Bắp Cải Tím Thêm",
+        "description":  "적채",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00048.webp"
+    },
+    {
+        "code":  "M00056",
+        "name":  "Cá Viên Thêm",
+        "description":  "어육 완자",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00056.webp"
+    },
+    {
+        "code":  "M00049",
+        "name":  "Cá Thêm",
+        "description":  "물고기",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00049.webp"
+    },
+    {
+        "code":  "M00057",
+        "name":  "Mực",
+        "description":  "오징어",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00057.webp"
+    },
+    {
+        "code":  "M00052",
+        "name":  "Tôm Thêm",
+        "description":  "새우",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00052.webp"
+    },
+    {
+        "code":  "M00066",
+        "name":  "Chả Cá Hàn Quốc",
+        "description":  "어묵",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00066.webp"
+    },
+    {
+        "code":  "M00058",
+        "name":  "Xúc Xích Thêm",
+        "description":  "소시지",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00058.webp"
+    },
+    {
+        "code":  "M00053",
+        "name":  "Thanh Cua",
+        "description":  "게맛살",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00053.webp"
+    },
+    {
+        "code":  "M00137",
+        "name":  "Bắp Bò",
+        "description":  "소사태",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00137.webp"
+    },
+    {
+        "code":  "M00054",
+        "name":  "Bò Thêm",
+        "description":  "소고기",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00054.webp"
+    },
+    {
+        "code":  "M00059",
+        "name":  "Mandu",
+        "description":  "만두",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00059.webp"
+    },
+    {
+        "code":  "M00051",
+        "name":  "Tokbokki Phô Mai",
+        "description":  "치즈 떡볶이",
+        "price":  "25,000VN\u0026#x110;",
+        "category":  "Mon Them Lau",
+        "image":  "MenuItem_M00051.webp"
+    },
+    {
+        "code":  "M00070",
+        "name":  "Khoai Tây Chiên",
+        "description":  "감자 튀김",
+        "price":  "32,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00070.webp"
+    },
+    {
+        "code":  "M00128",
+        "name":  "Gà Viên Chiên Giòn (6 viên)",
+        "description":  "Gà Viên Chiên Giòn (6 viên)",
+        "price":  "32,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00128.webp"
+    },
+    {
+        "code":  "M00076",
+        "name":  "Phô Mai Que",
+        "description":  "모짜렐라 스틱",
+        "price":  "39,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00076.webp"
+    },
+    {
+        "code":  "M00072",
+        "name":  "Rong Biển Cuộn Fillet Cá Chiên",
+        "description":  "어묵김말이 튀김",
+        "price":  "39,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00072.webp"
+    },
+    {
+        "code":  "M00073",
+        "name":  "Phô Mai Viên",
+        "description":  "치즈볼",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00073.webp"
+    },
+    {
+        "code":  "M00135",
+        "name":  "Combo khai vị phô mai",
+        "description":  "Phô mai que, phô mai viên, viên thanh cua phô mai",
+        "price":  "49,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00135.webp"
+    },
+    {
+        "code":  "M00134",
+        "name":  "Kimbap Sasin",
+        "description":  "12 cuộn",
+        "price":  "59,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00134.webp"
+    },
+    {
+        "code":  "M00133",
+        "name":  "Kimbap Sasin",
+        "description":  "6 cuộn",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00133.webp"
+    },
+    {
+        "code":  "M00069",
+        "name":  "Kimbap Chiên",
+        "description":  "바삭한 김밥튀김",
+        "price":  "45,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00069.webp"
+    },
+    {
+        "code":  "M00071",
+        "name":  "Mandu Chiên Xốt Cay",
+        "description":  "칠리 소스를 곁들인 튀김 만두",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00071.webp"
+    },
+    {
+        "code":  "M00074",
+        "name":  "Bánh Bạch Tuộc",
+        "description":  "타코야키",
+        "price":  "39,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00074.webp"
+    },
+    {
+        "code":  "M00127",
+        "name":  "Chân Gà Xốt Hàn",
+        "description":  "Chân Gà Xốt Hàn",
+        "price":  "49,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00127.webp"
+    },
+    {
+        "code":  "M00079",
+        "name":  "Sụn Gà Bắp Chiên Giòn",
+        "description":  "버삭한 옥수수 닭 오돌뼈",
+        "price":  "45,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00079.webp"
+    },
+    {
+        "code":  "M00078",
+        "name":  "Đùi Gà Giòn",
+        "description":  "닭 다리 후라이드",
+        "price":  "39,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00078.webp"
+    },
+    {
+        "code":  "M00080",
+        "name":  "Viên Thanh Cua Phô Mai",
+        "description":  "크랩스틱 치즈볼",
+        "price":  "45,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00080.webp"
+    },
+    {
+        "code":  "M00075",
+        "name":  "Xiên Bánh Cá Hầm",
+        "description":  "어묵",
+        "price":  "42,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00075.webp"
+    },
+    {
+        "code":  "M00077",
+        "name":  "Salad Xốt Mè Rang",
+        "description":  "+ Gà Fillet 12.000 VNĐ",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Khai Vi",
+        "image":  "MenuItem_M00077.webp"
+    },
+    {
+        "code":  "M00085",
+        "name":  "Nước Gạo Hàn Quốc",
+        "description":  "달콤한 쌀 음료",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00085.webp"
+    },
+    {
+        "code":  "M00097",
+        "name":  "Nước Gạo Hoa Anh Đào",
+        "description":  "사쿠라 찹쌀 음료",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00097.webp"
+    },
+    {
+        "code":  "M00082",
+        "name":  "Soda Dâu Dưa Lưới",
+        "description":  "딸기 메론 소다",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00082.webp"
+    },
+    {
+        "code":  "M00083",
+        "name":  "Soda Dừa Dứa Đác Thơm",
+        "description":  "파인애플 코코넛 소다와 사탕야자 씨앗",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00083.webp"
+    },
+    {
+        "code":  "M00084",
+        "name":  "Soda Thơm Lừng",
+        "description":  "멜론 파인애플 소다",
+        "price":  "35,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00084.webp"
+    },
+    {
+        "code":  "M00115",
+        "name":  "Sting",
+        "description":  "Sting lon",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00115.webp"
+    },
+    {
+        "code":  "M00087",
+        "name":  "Trà Dâu Đào",
+        "description":  "딸기 히비스커스 홍차",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00087.webp"
+    },
+    {
+        "code":  "M00086",
+        "name":  "Trà Đào Sasin",
+        "description":  "복숭아 홍차",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00086.webp"
+    },
+    {
+        "code":  "M00089",
+        "name":  "Trà Sữa Trân Châu Sasin",
+        "description":  "밀크 티",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00089.webp"
+    },
+    {
+        "code":  "M00088",
+        "name":  "Trà Sữa Matcha Trân Châu Sasin",
+        "description":  "말차 밀크티",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00088.webp"
+    },
+    {
+        "code":  "M00104",
+        "name":  "Sprite Size R",
+        "description":  "Sprite size R",
+        "price":  "23,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00104.webp"
+    },
+    {
+        "code":  "M00102",
+        "name":  "Coca Cola Size R",
+        "description":  "Coca Cola Size R",
+        "price":  "23,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00102.webp"
+    },
+    {
+        "code":  "M00105",
+        "name":  "Sprite Size L",
+        "description":  "Sprite size L",
+        "price":  "27,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00105.webp"
+    },
+    {
+        "code":  "M00103",
+        "name":  "Coca Cola Size L",
+        "description":  "Coca cola size L",
+        "price":  "27,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00103.webp"
+    },
+    {
+        "code":  "M00106",
+        "name":  "Coca Cola",
+        "description":  "Coca cola",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00106.webp"
+    },
+    {
+        "code":  "M00107",
+        "name":  "Sprite",
+        "description":  "Sprite",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00107.webp"
+    },
+    {
+        "code":  "M00108",
+        "name":  "Samurai Dâu",
+        "description":  "Samurai dâu",
+        "price":  "29,000VN\u0026#x110;",
+        "category":  "Giai Khat",
+        "image":  "MenuItem_M00108.webp"
+    }
+]

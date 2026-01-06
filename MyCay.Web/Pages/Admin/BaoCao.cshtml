@@ -1,0 +1,217 @@
+@page
+@model AdminBaoCaoModel
+@{
+    ViewData["Title"] = "Báo cáo doanh thu";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Báo cáo doanh thu</h1>
+    <div class="page-actions">
+        <select id="periodFilter" onchange="updateReport()" style="padding:10px 15px;border:1px solid #e5e7eb;border-radius:10px;">
+            <option value="today">Hôm nay</option>
+            <option value="week" selected>Tuần này</option>
+            <option value="month">Tháng này</option>
+            <option value="year">Năm nay</option>
+        </select>
+        <button class="btn btn-secondary" onclick="exportReport()">
+            <i class="fas fa-download"></i> Xuất báo cáo
+        </button>
+    </div>
+</div>
+
+<!-- Revenue Stats -->
+<div class="stats-grid">
+    <div class="stat-card stat-revenue">
+        <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
+        <div class="stat-info">
+            <h3>Tổng doanh thu</h3>
+            <p class="stat-number" id="totalRevenue">25,100,000đ</p>
+            <span class="stat-change positive">+15% so với kỳ trước</span>
+        </div>
+    </div>
+    <div class="stat-card stat-orders">
+        <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
+        <div class="stat-info">
+            <h3>Tổng đơn hàng</h3>
+            <p class="stat-number" id="totalOrders">156</p>
+            <span class="stat-change positive">+12% so với kỳ trước</span>
+        </div>
+    </div>
+    <div class="stat-card stat-products">
+        <div class="stat-icon"><i class="fas fa-receipt"></i></div>
+        <div class="stat-info">
+            <h3>Giá trị TB/đơn</h3>
+            <p class="stat-number" id="avgOrder">160,897đ</p>
+            <span class="stat-change positive">+3% so với kỳ trước</span>
+        </div>
+    </div>
+    <div class="stat-card stat-customers">
+        <div class="stat-icon"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+            <h3>Khách hàng mới</h3>
+            <p class="stat-number" id="newCustomers">23</p>
+            <span class="stat-change positive">+8% so với kỳ trước</span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts -->
+<div class="charts-grid" style="margin-top: 25px;">
+    <div class="dashboard-card chart-card">
+        <h2><i class="fas fa-chart-line"></i> Biểu đồ doanh thu</h2>
+        <div class="chart-placeholder" style="height: 300px;">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+    <div class="dashboard-card chart-card">
+        <h2><i class="fas fa-chart-pie"></i> Doanh thu theo danh mục</h2>
+        <div class="chart-placeholder" style="height: 300px;">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Store Performance -->
+<div class="dashboard-card" style="margin-top: 25px;">
+    <h2><i class="fas fa-store"></i> Doanh thu theo cửa hàng</h2>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Cửa hàng</th>
+                <th>Đơn hàng</th>
+                <th>Doanh thu</th>
+                <th>Tăng trưởng</th>
+                <th>Tiến độ</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Chi nhánh Quận 1</strong></td>
+                <td>68</td>
+                <td class="price">12,500,000đ</td>
+                <td><span class="stat-change positive">+18%</span></td>
+                <td>
+                    <div style="background:#e5e7eb;border-radius:10px;height:8px;width:150px;">
+                        <div style="background:#10b981;border-radius:10px;height:100%;width:85%;"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Chi nhánh Quận 3</strong></td>
+                <td>52</td>
+                <td class="price">8,200,000đ</td>
+                <td><span class="stat-change positive">+12%</span></td>
+                <td>
+                    <div style="background:#e5e7eb;border-radius:10px;height:8px;width:150px;">
+                        <div style="background:#f97316;border-radius:10px;height:100%;width:65%;"></div>
+                    </div>
+                </td>
+            </tr>
+            <tr>
+                <td><strong>Chi nhánh Quận 7</strong></td>
+                <td>36</td>
+                <td class="price">4,400,000đ</td>
+                <td><span class="stat-change positive">+25%</span></td>
+                <td>
+                    <div style="background:#e5e7eb;border-radius:10px;height:8px;width:150px;">
+                        <div style="background:#3b82f6;border-radius:10px;height:100%;width:45%;"></div>
+                    </div>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Top Products -->
+<div class="dashboard-grid" style="margin-top: 25px;">
+    <div class="dashboard-card">
+        <h2><i class="fas fa-fire"></i> Sản phẩm bán chạy</h2>
+        <div class="top-products">
+            <div class="product-item"><span class="rank">1</span><span class="name">Mì Thập Cẩm No Nê</span><span class="sold">89 phần - 6,853,000đ</span></div>
+            <div class="product-item"><span class="rank">2</span><span class="name">Mì Thập Cẩm</span><span class="sold">76 phần - 5,244,000đ</span></div>
+            <div class="product-item"><span class="rank">3</span><span class="name">Combo Vui Vẻ</span><span class="sold">65 phần - 4,485,000đ</span></div>
+            <div class="product-item"><span class="rank">4</span><span class="name">Tokbokki Phô Mai Sasin</span><span class="sold">58 phần - 3,422,000đ</span></div>
+            <div class="product-item"><span class="rank">5</span><span class="name">Mì Hải Sản</span><span class="sold">52 phần - 3,224,000đ</span></div>
+        </div>
+    </div>
+    <div class="dashboard-card">
+        <h2><i class="fas fa-clock"></i> Giờ cao điểm</h2>
+        <div class="top-products">
+            <div class="product-item"><span class="rank" style="background:#ef4444;">1</span><span class="name">11:00 - 13:00</span><span class="sold">45 đơn (28%)</span></div>
+            <div class="product-item"><span class="rank" style="background:#f97316;">2</span><span class="name">18:00 - 20:00</span><span class="sold">52 đơn (33%)</span></div>
+            <div class="product-item"><span class="rank" style="background:#fbbf24;">3</span><span class="name">20:00 - 21:00</span><span class="sold">28 đơn (18%)</span></div>
+            <div class="product-item"><span class="rank" style="background:#10b981;">4</span><span class="name">13:00 - 15:00</span><span class="sold">18 đơn (12%)</span></div>
+            <div class="product-item"><span class="rank" style="background:#3b82f6;">5</span><span class="name">Khác</span><span class="sold">13 đơn (9%)</span></div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+// Revenue Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+        datasets: [{
+            label: 'Doanh thu (triệu đồng)',
+            data: [2.8, 3.2, 2.9, 3.5, 4.1, 5.2, 3.4],
+            borderColor: '#f97316',
+            backgroundColor: 'rgba(249, 115, 22, 0.1)',
+            fill: true,
+            tension: 0.4
+        }, {
+            label: 'Tuần trước',
+            data: [2.5, 2.8, 2.6, 3.0, 3.5, 4.5, 3.0],
+            borderColor: '#9ca3af',
+            borderDash: [5, 5],
+            fill: false,
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'bottom' } }
+    }
+});
+
+// Category Chart
+const categoryCtx = document.getElementById('categoryChart').getContext('2d');
+new Chart(categoryCtx, {
+    type: 'doughnut',
+    data: {
+        labels: ['Mì Cay', 'Combo', 'Lẩu', 'Khai vị', 'Giải khát', 'Khác'],
+        datasets: [{
+            data: [45, 20, 15, 10, 7, 3],
+            backgroundColor: ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#f59e0b', '#6b7280']
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: { legend: { position: 'right' } }
+    }
+});
+
+function updateReport() {
+    const period = document.getElementById('periodFilter').value;
+    showToast('Đang cập nhật báo cáo...', 'success');
+}
+
+function exportReport() {
+    showToast('Đang xuất báo cáo PDF...', 'success');
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+</script>
+}

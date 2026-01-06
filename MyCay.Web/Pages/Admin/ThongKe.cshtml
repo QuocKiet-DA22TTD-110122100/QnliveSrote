@@ -1,0 +1,438 @@
+@page
+@model AdminThongKeModel
+@{
+    ViewData["Title"] = "Thống kê chi tiết";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">📊 Thống kê chi tiết</h1>
+    <div class="page-actions">
+        <select id="periodFilter" onchange="loadStats()">
+            <option value="today">Hôm nay</option>
+            <option value="week" selected>7 ngày qua</option>
+            <option value="month">30 ngày qua</option>
+            <option value="year">Năm nay</option>
+        </select>
+        <button class="btn btn-secondary" onclick="exportReport()">
+            <i class="fas fa-download"></i> Xuất báo cáo
+        </button>
+    </div>
+</div>
+
+<!-- Overview Stats -->
+<div class="stats-row">
+    <div class="stat-card highlight">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);">
+            <i class="fas fa-money-bill-wave"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalRevenue">0đ</span>
+            <span class="stat-label">Tổng doanh thu</span>
+            <span class="stat-change positive" id="revenueChange">+0%</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);">
+            <i class="fas fa-shopping-cart"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalOrders">0</span>
+            <span class="stat-label">Tổng đơn hàng</span>
+            <span class="stat-change" id="ordersChange">+0%</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);">
+            <i class="fas fa-receipt"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="avgOrderValue">0đ</span>
+            <span class="stat-label">Giá trị TB/đơn</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);">
+            <i class="fas fa-users"></i>
+        </div>
+        <div class="stat-info">
+            <span class="stat-value" id="newCustomers">0</span>
+            <span class="stat-label">Khách hàng mới</span>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="charts-row">
+    <div class="chart-card large">
+        <div class="chart-header">
+            <h3>📈 Biểu đồ doanh thu</h3>
+            <div class="chart-legend">
+                <span class="legend-item"><span class="dot revenue"></span> Doanh thu</span>
+                <span class="legend-item"><span class="dot orders"></span> Đơn hàng</span>
+            </div>
+        </div>
+        <div class="chart-body">
+            <canvas id="revenueChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>🍜 Top sản phẩm bán chạy</h3>
+        </div>
+        <div class="chart-body">
+            <div class="top-products" id="topProducts">
+                <div class="loading">Đang tải...</div>
+            </div>
+        </div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>📊 Phân bố đơn hàng theo trạng thái</h3>
+        </div>
+        <div class="chart-body">
+            <canvas id="statusChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<div class="charts-row">
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>🏷️ Doanh thu theo danh mục</h3>
+        </div>
+        <div class="chart-body">
+            <canvas id="categoryChart"></canvas>
+        </div>
+    </div>
+    <div class="chart-card">
+        <div class="chart-header">
+            <h3>⏰ Đơn hàng theo giờ</h3>
+        </div>
+        <div class="chart-body">
+            <canvas id="hourlyChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Orders -->
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <h3>🕐 Đơn hàng gần đây</h3>
+    </div>
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Mã đơn</th>
+                <th>Khách hàng</th>
+                <th>Tổng tiền</th>
+                <th>Trạng thái</th>
+                <th>Thời gian</th>
+            </tr>
+        </thead>
+        <tbody id="recentOrders">
+            <tr><td colspan="5" class="loading">Đang tải...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+@section Scripts {
+<script>
+let revenueChart, statusChart, categoryChart, hourlyChart;
+
+async function loadStats() {
+    const period = document.getElementById('periodFilter').value;
+    
+    try {
+        // Load overview stats
+        const statsRes = await fetch(`/api/reports/stats?period=${period}`);
+        const statsData = await statsRes.json();
+        
+        if (statsData.success) {
+            const s = statsData.data;
+            document.getElementById('totalRevenue').textContent = formatPrice(s.totalRevenue) + 'đ';
+            document.getElementById('totalOrders').textContent = s.totalOrders;
+            document.getElementById('avgOrderValue').textContent = formatPrice(s.avgOrderValue) + 'đ';
+            document.getElementById('newCustomers').textContent = s.newCustomers || 0;
+            
+            // Update change indicators
+            updateChangeIndicator('revenueChange', s.revenueChange);
+            updateChangeIndicator('ordersChange', s.ordersChange);
+        }
+        
+        // Load chart data
+        loadRevenueChart(period);
+        loadStatusChart();
+        loadCategoryChart();
+        loadHourlyChart();
+        loadTopProducts();
+        loadRecentOrders();
+        
+    } catch (e) {
+        console.error('Error loading stats:', e);
+    }
+}
+
+function updateChangeIndicator(elementId, change) {
+    const el = document.getElementById(elementId);
+    if (change > 0) {
+        el.textContent = `+${change.toFixed(1)}%`;
+        el.className = 'stat-change positive';
+    } else if (change < 0) {
+        el.textContent = `${change.toFixed(1)}%`;
+        el.className = 'stat-change negative';
+    } else {
+        el.textContent = '0%';
+        el.className = 'stat-change';
+    }
+}
+
+async function loadRevenueChart(period) {
+    try {
+        const res = await fetch(`/api/reports/revenue-chart?period=${period}`);
+        const data = await res.json();
+        
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        if (revenueChart) revenueChart.destroy();
+        
+        revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: data.labels || ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: data.revenue || [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    yAxisID: 'y'
+                }, {
+                    label: 'Đơn hàng',
+                    data: data.orders || [0, 0, 0, 0, 0, 0, 0],
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'transparent',
+                    tension: 0.4,
+                    yAxisID: 'y1'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    y: { type: 'linear', position: 'left', ticks: { callback: v => formatPrice(v) + 'đ' } },
+                    y1: { type: 'linear', position: 'right', grid: { drawOnChartArea: false } }
+                }
+            }
+        });
+    } catch (e) {
+        console.error('Error loading revenue chart:', e);
+    }
+}
+
+async function loadStatusChart() {
+    try {
+        const res = await fetch('/api/reports/order-status');
+        const data = await res.json();
+        
+        const ctx = document.getElementById('statusChart').getContext('2d');
+        
+        if (statusChart) statusChart.destroy();
+        
+        statusChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: data.labels || ['Chờ xác nhận', 'Đang chuẩn bị', 'Đang giao', 'Hoàn thành', 'Đã hủy'],
+                datasets: [{
+                    data: data.values || [0, 0, 0, 0, 0],
+                    backgroundColor: ['#fbbf24', '#3b82f6', '#8b5cf6', '#10b981', '#ef4444']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { position: 'bottom' } }
+            }
+        });
+    } catch (e) {
+        console.error('Error loading status chart:', e);
+    }
+}
+
+async function loadCategoryChart() {
+    try {
+        const res = await fetch('/api/reports/category-revenue');
+        const data = await res.json();
+        
+        const ctx = document.getElementById('categoryChart').getContext('2d');
+        
+        if (categoryChart) categoryChart.destroy();
+        
+        categoryChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels || ['Mì Cay', 'Mì Tương Đen', 'Lẩu', 'Khai Vị', 'Giải Khát'],
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: data.values || [0, 0, 0, 0, 0],
+                    backgroundColor: ['#f97316', '#3b82f6', '#10b981', '#8b5cf6', '#ec4899']
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: { y: { ticks: { callback: v => formatPrice(v) + 'đ' } } }
+            }
+        });
+    } catch (e) {
+        console.error('Error loading category chart:', e);
+    }
+}
+
+async function loadHourlyChart() {
+    try {
+        const res = await fetch('/api/reports/hourly-orders');
+        const data = await res.json();
+        
+        const ctx = document.getElementById('hourlyChart').getContext('2d');
+        
+        if (hourlyChart) hourlyChart.destroy();
+        
+        hourlyChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: data.labels || ['10h', '11h', '12h', '13h', '14h', '15h', '16h', '17h', '18h', '19h', '20h', '21h'],
+                datasets: [{
+                    label: 'Đơn hàng',
+                    data: data.values || [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                    backgroundColor: '#f97316'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } }
+            }
+        });
+    } catch (e) {
+        console.error('Error loading hourly chart:', e);
+    }
+}
+
+async function loadTopProducts() {
+    try {
+        const res = await fetch('/api/reports/top-products?limit=5');
+        const data = await res.json();
+        
+        const container = document.getElementById('topProducts');
+        
+        if (data.success && data.data.length > 0) {
+            const maxQty = Math.max(...data.data.map(p => p.quantity));
+            container.innerHTML = data.data.map((p, i) => `
+                <div class="top-product-item">
+                    <span class="rank">#${i + 1}</span>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-stats">${p.quantity} đã bán • ${formatPrice(p.revenue)}đ</div>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress" style="width: ${(p.quantity / maxQty * 100)}%"></div>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = '<div class="empty">Chưa có dữ liệu</div>';
+        }
+    } catch (e) {
+        console.error('Error loading top products:', e);
+    }
+}
+
+async function loadRecentOrders() {
+    try {
+        const res = await fetch('/api/orders?pageSize=5');
+        const data = await res.json();
+        
+        const tbody = document.getElementById('recentOrders');
+        
+        if (data.success && data.data.length > 0) {
+            tbody.innerHTML = data.data.map(o => `
+                <tr>
+                    <td><span class="order-code">${o.code}</span></td>
+                    <td>${o.customerName}</td>
+                    <td class="price">${formatPrice(o.total)}đ</td>
+                    <td><span class="status-badge ${getStatusClass(o.status)}">${o.status}</span></td>
+                    <td>${formatDate(o.createdAt)}</td>
+                </tr>
+            `).join('');
+        } else {
+            tbody.innerHTML = '<tr><td colspan="5" class="empty">Chưa có đơn hàng</td></tr>';
+        }
+    } catch (e) {
+        console.error('Error loading recent orders:', e);
+    }
+}
+
+function formatPrice(n) {
+    return Math.round(n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function formatDate(d) {
+    return new Date(d).toLocaleDateString('vi-VN') + ' ' + new Date(d).toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+}
+
+function getStatusClass(s) {
+    return {'Chờ xác nhận':'status-pending','Đang chuẩn bị':'status-preparing','Đang giao':'status-shipping','Hoàn thành':'status-completed','Đã hủy':'status-cancelled'}[s] || 'status-pending';
+}
+
+function exportReport() {
+    alert('Tính năng xuất báo cáo đang phát triển!');
+}
+
+// Init
+loadStats();
+</script>
+
+<style>
+.charts-row { display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px; }
+.chart-card { background: white; border-radius: 16px; padding: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+.chart-card.large { grid-column: span 2; }
+.chart-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+.chart-header h3 { font-size: 1rem; margin: 0; }
+.chart-legend { display: flex; gap: 15px; }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 0.85rem; color: #6b7280; }
+.legend-item .dot { width: 10px; height: 10px; border-radius: 50%; }
+.legend-item .dot.revenue { background: #f97316; }
+.legend-item .dot.orders { background: #3b82f6; }
+.chart-body { height: 250px; }
+.chart-card.large .chart-body { height: 300px; }
+
+.top-product-item { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid #f3f4f6; }
+.top-product-item:last-child { border-bottom: none; }
+.top-product-item .rank { width: 30px; height: 30px; background: #f97316; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 0.85rem; }
+.top-product-item .product-info { flex: 1; }
+.top-product-item .product-name { font-weight: 600; margin-bottom: 2px; }
+.top-product-item .product-stats { font-size: 0.8rem; color: #6b7280; }
+.top-product-item .progress-bar { width: 80px; height: 6px; background: #e5e7eb; border-radius: 3px; overflow: hidden; }
+.top-product-item .progress { height: 100%; background: linear-gradient(90deg, #f97316, #ea580c); border-radius: 3px; }
+
+.stat-change { font-size: 0.8rem; padding: 2px 8px; border-radius: 10px; margin-top: 5px; display: inline-block; }
+.stat-change.positive { background: #d1fae5; color: #059669; }
+.stat-change.negative { background: #fee2e2; color: #dc2626; }
+
+.order-code { font-family: monospace; color: #f97316; font-weight: 600; }
+
+@@media (max-width: 768px) {
+    .charts-row { grid-template-columns: 1fr; }
+    .chart-card.large { grid-column: span 1; }
+}
+</style>
+}

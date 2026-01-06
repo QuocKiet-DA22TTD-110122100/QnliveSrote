@@ -1,0 +1,273 @@
+@page
+@model AdminCuaHangModel
+@{
+    ViewData["Title"] = "Quản lý cửa hàng";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Quản lý cửa hàng</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Thêm cửa hàng
+        </button>
+    </div>
+</div>
+
+<!-- Store Cards -->
+<div class="stores-grid" id="storesGrid">
+    <!-- Stores will be loaded here -->
+</div>
+
+<!-- Store Modal -->
+<div class="modal-overlay" id="storeModal">
+    <div class="modal" style="max-width: 600px;">
+        <div class="modal-header">
+            <h3 id="modalTitle">Thêm cửa hàng</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="storeForm">
+                <input type="hidden" id="storeId" />
+                <div class="form-group">
+                    <label>Tên cửa hàng *</label>
+                    <input type="text" id="storeName" required />
+                </div>
+                <div class="form-group">
+                    <label>Địa chỉ *</label>
+                    <textarea id="storeAddress" required></textarea>
+                </div>
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Số điện thoại *</label>
+                        <input type="tel" id="storePhone" required />
+                    </div>
+                    <div class="form-group">
+                        <label>Email</label>
+                        <input type="email" id="storeEmail" />
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ mở cửa</label>
+                        <input type="time" id="storeOpenTime" value="10:00" />
+                    </div>
+                    <div class="form-group">
+                        <label>Giờ đóng cửa</label>
+                        <input type="time" id="storeCloseTime" value="22:00" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="saveStore()">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.stores-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+    gap: 25px;
+}
+.store-card {
+    background: var(--admin-white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+}
+.store-header {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    padding: 25px;
+}
+.store-header h3 {
+    font-size: 1.3rem;
+    margin-bottom: 5px;
+}
+.store-header p {
+    opacity: 0.9;
+    font-size: 0.9rem;
+}
+.store-body {
+    padding: 25px;
+}
+.store-info {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.store-info-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: var(--admin-gray);
+}
+.store-info-item i {
+    width: 20px;
+    color: var(--admin-primary);
+}
+.store-stats {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid var(--admin-gray-light);
+}
+.store-stat {
+    text-align: center;
+}
+.store-stat-value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--admin-dark);
+}
+.store-stat-label {
+    font-size: 0.8rem;
+    color: var(--admin-gray);
+}
+.store-footer {
+    padding: 15px 25px;
+    background: var(--admin-light);
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+</style>
+
+@section Scripts {
+<script>
+const stores = [
+    { id: 1, name: 'Mỳ Cay Sasin - Quận 1', address: '123 Nguyễn Huệ, Phường Bến Nghé, Quận 1, TP.HCM', phone: '0901234567', email: 'q1@mycaysasin.vn', openTime: '10:00', closeTime: '22:00', staff: 5, orders: 68, revenue: 12500000, status: 1 },
+    { id: 2, name: 'Mỳ Cay Sasin - Quận 3', address: '456 Võ Văn Tần, Phường 5, Quận 3, TP.HCM', phone: '0901234568', email: 'q3@mycaysasin.vn', openTime: '10:00', closeTime: '22:00', staff: 4, orders: 52, revenue: 8200000, status: 1 },
+    { id: 3, name: 'Mỳ Cay Sasin - Quận 7', address: '789 Nguyễn Thị Thập, Phường Tân Phú, Quận 7, TP.HCM', phone: '0901234569', email: 'q7@mycaysasin.vn', openTime: '10:00', closeTime: '22:00', staff: 3, orders: 36, revenue: 4400000, status: 1 }
+];
+
+function renderStores() {
+    const grid = document.getElementById('storesGrid');
+    grid.innerHTML = stores.map(s => `
+        <div class="store-card">
+            <div class="store-header">
+                <h3>${s.name}</h3>
+                <p><i class="fas fa-map-marker-alt"></i> ${s.address}</p>
+            </div>
+            <div class="store-body">
+                <div class="store-info">
+                    <div class="store-info-item">
+                        <i class="fas fa-phone"></i>
+                        <span>${s.phone}</span>
+                    </div>
+                    <div class="store-info-item">
+                        <i class="fas fa-envelope"></i>
+                        <span>${s.email}</span>
+                    </div>
+                    <div class="store-info-item">
+                        <i class="fas fa-clock"></i>
+                        <span>${s.openTime} - ${s.closeTime}</span>
+                    </div>
+                </div>
+                <div class="store-stats">
+                    <div class="store-stat">
+                        <div class="store-stat-value">${s.staff}</div>
+                        <div class="store-stat-label">Nhân viên</div>
+                    </div>
+                    <div class="store-stat">
+                        <div class="store-stat-value">${s.orders}</div>
+                        <div class="store-stat-label">Đơn hàng</div>
+                    </div>
+                    <div class="store-stat">
+                        <div class="store-stat-value">${(s.revenue/1000000).toFixed(1)}M</div>
+                        <div class="store-stat-label">Doanh thu</div>
+                    </div>
+                </div>
+            </div>
+            <div class="store-footer">
+                <button class="btn btn-sm btn-secondary" onclick="editStore(${s.id})"><i class="fas fa-edit"></i> Sửa</button>
+                <button class="btn btn-sm btn-danger" onclick="deleteStore(${s.id})"><i class="fas fa-trash"></i> Xóa</button>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm cửa hàng';
+    document.getElementById('storeForm').reset();
+    document.getElementById('storeId').value = '';
+    document.getElementById('storeModal').classList.add('show');
+}
+
+function editStore(id) {
+    const store = stores.find(s => s.id === id);
+    if (!store) return;
+    
+    document.getElementById('modalTitle').textContent = 'Sửa thông tin cửa hàng';
+    document.getElementById('storeId').value = store.id;
+    document.getElementById('storeName').value = store.name;
+    document.getElementById('storeAddress').value = store.address;
+    document.getElementById('storePhone').value = store.phone;
+    document.getElementById('storeEmail').value = store.email || '';
+    document.getElementById('storeOpenTime').value = store.openTime;
+    document.getElementById('storeCloseTime').value = store.closeTime;
+    
+    document.getElementById('storeModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('storeModal').classList.remove('show');
+}
+
+function saveStore() {
+    const id = document.getElementById('storeId').value;
+    const data = {
+        name: document.getElementById('storeName').value,
+        address: document.getElementById('storeAddress').value,
+        phone: document.getElementById('storePhone').value,
+        email: document.getElementById('storeEmail').value,
+        openTime: document.getElementById('storeOpenTime').value,
+        closeTime: document.getElementById('storeCloseTime').value,
+        status: 1
+    };
+    
+    if (!data.name || !data.address || !data.phone) {
+        showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+        return;
+    }
+    
+    if (id) {
+        const index = stores.findIndex(s => s.id == id);
+        if (index > -1) stores[index] = { ...stores[index], ...data };
+        showToast('Cập nhật thành công!', 'success');
+    } else {
+        data.id = stores.length + 1;
+        data.staff = 0;
+        data.orders = 0;
+        data.revenue = 0;
+        stores.push(data);
+        showToast('Thêm cửa hàng thành công!', 'success');
+    }
+    
+    closeModal();
+    renderStores();
+}
+
+function deleteStore(id) {
+    if (confirm('Bạn có chắc muốn xóa cửa hàng này?')) {
+        const index = stores.findIndex(s => s.id === id);
+        if (index > -1) stores.splice(index, 1);
+        renderStores();
+        showToast('Đã xóa cửa hàng!', 'warning');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+renderStores();
+</script>
+}

@@ -1,0 +1,110 @@
+# Visual Studio
+.vs/
+.vscode/
+*.vssscc
+*.vspscc
+
+# Build results
+[Bb]in/
+[Oo]bj/
+[Ll]og/
+[Ll]ogs/
+*.log
+
+# Rider/IntelliJ
+.idea/
+*.sln.iml
+
+# User-specific files
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.rsuser
+
+# Test results
+[Tt]est[Rr]esult*/
+[Tt]est[Rr]esults/
+*.trx
+*.coverage*
+
+# NuGet
+packages/
+*.nupkg
+.nuget/
+
+# Others
+[Dd]ebug/
+[Rr]elease/
+[xX]64/
+[xX]86/
+[Bb]uild/
+*[Rr]e[Ss]harper*/
+*.cache
+*.pdb
+*.mdb
+*.dbmdl
+*.jfm
+*.opendb
+
+# Local environment
+.env
+.env.*
+
+# Secrets & API Keys - IMPORTANT: Never commit these!
+appsettings.Development.json
+appsettings.Local.json
+appsettings.Production.json
+**/secrets.json
+**/appsettings.*.local.json
+
+# User Secrets
+secrets/
+
+# ASP.NET Scaffolding
+ScaffoldingReadMe.txt
+
+# Visual Studio 2015/2017 cache/options directory
+# If you have some components that store ephemerical data in AppData, feel free to add them here
+# but be aware that this normally includes user-specific files which will be overwritten by default.
+# AppData/Local directory
+# Note: it is not recommended to add this to your .gitignore unless you know what you're doing.
+# AppData/Local/
+
+# DotCover
+.idea/.idea.DotSettings.user
+
+# Resharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
+*.DotSettings.user
+
+# Code coverage
+coverage/
+
+# MSBuild Binary and Structured Log
+msbuild.binlog
+*.binlog
+
+# TFS
+$tf/
+
+# Azure Functions localsettings
+local.settings.json
+
+# JetBrains Rider settings
+*.sln.DotSettings.user
+
+# SQL Server files
+*.mdf
+*.ldf
+*.ndf
+
+# Backup & Reports
+*.bak
+*.bkp
+*.rdl.data
+
+# OS generated files
+.DS_Store
+Thumbs.db

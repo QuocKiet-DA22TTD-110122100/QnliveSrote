@@ -1,0 +1,1477 @@
+@page
+@model ThucDonModel
+@{
+    ViewData["Title"] = "Thực đơn";
+}
+
+<section class="menu-page">
+    <div class="container">
+        <!-- Hero Banner -->
+        <div class="menu-hero">
+            <div class="menu-hero-content">
+                <span class="menu-hero-badge">🔥 Hơn 100+ món ngon</span>
+                <h1 class="menu-hero-title">Thực đơn <span>Mỳ Cay Sasin</span></h1>
+                <p class="menu-hero-subtitle">Khám phá hương vị Hàn Quốc đích thực với các món mì cay, lẩu, và nhiều món ngon khác</p>
+            </div>
+            <div class="menu-hero-decoration">
+                <span class="floating-emoji e1">🍜</span>
+                <span class="floating-emoji e2">🌶️</span>
+                <span class="floating-emoji e3">🍲</span>
+                <span class="floating-emoji e4">🥢</span>
+            </div>
+        </div>
+
+        <!-- Filter by Category -->
+        <div class="menu-filters">
+            <div class="filter-header">
+                <h3>🏷️ Danh mục</h3>
+                <span class="products-count">
+                    <span id="visibleCount">@Model.Products.Count</span> sản phẩm
+                </span>
+            </div>
+            <div class="category-tabs">
+                <button class="tab-btn active" data-category="all">
+                    <span class="tab-icon">📋</span>
+                    <span class="tab-text">Tất cả</span>
+                </button>
+                <button class="tab-btn" data-category="mi-cay">
+                    <span class="tab-icon">🌶️</span>
+                    <span class="tab-text">Mì Cay</span>
+                </button>
+                <button class="tab-btn" data-category="mi-tuong-den">
+                    <span class="tab-icon">🥢</span>
+                    <span class="tab-text">Mì Tương Đen</span>
+                </button>
+                <button class="tab-btn" data-category="mi-xao">
+                    <span class="tab-icon">🍝</span>
+                    <span class="tab-text">Mì Xào</span>
+                </button>
+                <button class="tab-btn" data-category="mon-khac">
+                    <span class="tab-icon">🍚</span>
+                    <span class="tab-text">Món Khác</span>
+                </button>
+                <button class="tab-btn" data-category="mon-them">
+                    <span class="tab-icon">🥟</span>
+                    <span class="tab-text">Topping Mì</span>
+                </button>
+                <button class="tab-btn" data-category="lau">
+                    <span class="tab-icon">🍲</span>
+                    <span class="tab-text">Lẩu</span>
+                </button>
+                <button class="tab-btn" data-category="mon-them-lau">
+                    <span class="tab-icon">🥘</span>
+                    <span class="tab-text">Topping Lẩu</span>
+                </button>
+                <button class="tab-btn" data-category="khai-vi">
+                    <span class="tab-icon">🍟</span>
+                    <span class="tab-text">Khai Vị</span>
+                </button>
+                <button class="tab-btn" data-category="combo">
+                    <span class="tab-icon">🎁</span>
+                    <span class="tab-text">Combo</span>
+                </button>
+                <button class="tab-btn" data-category="giai-khat">
+                    <span class="tab-icon">🥤</span>
+                    <span class="tab-text">Giải Khát</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Products Grid -->
+        <div class="products-grid" id="productsGrid">
+            @foreach (var product in Model.Products)
+            {
+                <div class="product-card" data-category="@product.CategorySlug" data-name="@product.Name.ToLower()" data-desc="@(product.Description?.ToLower() ?? "")">
+                    <div class="product-image">
+                        <img src="~/images/products/@product.Image" alt="@product.Name" loading="lazy" 
+                             onerror="this.onerror=null; this.src='https://placehold.co/300x300/fff5f0/f97316?text=🍜'; this.style.objectFit='contain';" />
+                        @if (product.IsBestSeller)
+                        {
+                            <span class="product-badge bestseller">🔥 Best Seller</span>
+                        }
+                        <div class="product-overlay">
+                            <button class="btn-quick-view" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" data-id="@product.Id" onclick="if(!checkLoginFirst()){return false;}addToCartFromBtn(this)">
+                                <i class="fas fa-cart-plus"></i> Thêm vào giỏ
+                            </button>
+                        </div>
+                    </div>
+                    <div class="product-info">
+                        <h3 class="product-name">@product.Name</h3>
+                        <p class="product-desc">@product.Description</p>
+                        <div class="product-footer">
+                            <span class="product-price">@product.Price</span>
+                            <button class="btn-add" data-code="@product.Code" data-name="@product.Name" data-price="@product.PriceNumber" data-image="@product.Image" data-id="@product.Id" onclick="if(!checkLoginFirst()){return false;}addToCartFromBtn(this)">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <!-- Empty State -->
+        <div class="empty-state" id="emptyState" style="display: none;">
+            <div class="empty-icon">🍜</div>
+            <h3>Không tìm thấy sản phẩm</h3>
+            <p>Vui lòng chọn danh mục khác</p>
+        </div>
+    </div>
+</section>
+
+<!-- Product Options Modal -->
+<div class="product-modal-overlay" id="productModal">
+    <div class="product-modal">
+        <button class="modal-close-btn" onclick="closeProductModal()">×</button>
+        
+        <div class="modal-product-info">
+            <img id="modalProductImage" src="" alt="" />
+            <div class="modal-product-details">
+                <h2 id="modalProductName"></h2>
+                <p id="modalProductDesc"></p>
+                <div class="modal-product-price">
+                    <span id="modalProductPrice"></span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loại nước dùng (chỉ cho mì cay) -->
+        <div class="modal-option-group" id="brothTypeGroup">
+            <h4>🍜 Chọn loại nước dùng</h4>
+            <div class="option-buttons">
+                <button class="option-btn active" data-value="kimchi" onclick="selectOption(this, 'broth')">
+                    <span class="option-icon">🥬</span>
+                    <span>Kim Chi</span>
+                </button>
+                <button class="option-btn" data-value="soyum" onclick="selectOption(this, 'broth')">
+                    <span class="option-icon">🍲</span>
+                    <span>Soyum</span>
+                </button>
+                <button class="option-btn" data-value="sincay" onclick="selectOption(this, 'broth')">
+                    <span class="option-icon">🔥</span>
+                    <span>Sincay</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Cấp độ cay (chỉ cho mì cay) -->
+        <div class="modal-option-group" id="spicyLevelGroup">
+            <h4>🌶️ Chọn cấp độ cay (1-10)</h4>
+            <div class="spicy-slider">
+                <input type="range" id="spicyLevel" min="1" max="10" value="3" oninput="updateSpicyDisplay(this.value)" />
+                <div class="spicy-display">
+                    <span class="spicy-number" id="spicyNumber">3</span>
+                    <span class="spicy-text" id="spicyText">Cay vừa</span>
+                    <span class="spicy-peppers" id="spicyPeppers">🌶️🌶️🌶️</span>
+                </div>
+            </div>
+            <div class="spicy-labels">
+                <span>1 - Không cay</span>
+                <span>10 - Siêu cay</span>
+            </div>
+        </div>
+
+        <!-- Số lượng -->
+        <div class="modal-option-group">
+            <h4>📦 Số lượng</h4>
+            <div class="quantity-selector">
+                <button class="qty-btn" onclick="changeQuantity(-1)">−</button>
+                <input type="number" id="modalQuantity" value="1" min="1" max="99" readonly />
+                <button class="qty-btn" onclick="changeQuantity(1)">+</button>
+            </div>
+        </div>
+
+        <!-- Tổng tiền và nút thêm -->
+        <div class="modal-footer">
+            <div class="modal-total">
+                <span>Tổng tiền:</span>
+                <span class="total-price" id="modalTotalPrice">0đ</span>
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-add-to-cart" onclick="confirmAddToCart()">
+                    <i class="fas fa-cart-plus"></i> Thêm vào giỏ hàng
+                </button>
+                <button class="btn-buy-now" onclick="buyNow()">
+                    <i class="fas fa-bolt"></i> Mua ngay
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Login Required Modal -->
+<div class="login-modal-overlay" id="loginRequiredModal">
+    <div class="login-modal">
+        <button class="modal-close" onclick="closeLoginRequired()">×</button>
+        <div class="login-modal-icon">🔐</div>
+        <h2>Vui lòng đăng nhập</h2>
+        <p>Bạn cần đăng nhập để thêm sản phẩm vào giỏ hàng và đặt món.</p>
+        <div class="login-modal-buttons">
+            <a href="/DangNhap?returnUrl=/ThucDon" class="btn-login">
+                <i class="fas fa-sign-in-alt"></i> Đăng nhập
+            </a>
+            <a href="/DangKy?returnUrl=/ThucDon" class="btn-register">
+                <i class="fas fa-user-plus"></i> Đăng ký
+            </a>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Menu Page - Modern Design */
+.menu-page {
+    padding: 0;
+    background: linear-gradient(180deg, #fff5f0 0%, #ffffff 100%);
+    min-height: 100vh;
+    margin-top: -75px; /* Offset the main padding for full-width hero */
+    padding-top: 75px;
+}
+
+/* Hero Banner */
+.menu-hero {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 50%, #ff6b35 100%);
+    padding: 60px 40px;
+    border-radius: 0 0 40px 40px;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+}
+.menu-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.1'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.3;
+}
+.menu-hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    color: white;
+}
+.menu-hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.2);
+    backdrop-filter: blur(10px);
+    padding: 8px 20px;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    margin-bottom: 15px;
+    border: 1px solid rgba(255,255,255,0.3);
+}
+.menu-hero-title {
+    font-size: 2.5rem;
+    font-weight: 800;
+    margin-bottom: 15px;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.menu-hero-title span {
+    display: block;
+    font-size: 3rem;
+    background: linear-gradient(to right, #fff, #ffe4d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+.menu-hero-subtitle {
+    font-size: 1.1rem;
+    opacity: 0.95;
+    max-width: 500px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+.menu-hero-decoration {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+}
+.floating-emoji {
+    position: absolute;
+    font-size: 2.5rem;
+    animation: float 4s ease-in-out infinite;
+    opacity: 0.6;
+}
+.floating-emoji.e1 { top: 20%; left: 10%; animation-delay: 0s; }
+.floating-emoji.e2 { top: 60%; left: 5%; animation-delay: 1s; }
+.floating-emoji.e3 { top: 30%; right: 10%; animation-delay: 2s; }
+.floating-emoji.e4 { top: 70%; right: 8%; animation-delay: 0.5s; }
+@@keyframes float {
+    0%, 100% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(10deg); }
+}
+
+/* Menu Filters - Improved */
+.menu-filters {
+    background: white;
+    padding: 25px;
+    border-radius: 20px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    margin-bottom: 30px;
+    position: sticky;
+    top: 80px;
+    z-index: 100;
+}
+.filter-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+}
+.filter-header h3 {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin: 0;
+}
+.products-count {
+    background: linear-gradient(135deg, #fff7ed, #ffedd5);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #ea580c;
+}
+.category-tabs {
+    display: flex;
+    gap: 10px;
+    overflow-x: auto;
+    padding-bottom: 5px;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    -webkit-overflow-scrolling: touch;
+}
+.category-tabs::-webkit-scrollbar {
+    display: none;
+}
+.tab-btn {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 20px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 30px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+.tab-btn .tab-icon {
+    font-size: 1.1rem;
+}
+.tab-btn:hover {
+    border-color: #f97316;
+    background: #fff7ed;
+    transform: translateY(-2px);
+}
+.tab-btn.active {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border-color: transparent;
+    box-shadow: 0 4px 15px rgba(249,115,22,0.4);
+}
+
+/* Products Grid - Enhanced */
+.products-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 25px;
+    padding-bottom: 40px;
+}
+
+/* Product Card - Modern Style */
+.product-card {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    position: relative;
+}
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(249,115,22,0.2);
+}
+.product-image {
+    position: relative;
+    background: linear-gradient(135deg, #fff5f0, #ffffff);
+    overflow: hidden;
+    aspect-ratio: 1;
+}
+.product-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    padding: 15px;
+    transition: transform 0.5s ease;
+}
+.product-card:hover .product-image img {
+    transform: scale(1.1);
+}
+.product-badge {
+    position: absolute;
+    top: 15px;
+    left: 15px;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    z-index: 2;
+}
+.product-badge.bestseller {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 10px rgba(239,68,68,0.4);
+}
+.product-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, transparent 50%);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.product-card:hover .product-overlay {
+    opacity: 1;
+}
+.btn-quick-view {
+    background: white;
+    color: #f97316;
+    border: none;
+    padding: 12px 24px;
+    border-radius: 25px;
+    font-weight: 700;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+}
+.product-card:hover .btn-quick-view {
+    transform: translateY(0);
+}
+.btn-quick-view:hover {
+    background: #f97316;
+    color: white;
+}
+.product-info {
+    padding: 20px;
+}
+.product-name {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #1f2937;
+    margin-bottom: 8px;
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.product-desc {
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin-bottom: 15px;
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+.product-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.product-price {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.btn-add {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(249,115,22,0.4);
+}
+.btn-add:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 6px 20px rgba(249,115,22,0.5);
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 60px 20px;
+}
+.empty-icon {
+    font-size: 5rem;
+    margin-bottom: 20px;
+    opacity: 0.5;
+}
+.empty-state h3 {
+    font-size: 1.3rem;
+    color: #374151;
+    margin-bottom: 10px;
+}
+.empty-state p {
+    color: #6b7280;
+}
+
+/* Responsive */
+@@media (max-width: 768px) {
+    .menu-hero {
+        padding: 40px 20px;
+        border-radius: 0 0 30px 30px;
+    }
+    .menu-hero-title {
+        font-size: 1.8rem;
+    }
+    .menu-hero-title span {
+        font-size: 2.2rem;
+    }
+    .menu-filters {
+        padding: 15px;
+        border-radius: 15px;
+        position: static;
+    }
+    .filter-header {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
+    }
+    .tab-btn {
+        padding: 10px 16px;
+        font-size: 0.85rem;
+    }
+    .products-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    .product-info {
+        padding: 15px;
+    }
+    .product-name {
+        font-size: 0.95rem;
+    }
+    .product-price {
+        font-size: 1.1rem;
+    }
+    .btn-add {
+        width: 40px;
+        height: 40px;
+    }
+    .floating-emoji {
+        font-size: 1.8rem;
+    }
+}
+
+/* Product Modal */
+.product-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    padding: 20px;
+}
+.product-modal-overlay.active {
+    display: flex;
+}
+.product-modal {
+    background: white;
+    border-radius: 20px;
+    width: 100%;
+    max-width: 500px;
+    max-height: 90vh;
+    overflow-y: auto;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+@@keyframes modalSlideIn {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+.modal-close-btn {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    z-index: 10;
+}
+.modal-close-btn:hover {
+    background: #ef4444;
+    color: white;
+}
+.modal-product-info {
+    display: flex;
+    gap: 20px;
+    padding: 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.modal-product-info img {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: 12px;
+    background: #f8f8f8;
+}
+.modal-product-details {
+    flex: 1;
+}
+.modal-product-details h2 {
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #1f2937;
+}
+.modal-product-details p {
+    font-size: 0.9rem;
+    color: #6b7280;
+    margin-bottom: 10px;
+    line-height: 1.5;
+}
+.modal-product-price {
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.modal-option-group {
+    padding: 20px 25px;
+    border-bottom: 1px solid #e5e7eb;
+}
+.modal-option-group h4 {
+    font-size: 1rem;
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+.option-buttons {
+    display: flex;
+    gap: 10px;
+}
+.option-btn {
+    flex: 1;
+    padding: 12px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 12px;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+.option-btn:hover {
+    border-color: #f97316;
+}
+.option-btn.active {
+    border-color: #f97316;
+    background: #fff7ed;
+}
+.option-icon {
+    font-size: 1.5rem;
+}
+.option-btn span:last-child {
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+/* Spicy Slider */
+.spicy-slider {
+    margin-bottom: 10px;
+}
+.spicy-slider input[type="range"] {
+    width: 100%;
+    height: 8px;
+    border-radius: 4px;
+    background: linear-gradient(to right, #fef3c7, #f97316, #dc2626);
+    outline: none;
+    -webkit-appearance: none;
+}
+.spicy-slider input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 24px;
+    height: 24px;
+    background: white;
+    border: 3px solid #f97316;
+    border-radius: 50%;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+}
+.spicy-display {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    margin-top: 15px;
+    padding: 15px;
+    background: #fef3c7;
+    border-radius: 12px;
+}
+.spicy-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.spicy-text {
+    font-weight: 600;
+    color: #92400e;
+}
+.spicy-labels {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.8rem;
+    color: #6b7280;
+    margin-top: 8px;
+}
+/* Quantity Selector */
+.quantity-selector {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+}
+.quantity-selector .qty-btn {
+    width: 45px;
+    height: 45px;
+    border: 2px solid #e5e7eb;
+    background: white;
+    border-radius: 12px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.quantity-selector .qty-btn:hover {
+    border-color: #f97316;
+    background: #fff7ed;
+}
+.quantity-selector input {
+    width: 80px;
+    height: 45px;
+    text-align: center;
+    font-size: 1.3rem;
+    font-weight: 700;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+}
+/* Modal Footer */
+.modal-footer {
+    padding: 20px 25px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    background: #f9fafb;
+    border-radius: 0 0 20px 20px;
+}
+.modal-total {
+    display: flex;
+    flex-direction: column;
+}
+.modal-total span:first-child {
+    font-size: 0.85rem;
+    color: #6b7280;
+}
+.total-price {
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #f97316;
+}
+.modal-buttons {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.btn-add-to-cart {
+    flex: 1;
+    min-width: 150px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-add-to-cart:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+.btn-buy-now {
+    flex: 1;
+    min-width: 150px;
+    padding: 15px 20px;
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 0.95rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+}
+.btn-buy-now:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(239,68,68,0.4);
+}
+
+/* Toast Notification */
+.toast-message {
+    position: fixed;
+    bottom: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(135deg, #10b981, #059669);
+    color: white;
+    padding: 16px 30px;
+    border-radius: 12px;
+    font-weight: 600;
+    z-index: 9999;
+    animation: toastSlide 0.3s ease;
+    box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+}
+@@keyframes toastSlide {
+    from { transform: translateX(-50%) translateY(20px); opacity: 0; }
+    to { transform: translateX(-50%) translateY(0); opacity: 1; }
+}
+
+/* Login Required Modal */
+.login-modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 3000;
+    padding: 20px;
+}
+.login-modal-overlay.active {
+    display: flex;
+}
+.login-modal {
+    background: white;
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 420px;
+    width: 100%;
+    position: relative;
+    animation: modalSlideIn 0.3s ease;
+}
+.login-modal .modal-close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #f3f4f6;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+}
+.login-modal .modal-close:hover {
+    background: #ef4444;
+    color: white;
+}
+.login-modal-icon {
+    font-size: 4rem;
+    margin-bottom: 20px;
+}
+.login-modal h2 {
+    font-size: 1.5rem;
+    color: #1f2937;
+    margin-bottom: 15px;
+}
+.login-modal p {
+    color: #6b7280;
+    margin-bottom: 25px;
+    line-height: 1.6;
+}
+.login-modal-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+.login-modal-buttons a {
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.btn-login {
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+}
+.btn-login:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+.btn-register {
+    background: #f3f4f6;
+    color: #374151;
+}
+.btn-register:hover {
+    background: #e5e7eb;
+}
+</style>
+
+@section Scripts {
+<script>
+    // KIỂM TRA ĐĂNG NHẬP - HÀM NÀY CHẠY ĐẦU TIÊN
+    function checkLoginFirst() {
+        const userStr = localStorage.getItem('user');
+        if (!userStr || userStr === 'null' || userStr === '{}') {
+            showLoginModal();
+            return false;
+        }
+        try {
+            const user = JSON.parse(userStr);
+            if (!user || !user.username) {
+                showLoginModal();
+                return false;
+            }
+            return true;
+        } catch(e) {
+            showLoginModal();
+            return false;
+        }
+    }
+    
+    // Hiện modal yêu cầu đăng nhập
+    function showLoginModal() {
+        const modal = document.getElementById('loginRequiredModal');
+        if (modal) {
+            modal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+        }
+    }
+
+    let allCards = document.querySelectorAll('.product-card');
+    console.log('Total products loaded:', allCards.length);
+    
+    // Current product for modal
+    let currentProduct = {
+        code: '',
+        name: '',
+        price: 0,
+        image: '',
+        category: '',
+        broth: 'kimchi',
+        spicyLevel: 3,
+        quantity: 1
+    };
+    
+    // Filter by category
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+        btn.addEventListener('click', function() {
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            this.classList.add('active');
+            filterProducts();
+        });
+    });
+
+    function filterProducts() {
+        const activeTab = document.querySelector('.tab-btn.active');
+        const category = activeTab ? activeTab.dataset.category : 'all';
+        
+        console.log('Filtering - Category:', category);
+        
+        let visibleCount = 0;
+        
+        // Re-query cards in case DOM changed
+        allCards = document.querySelectorAll('.product-card');
+        
+        allCards.forEach(card => {
+            const cardCategory = card.dataset.category || '';
+            const matchCategory = category === 'all' || cardCategory === category;
+            
+            if (matchCategory) {
+                card.style.display = '';
+                visibleCount++;
+            } else {
+                card.style.display = 'none';
+            }
+        });
+        
+        console.log('Visible products:', visibleCount);
+        document.getElementById('visibleCount').textContent = visibleCount;
+        
+        // Show/hide empty state
+        const emptyState = document.getElementById('emptyState');
+        const productsGrid = document.getElementById('productsGrid');
+        if (visibleCount === 0) {
+            emptyState.style.display = 'block';
+            productsGrid.style.display = 'none';
+        } else {
+            emptyState.style.display = 'none';
+            productsGrid.style.display = 'grid';
+        }
+    }
+
+    // Check if product is Mì Cay (cần chọn nước dùng và cấp độ cay)
+    // Loại trừ: Mì Tương Đen, Mì Xào, Mì Phô Mai, Mì Tương Hàn - không cần chọn
+    function isMiCay(code, name) {
+        const nameLower = name.toLowerCase();
+        
+        // Các loại mì KHÔNG cần chọn nước dùng và cấp cay
+        const excludedTypes = [
+            'tương đen', 'tuong den',
+            'mì xào', 'mi xao', 'mỳ xào', 'my xao',
+            'phô mai', 'pho mai',
+            'tương hàn', 'tuong han',
+            'jajang', 'jjajang',
+            'carbonara'
+        ];
+        
+        // Nếu tên chứa các loại loại trừ -> không phải mì cay
+        for (const excluded of excludedTypes) {
+            if (nameLower.includes(excluded)) {
+                return false;
+            }
+        }
+        
+        // Chỉ các món có chữ "mì/mỳ" và thuộc danh mục mì cay mới cần chọn
+        const isMi = nameLower.includes('mì') || nameLower.includes('mi ') || 
+                     nameLower.includes('mỳ') || nameLower.includes('my ');
+        
+        // Kiểm tra thêm: phải có từ "cay" hoặc không có các từ loại trừ
+        const hasCay = nameLower.includes('cay');
+        
+        return isMi && hasCay;
+    }
+
+    // Add to cart from button (using data attributes)
+    function addToCartFromBtn(btn) {
+        console.log('Button clicked - addToCartFromBtn');
+        
+        // Kiểm tra đăng nhập ngay tại đây
+        if (!isLoggedIn()) {
+            console.log('Not logged in - blocking add to cart');
+            showLoginRequired();
+            return; // STOP - không cho thêm
+        }
+        
+        const code = btn.dataset.code;
+        const name = btn.dataset.name;
+        const price = btn.dataset.price;
+        const image = btn.dataset.image;
+        const productId = btn.dataset.id || 0;
+        addToCart(code, name, price, image, productId);
+    }
+
+    // Check if user is logged in - kiểm tra chặt chẽ
+    function isLoggedIn() {
+        try {
+            const userStr = localStorage.getItem('user');
+            if (!userStr || userStr === 'null' || userStr === '{}') {
+                console.log('User not logged in: no user data');
+                return false;
+            }
+            const user = JSON.parse(userStr);
+            const loggedIn = user && user.username && user.username.length > 0;
+            console.log('Login check:', loggedIn ? 'Logged in as ' + user.username : 'Not logged in');
+            return loggedIn;
+        } catch (e) {
+            console.log('Login check error:', e);
+            return false;
+        }
+    }
+
+    // Show login required modal
+    function showLoginRequired() {
+        console.log('Showing login required modal');
+        document.getElementById('loginRequiredModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close login required modal
+    function closeLoginRequired() {
+        document.getElementById('loginRequiredModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Add to cart - check if Mì Cay to show modal
+    function addToCart(code, name, price, image, productId) {
+        console.log('addToCart called - checking login...');
+        
+        // Check login first - QUAN TRỌNG
+        if (!isLoggedIn()) {
+            console.log('User not logged in - showing modal');
+            showLoginRequired();
+            return; // STOP HERE - không thêm vào giỏ
+        }
+        
+        console.log('User is logged in - proceeding to add');
+        
+        console.log('Adding to cart:', code, name, price, image, productId);
+        
+        // Get category from card by code
+        const cards = document.querySelectorAll('.product-card');
+        let category = '';
+        cards.forEach(card => {
+            const btn = card.querySelector('.btn-add');
+            if (btn && btn.dataset.code === code) {
+                category = card.dataset.category;
+            }
+        });
+        
+        // Luôn mở modal để chọn số lượng (ẩn nước dùng/cấp cay nếu không phải mì cay)
+        openProductModal(code, name, price, image, category, productId);
+    }
+
+    // Open product modal
+    function openProductModal(code, name, price, image, category, productId) {
+        const isMiCayProduct = isMiCay(code, name) || category === 'mi-cay';
+        
+        currentProduct = {
+            code: code,
+            name: name,
+            price: parseFloat(price),
+            image: image,
+            category: category,
+            productId: parseInt(productId) || 0,
+            broth: isMiCayProduct ? 'kimchi' : null,
+            spicyLevel: isMiCayProduct ? 3 : 0,
+            quantity: 1
+        };
+        
+        // Update modal content
+        document.getElementById('modalProductImage').src = '/images/products/' + image;
+        document.getElementById('modalProductName').textContent = name;
+        document.getElementById('modalProductDesc').textContent = isMiCayProduct 
+            ? 'Món mì cay đặc trưng của Mỳ Cay Sasin - Chọn nước dùng và cấp độ cay'
+            : 'Món ăn ngon từ Mỳ Cay Sasin';
+        document.getElementById('modalProductPrice').textContent = formatPrice(currentProduct.price);
+        
+        // Reset options
+        document.getElementById('spicyLevel').value = 3;
+        document.getElementById('modalQuantity').value = 1;
+        updateSpicyDisplay(3);
+        
+        // Reset broth selection
+        document.querySelectorAll('#brothTypeGroup .option-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.value === 'kimchi') btn.classList.add('active');
+        });
+        
+        // Show/hide options based on category - CHỈ MÌ CAY mới hiện nước dùng và cấp cay
+        document.getElementById('brothTypeGroup').style.display = isMiCayProduct ? 'block' : 'none';
+        document.getElementById('spicyLevelGroup').style.display = isMiCayProduct ? 'block' : 'none';
+        
+        // Update total price
+        updateTotalPrice();
+        
+        // Show modal
+        document.getElementById('productModal').classList.add('active');
+        document.body.style.overflow = 'hidden';
+    }
+
+    // Close product modal
+    function closeProductModal() {
+        document.getElementById('productModal').classList.remove('active');
+        document.body.style.overflow = '';
+    }
+
+    // Select option (broth type)
+    function selectOption(btn, type) {
+        const group = btn.closest('.option-buttons');
+        group.querySelectorAll('.option-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        if (type === 'broth') {
+            currentProduct.broth = btn.dataset.value;
+        }
+    }
+
+    // Update spicy level display
+    function updateSpicyDisplay(value) {
+        const level = parseInt(value);
+        currentProduct.spicyLevel = level;
+        
+        document.getElementById('spicyNumber').textContent = level;
+        
+        // Update text description
+        let text = '';
+        if (level <= 2) text = 'Không cay';
+        else if (level <= 4) text = 'Cay nhẹ';
+        else if (level <= 6) text = 'Cay vừa';
+        else if (level <= 8) text = 'Cay nhiều';
+        else text = 'Siêu cay';
+        document.getElementById('spicyText').textContent = text;
+        
+        // Update pepper icons
+        let peppers = '';
+        for (let i = 0; i < level; i++) {
+            peppers += '🌶️';
+        }
+        document.getElementById('spicyPeppers').textContent = peppers;
+        
+        // Update slider background color
+        const slider = document.getElementById('spicyLevel');
+        const percent = ((level - 1) / 9) * 100;
+        slider.style.background = `linear-gradient(to right, #fef3c7 0%, #f97316 ${percent}%, #dc2626 100%)`;
+    }
+
+    // Change quantity
+    function changeQuantity(delta) {
+        let qty = parseInt(document.getElementById('modalQuantity').value) + delta;
+        if (qty < 1) qty = 1;
+        if (qty > 99) qty = 99;
+        
+        document.getElementById('modalQuantity').value = qty;
+        currentProduct.quantity = qty;
+        updateTotalPrice();
+    }
+
+    // Update total price
+    function updateTotalPrice() {
+        const total = currentProduct.price * currentProduct.quantity;
+        document.getElementById('modalTotalPrice').textContent = formatPrice(total);
+    }
+
+    // Format price
+    function formatPrice(price) {
+        return new Intl.NumberFormat('vi-VN').format(price) + 'đ';
+    }
+
+    // Confirm add to cart from modal
+    function confirmAddToCart() {
+        // Kiểm tra đăng nhập lần nữa để chắc chắn
+        if (!isLoggedIn()) {
+            closeProductModal();
+            showLoginRequired();
+            return;
+        }
+        
+        const broth = currentProduct.broth;
+        const spicy = currentProduct.spicyLevel;
+        const qty = currentProduct.quantity;
+        
+        // Get broth name
+        const brothNames = { kimchi: 'Kim Chi', soyum: 'Soyum', sincay: 'Sincay' };
+        const brothName = brothNames[broth] || broth;
+        
+        addToCartDirect(
+            currentProduct.code, 
+            currentProduct.name, 
+            currentProduct.price, 
+            currentProduct.image,
+            brothName,
+            spicy,
+            qty,
+            currentProduct.productId
+        );
+        
+        closeProductModal();
+    }
+    
+    // Mua ngay - thêm vào giỏ và chuyển đến trang giỏ hàng
+    function buyNow() {
+        // Kiểm tra đăng nhập
+        if (!isLoggedIn()) {
+            closeProductModal();
+            showLoginRequired();
+            return;
+        }
+        
+        const broth = currentProduct.broth;
+        const spicy = currentProduct.spicyLevel;
+        const qty = currentProduct.quantity;
+        
+        // Get broth name
+        const brothNames = { kimchi: 'Kim Chi', soyum: 'Soyum', sincay: 'Sincay' };
+        const brothName = brothNames[broth] || broth;
+        
+        addToCartDirect(
+            currentProduct.code, 
+            currentProduct.name, 
+            currentProduct.price, 
+            currentProduct.image,
+            brothName,
+            spicy,
+            qty,
+            currentProduct.productId
+        );
+        
+        closeProductModal();
+        
+        // Chuyển đến trang giỏ hàng
+        window.location.href = '/GioHang';
+    }
+
+    // Get or create session ID for guest users
+    function getSessionId() {
+        let sessionId = localStorage.getItem('sessionId');
+        if (!sessionId) {
+            sessionId = 'sess_' + Date.now() + '_' + Math.random().toString(36).substr(2, 9);
+            localStorage.setItem('sessionId', sessionId);
+        }
+        return sessionId;
+    }
+
+    // Get customer ID if logged in
+    function getCustomerId() {
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        return user.id || null;
+    }
+
+    // Direct add to cart - save to both localStorage and API
+    function addToCartDirect(code, name, price, image, broth, spicyLevel, quantity, productId) {
+        // Save to localStorage for immediate UI update
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        
+        const existing = cart.find(item => {
+            if (broth) {
+                return item.code === code && item.broth === broth && item.spicyLevel === spicyLevel;
+            }
+            return item.code === code && !item.broth;
+        });
+        
+        if (existing) {
+            existing.quantity += quantity;
+        } else {
+            const cartItem = { 
+                code, 
+                name, 
+                price: parseFloat(price), 
+                image: image,
+                quantity: quantity,
+                productId: parseInt(productId) || 0
+            };
+            
+            if (broth) {
+                cartItem.broth = broth;
+                cartItem.spicyLevel = spicyLevel;
+                cartItem.displayName = `${name} (${broth}, Cấp ${spicyLevel})`;
+            }
+            
+            cart.push(cartItem);
+        }
+        
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+        
+        // Also save to API backend
+        const customerId = getCustomerId();
+        const sessionId = getSessionId();
+        
+        // Use actual productId from database
+        const actualProductId = parseInt(productId) || 1;
+        
+        fetch('/api/cart', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                customerId: customerId,
+                sessionId: sessionId,
+                productId: actualProductId,
+                quantity: quantity,
+                spicyLevel: spicyLevel || 0,
+                brothType: broth || null,
+                note: null
+            })
+        }).then(res => res.json())
+          .then(data => console.log('Cart API:', data))
+          .catch(err => console.log('Cart API error (using localStorage):', err));
+        
+        let message = '✓ Đã thêm "' + name + '"';
+        if (broth) {
+            message += ` (${broth}, Cấp ${spicyLevel})`;
+        }
+        message += ' vào giỏ hàng!';
+        showToast(message);
+        
+        // Animate cart badge
+        const badge = document.getElementById('cartCount');
+        if (badge) {
+            badge.style.transform = 'scale(1.3)';
+            setTimeout(() => badge.style.transform = 'scale(1)', 200);
+        }
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+        const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+        const badge = document.getElementById('cartCount');
+        if (badge) badge.textContent = count;
+    }
+
+    function showToast(message) {
+        // Remove existing toast
+        const existingToast = document.querySelector('.toast-message');
+        if (existingToast) existingToast.remove();
+        
+        const toast = document.createElement('div');
+        toast.className = 'toast-message';
+        toast.innerHTML = message;
+        document.body.appendChild(toast);
+        setTimeout(() => toast.remove(), 3000);
+    }
+
+    // Close modal on overlay click
+    document.getElementById('productModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeProductModal();
+        }
+    });
+
+    // Close login modal on overlay click
+    document.getElementById('loginRequiredModal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            closeLoginRequired();
+        }
+    });
+
+    // Close modal on Escape key
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            closeProductModal();
+            closeLoginRequired();
+        }
+    });
+
+    updateCartCount();
+</script>
+}

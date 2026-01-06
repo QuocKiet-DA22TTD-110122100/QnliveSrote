@@ -1,0 +1,233 @@
+@page
+@{
+    ViewData["Title"] = "Quản lý Chi nhánh";
+    Layout = "_AdminLayout";
+}
+
+<div class="admin-header">
+    <h1>🏪 Quản lý Chi nhánh</h1>
+    <button class="btn btn-primary" onclick="showAddModal()">
+        <i class="fas fa-plus"></i> Thêm chi nhánh
+    </button>
+</div>
+
+<div class="stats-row">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #10b981;">🏪</div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalBranches">0</span>
+            <span class="stat-label">Tổng chi nhánh</span>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: #3b82f6;">👥</div>
+        <div class="stat-info">
+            <span class="stat-value" id="totalStaff">0</span>
+            <span class="stat-label">Tổng nhân viên</span>
+        </div>
+    </div>
+</div>
+
+<div class="data-table-container">
+    <table class="data-table" id="branchTable">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Tên chi nhánh</th>
+                <th>Địa chỉ</th>
+                <th>Quận/Huyện</th>
+                <th>SĐT</th>
+                <th>Giờ mở cửa</th>
+                <th>Nhân viên</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="branchTableBody">
+            <tr><td colspan="8" class="loading">Đang tải...</td></tr>
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal Thêm/Sửa -->
+<div class="modal-overlay" id="branchModal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3 id="modalTitle">Thêm chi nhánh</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <form id="branchForm" onsubmit="saveBranch(event)">
+            <input type="hidden" id="branchId">
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Tên chi nhánh *</label>
+                    <input type="text" id="tenChiNhanh" required>
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <input type="text" id="diaChi">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Quận/Huyện</label>
+                    <input type="text" id="quanHuyen">
+                </div>
+                <div class="form-group">
+                    <label>Thành phố</label>
+                    <input type="text" id="thanhPho" value="TP.HCM">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="text" id="soDienThoai">
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="email">
+                </div>
+            </div>
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Giờ mở cửa</label>
+                    <input type="text" id="gioMoCua" value="10:00">
+                </div>
+                <div class="form-group">
+                    <label>Giờ đóng cửa</label>
+                    <input type="text" id="gioDongCua" value="22:00">
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+                <button type="submit" class="btn btn-primary">Lưu</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+let branches = [];
+
+async function loadBranches() {
+    try {
+        const res = await fetch('/api/branch');
+        branches = await res.json();
+        renderTable();
+        updateStats();
+    } catch (e) {
+        console.error('Error:', e);
+    }
+}
+
+function renderTable() {
+    const tbody = document.getElementById('branchTableBody');
+    if (branches.length === 0) {
+        tbody.innerHTML = '<tr><td colspan="8" class="empty">Chưa có chi nhánh nào</td></tr>';
+        return;
+    }
+    
+    tbody.innerHTML = branches.map(b => `
+        <tr>
+            <td>${b.maCN}</td>
+            <td><strong>${b.tenChiNhanh}</strong></td>
+            <td>${b.diaChi || '-'}</td>
+            <td>${b.quanHuyen || '-'}</td>
+            <td>${b.soDienThoai || '-'}</td>
+            <td>${b.gioMoCua} - ${b.gioDongCua}</td>
+            <td><span class="badge">${b.soNhanVien} người</span></td>
+            <td>
+                <button class="btn-icon" onclick="editBranch(${b.maCN})" title="Sửa">
+                    <i class="fas fa-edit"></i>
+                </button>
+                <button class="btn-icon btn-danger" onclick="deleteBranch(${b.maCN})" title="Xóa">
+                    <i class="fas fa-trash"></i>
+                </button>
+            </td>
+        </tr>
+    `).join('');
+}
+
+function updateStats() {
+    document.getElementById('totalBranches').textContent = branches.length;
+    const totalStaff = branches.reduce((sum, b) => sum + b.soNhanVien, 0);
+    document.getElementById('totalStaff').textContent = totalStaff;
+}
+
+function showAddModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm chi nhánh';
+    document.getElementById('branchForm').reset();
+    document.getElementById('branchId').value = '';
+    document.getElementById('thanhPho').value = 'TP.HCM';
+    document.getElementById('gioMoCua').value = '10:00';
+    document.getElementById('gioDongCua').value = '22:00';
+    document.getElementById('branchModal').classList.add('active');
+}
+
+async function editBranch(id) {
+    const branch = branches.find(b => b.maCN === id);
+    if (!branch) return;
+    
+    document.getElementById('modalTitle').textContent = 'Sửa chi nhánh';
+    document.getElementById('branchId').value = id;
+    document.getElementById('tenChiNhanh').value = branch.tenChiNhanh;
+    document.getElementById('diaChi').value = branch.diaChi || '';
+    document.getElementById('quanHuyen').value = branch.quanHuyen || '';
+    document.getElementById('thanhPho').value = branch.thanhPho || 'TP.HCM';
+    document.getElementById('soDienThoai').value = branch.soDienThoai || '';
+    document.getElementById('email').value = branch.email || '';
+    document.getElementById('gioMoCua').value = branch.gioMoCua || '10:00';
+    document.getElementById('gioDongCua').value = branch.gioDongCua || '22:00';
+    document.getElementById('branchModal').classList.add('active');
+}
+
+async function saveBranch(e) {
+    e.preventDefault();
+    const id = document.getElementById('branchId').value;
+    const data = {
+        tenChiNhanh: document.getElementById('tenChiNhanh').value,
+        diaChi: document.getElementById('diaChi').value,
+        quanHuyen: document.getElementById('quanHuyen').value,
+        thanhPho: document.getElementById('thanhPho').value,
+        soDienThoai: document.getElementById('soDienThoai').value,
+        email: document.getElementById('email').value,
+        gioMoCua: document.getElementById('gioMoCua').value,
+        gioDongCua: document.getElementById('gioDongCua').value,
+        trangThai: true
+    };
+    
+    const url = id ? `/api/branch/${id}` : '/api/branch';
+    const method = id ? 'PUT' : 'POST';
+    
+    const res = await fetch(url, {
+        method,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    
+    if (res.ok) {
+        closeModal();
+        loadBranches();
+        alert(id ? 'Cập nhật thành công!' : 'Thêm chi nhánh thành công!');
+    }
+}
+
+async function deleteBranch(id) {
+    if (!confirm('Bạn có chắc muốn xóa chi nhánh này?')) return;
+    
+    const res = await fetch(`/api/branch/${id}`, { method: 'DELETE' });
+    if (res.ok) {
+        loadBranches();
+        alert('Đã xóa chi nhánh!');
+    }
+}
+
+function closeModal() {
+    document.getElementById('branchModal').classList.remove('active');
+}
+
+loadBranches();
+</script>
+}

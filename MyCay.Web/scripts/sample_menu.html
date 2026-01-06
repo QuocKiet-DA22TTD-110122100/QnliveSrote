@@ -1,0 +1,656 @@
+﻿
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no" />
+    <title> Thực đơn</title>
+    <meta name="description" content="Thực đơn" />
+    <link rel="icon" href="./assets/icons/group-4235.svg">
+        <meta property="og:image" itemprop="thumbnailUrl" content="https://sasin.vn:8002//Resource/Image/PageInfo/Menu/Image/Detail.webp">
+
+
+
+
+    <link href="/lib/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet" />
+
+    <script src="/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="/css/gather.min.css" />
+    <!-- Google Tag Manager -->
+    <script>
+        (function (w, d, s, l, i) {
+            w[l] = w[l] || []; w[l].push({
+                'gtm.start':
+                    new Date().getTime(), event: 'gtm.js'
+            }); var f = d.getElementsByTagName(s)[0],
+                j = d.createElement(s), dl = l != 'dataLayer' ? '&l=' + l : ''; j.async = true; j.src =
+                    'https://www.googletagmanager.com/gtm.js?id=' + i + dl; f.parentNode.insertBefore(j, f);
+        })(window, document, 'script', 'dataLayer', 'GTM-WJQM22QH');</script>
+    <!-- End Google Tag Manager -->
+    <meta name="google-site-verification" content="auRO2_BwTPnfSDacXz-2DuUBDO40WVYYESIo5hCpE" />
+    <meta name="google-site-verification" content="ggpbW4oIiJzrtCSqc5lIk2LTvR1UZx-XYYESIo5hCpE" />
+
+</head>
+<body>
+    <!-- Google Tag Manager (noscript) -->
+    <noscript b-9sz6nx3eeh>
+        <iframe b-9sz6nx3eeh src="https://www.googletagmanager.com/ns.html?id=GTM-WJQM22QH"
+                height="0" width="0" style="display:none;visibility:hidden"></iframe>
+    </noscript>
+    <!-- End Google Tag Manager (noscript) -->
+    
+
+<div class="headerContainer" id="header">
+    <div class="header">
+        <div class="d-flex flex-row">
+            <a href="/">
+                <div class="headerLogo">
+                    <img alt="..." loading="lazy" src="/assets/icons/group-2.svg" />
+                </div>
+            </a>
+            <div class="headerItem">
+                <a class="  active barlow-bold-24" href="/menu/index/5">Th&#x1EF1;c &#x111;&#x1A1;n</a>
+            </div>
+            <div class="headerItem">
+                <a class=" barlow-regular-24" href="/promotion">&#x1AF;u &#x111;&#xE3;i</a>
+            </div>
+            <div class="headerItem">
+                <a class=" barlow-regular-24" href="/news">Tin t&#x1EE9;c</a>
+            </div>
+            <div class="headerItem">
+                <a class=" barlow-regular-24" href="/recruitment">Tuy&#x1EC3;n d&#x1EE5;ng</a>
+            </div>
+
+                <div class="headerItem">
+                    <a href="https://franchise.sasin.vn/" target="_blank" class=" barlow-regular-24">Nh&#x1B0;&#x1EE3;ng quy&#x1EC1;n</a>
+                </div>
+                <div class="headerItem">
+                    <a href="https://shop.sasin.vn/" target="_blank" class=" barlow-regular-24">Sasin Shop</a>
+                </div>
+        </div>
+        <div class="d-flex flex-row">
+            <div class="headerItem allScreen">
+                <a class="text-decoration-none" href="/restaurant">
+                    <span class="buttom-firebrickBorder-transparent bg-transparent text-21-700w barlow-bold-24">Nh&#xE0; h&#xE0;ng</span>
+                </a>
+            </div>
+            <div class="headerItem">
+                <a class=" barlow-regular-24" href="/contact">Li&#xEA;n h&#x1EC7;</a>
+            </div>
+            <div class="headerItem m-0">
+                <a class="headerItem barlow-bold-24 m-0 text-decoration-none textColor-darkgray" id="setLanguageByCookei" href="/Home/SetLanguage"></a>
+            </div>
+            <section class="justMobile">
+                <div class="dropdown">
+                    <button class="border-0  bg-transparent " type="button" id="dropdownHeaderButton" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                        <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="19.481" height="16.004" viewBox="0 0 19.481 16.004">
+                            <defs>
+                                <clipPath id="clip-path">
+                                    <rect width="19.481" height="16.004" fill="none" />
+                                </clipPath>
+                            </defs>
+                            <g id="Repeat_Grid_24" data-name="Repeat Grid 24" clip-path="url(#clip-path)">
+                                <g transform="translate(7479.981 -15974.998)">
+                                    <g id="Component_68_1" data-name="Component 68 – 1" transform="translate(-7478.481 15976.498)">
+                                        <line id="Line_112" data-name="Line 112" x2="16.481" fill="none" stroke="#c92c3c" stroke-linecap="round" stroke-width="3" />
+                                        <line id="Line_113" data-name="Line 113" x2="16" transform="translate(0.481 6.502)" fill="none" stroke="#c92c3c" stroke-linecap="round" stroke-width="3" />
+                                        <line id="Line_114" data-name="Line 114" x2="16.481" transform="translate(0 13.004)" fill="none" stroke="#c92c3c" stroke-linecap="round" stroke-width="3" />
+                                    </g>
+                                </g>
+                            </g>
+                        </svg>
+                    </button>
+                    <ul class="dropdown-menu" aria-labelledby="dropdownHeaderButton">
+                        <li class="d-flex justify-content-end">
+                            <svg xmlns="http://www.w3.org/2000/svg" style="transform:rotate(180deg)" xmlns:xlink="http://www.w3.org/1999/xlink" width="19.481" height="16.004" viewBox="0 0 19.481 16.004">
+                                <defs>
+                                    <clipPath id="clip-path">
+                                        <rect width="19.481" height="16.004" fill="none" />
+                                    </clipPath>
+                                </defs>
+                                <g id="Repeat_Grid_24" data-name="Repeat Grid 24" clip-path="url(#clip-path)">
+                                    <g transform="translate(7479.981 -15974.998)">
+                                        <g id="Component_68_1" data-name="Component 68 – 1" transform="translate(-7478.481 15976.498)">
+                                            <line id="Line_112" data-name="Line 112" x2="10" fill="none" stroke="#c92c3c" stroke-linecap="round" stroke-width="3" />
+                                            <line id="Line_113" data-name="Line 113" x2="16" transform="translate(0.481 6.502)" fill="none" stroke="#c92c3c" stroke-linecap="round" stroke-width="3" />
+                                            <line id="Line_114" data-name="Line 114" x2="10" transform="translate(0 13.004)" fill="none" stroke="#c92c3c" stroke-linecap="round" stroke-width="3" />
+                                        </g>
+                                    </g>
+                                </g>
+                            </svg>
+                        </li>
+                        <li><a class="dropdown-item barlow-bold-21 textColor-firebrick " href="/menu/index/5">Th&#x1EF1;c &#x111;&#x1A1;n</a></li>
+                        <li><a class="dropdown-item barlow-bold-21 " href="/promotion">&#x1AF;u &#x111;&#xE3;i</a></li>
+                        <li><a class="dropdown-item barlow-bold-21 " href="/news">Tin t&#x1EE9;c</a></li>
+                        <li><a class="dropdown-item barlow-bold-21 " href="/recruitment">Tuy&#x1EC3;n d&#x1EE5;ng</a></li>
+                            <li><a class="dropdown-item barlow-bold-21 " href="https://franchise.sasin.vn/" target="_blank">Nh&#x1B0;&#x1EE3;ng quy&#x1EC1;n</a></li>
+                            <li><a class="dropdown-item barlow-bold-21 " href="https://shop.sasin.vn/" target="_blank">Sasin Shop</a></li>
+                        <li><a class="dropdown-item barlow-bold-21 " href="/contact">Li&#xEA;n h&#x1EC7;</a></li>
+                        <li><a class="dropdown-item barlow-bold-21 border-botton-none" id="setLanguageByCookeiMobile" href="/Home/SetLanguage"></a></li>
+                    </ul>
+                </div>
+            </section>
+        </div>
+    </div>
+</div>
+    <!--Success Dialog Start-->
+    <div b-9sz6nx3eeh id="myModalSuccess" class="modal fade text-width:30%;" role="dialog">
+        <div b-9sz6nx3eeh class="modal-dialog">
+            <div b-9sz6nx3eeh class="modal-content">
+
+                <div b-9sz6nx3eeh class="modal-header">
+                    <h2 b-9sz6nx3eeh>Information</h2>
+                    <button b-9sz6nx3eeh type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div b-9sz6nx3eeh id="MyModalSuccessAlertBody" class="modal-body alert alert-success">
+                    this is a modal body. our message will appear here.
+                </div>
+
+                <div b-9sz6nx3eeh class="modal-footer">
+                    &nbsp;
+                    <button b-9sz6nx3eeh type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--Success Dialog End-->
+    <!--Error Dialog Start-->
+    <div b-9sz6nx3eeh id="myModalError" class="modal fade text-width:30%;" role="dialog">
+        <div b-9sz6nx3eeh class="modal-dialog">
+            <div b-9sz6nx3eeh class="modal-content">
+
+                <div b-9sz6nx3eeh class="modal-header">
+                    <h2 b-9sz6nx3eeh>Error</h2>
+                    <button b-9sz6nx3eeh type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div b-9sz6nx3eeh id="MyModalErrorAlertBody" class="modal-body alert alert-danger">
+                    this is a modal body. our message will appear here.
+                </div>
+
+                <div b-9sz6nx3eeh class="modal-footer">
+                    &nbsp;
+                    <button b-9sz6nx3eeh type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <!--Error Dialog End-->
+    
+<link rel="stylesheet" href="/css/menu.min.css" />
+<section>
+    <div class="virtual-header"></div>
+        <section class="menu">
+        <div class="mobileCategory">
+            <span class="barlow-black-150 textColor-gray-100">Th&#x1EF1;c &#x111;&#x1A1;n</span>
+
+            <div class="mobileCategoryItemList dropdown">
+
+                <button class="border-0  bg-transparent d-flex flex-column align-items-end" type="button" id="dropdownHomeMenuButton" data-bs-toggle="dropdown" aria-expanded="false" data-bs-display="static">
+                    <svg id="Group_4495" data-name="Group 4495" xmlns="http://www.w3.org/2000/svg" width="14.448" height="16.998" viewBox="0 0 14.448 16.998">
+                        <g id="Iconly_Bold_Paper" data-name="Iconly/Bold/Paper" transform="translate(0)">
+                            <g id="Paper">
+                                <path id="Path_3195" data-name="Path 3195" d="M8.289,0a.388.388,0,0,1,.387.391h0V3.128a2.846,2.846,0,0,0,2.811,2.839c.639,0,1.144.008,1.531.008h.143c.259,0,.607-.008.909-.008a.379.379,0,0,1,.379.382h0v6.833A3.8,3.8,0,0,1,10.67,17h-6.7A3.992,3.992,0,0,1,0,13H0V3.833A3.821,3.821,0,0,1,3.8,0H8.289Zm.9,10.964H4.611a.632.632,0,0,0-.631.629.639.639,0,0,0,.631.637H9.189a.639.639,0,0,0,.631-.637.632.632,0,0,0-.631-.629ZM7.456,6.714H4.611a.639.639,0,0,0-.631.637.632.632,0,0,0,.631.629H7.456a.632.632,0,0,0,.631-.629.639.639,0,0,0-.631-.637ZM9.9.77a.4.4,0,0,1,.692-.284l3.388,3.559a.405.405,0,0,1-.289.686c-.692,0-1.507,0-2.094-.006A1.715,1.715,0,0,1,9.9,3.01h0Z" transform="translate(0)" fill="#c92c3c" />
+                            </g>
+                        </g>
+                    </svg>
+                    <span class="textColor-firebrick barlow-bold-18">Danh m&#x1EE5;c</span>
+                </button>
+                <ul class="dropdown-menu m-0" aria-labelledby="dropdownHomeMenuButton">
+                    <li class="d-flex flex-row justify-content-between">
+                        <span class="barlow-regular-18">Ch&#x1ECD;n m&#xF3;n</span>
+                        <div class=" d-flex flex-column align-items-end">
+                            <svg id="Group_4495" data-name="Group 4495" xmlns="http://www.w3.org/2000/svg" width="14.448" height="16.998" viewBox="0 0 14.448 16.998">
+                                <g id="Iconly_Bold_Paper" data-name="Iconly/Bold/Paper" transform="translate(0)">
+                                    <g id="Paper">
+                                        <path id="Path_3195" data-name="Path 3195" d="M8.289,0a.388.388,0,0,1,.387.391h0V3.128a2.846,2.846,0,0,0,2.811,2.839c.639,0,1.144.008,1.531.008h.143c.259,0,.607-.008.909-.008a.379.379,0,0,1,.379.382h0v6.833A3.8,3.8,0,0,1,10.67,17h-6.7A3.992,3.992,0,0,1,0,13H0V3.833A3.821,3.821,0,0,1,3.8,0H8.289Zm.9,10.964H4.611a.632.632,0,0,0-.631.629.639.639,0,0,0,.631.637H9.189a.639.639,0,0,0,.631-.637.632.632,0,0,0-.631-.629ZM7.456,6.714H4.611a.639.639,0,0,0-.631.637.632.632,0,0,0,.631.629H7.456a.632.632,0,0,0,.631-.629.639.639,0,0,0-.631-.637ZM9.9.77a.4.4,0,0,1,.692-.284l3.388,3.559a.405.405,0,0,1-.289.686c-.692,0-1.507,0-2.094-.006A1.715,1.715,0,0,1,9.9,3.01h0Z" transform="translate(0)" fill="#c92c3c" />
+                                    </g>
+                                </g>
+                            </svg>
+                            <span class="textColor-firebrick barlow-bold-18">Danh m&#x1EE5;c</span>
+                        </div>
+                    </li>
+                            <li class="mobileItemGroup active">
+                                <a href="/menu/index/5">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        M&#xEC; Cay
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/6">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        M&#xEC; T&#x1B0;&#x1A1;ng &#x110;en
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/18">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        M&#xEC; X&#xE0;o
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/7">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        M&#xF3;n Kh&#xE1;c
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/10">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        M&#xF3;n Th&#xEA;m M&#xEC;
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/19">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        COMBO
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/3">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        L&#x1EA9;u H&#xE0;n Qu&#x1ED1;c
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/9">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        M&#xF3;n Th&#xEA;m L&#x1EA9;u
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/2">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        Khai V&#x1ECB;
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/8">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        Gi&#x1EA3;i Kh&#xE1;t
+                                    </span>
+                                </a>
+                            </li>
+                            <li class="mobileItemGroup">
+                                <a href="/menu/index/1">
+                                    <span class="icon me-2">
+                                        <img src="/assets/icons/ellipse-154.svg" alt="..." />
+                                    </span>
+                                    <span class="barlow-bold-21">
+                                        Panchan
+                                    </span>
+                                </a>
+                            </li>
+                </ul>
+
+            </div>
+
+        </div>
+        <div class="menuCategory">
+            <div class="category">
+                <p class="barlow-black-150 textColor-gray-100">Th&#x1EF1;c &#x111;&#x1A1;n</p>
+                <div class="categoryList" id="sectionContent">
+                            <a class="text-decoration-none" href="/menu/index/5?pageIndex=1">
+                                    <div class="icon active me-2">
+                                        <img class="iconPoint" style="" loading="lazy" alt="..." src="/assets/icons/ellipse-209.svg">
+                                    </div>
+                                    <span class="barlow-bold-24 textColor-firebrick">M&#xEC; Cay</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/6?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">M&#xEC; T&#x1B0;&#x1A1;ng &#x110;en</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/18?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">M&#xEC; X&#xE0;o</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/7?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">M&#xF3;n Kh&#xE1;c</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/10?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">M&#xF3;n Th&#xEA;m M&#xEC;</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/19?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">COMBO</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/3?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">L&#x1EA9;u H&#xE0;n Qu&#x1ED1;c</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/9?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">M&#xF3;n Th&#xEA;m L&#x1EA9;u</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/2?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">Khai V&#x1ECB;</span>
+                            </a>
+                            <a class="text-decoration-none" href="/menu/index/8?pageIndex=1">
+                                    <div class="icon me-2"></div>
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">Gi&#x1EA3;i Kh&#xE1;t</span>
+                            </a>
+                            <div class="mb-2 mt-2" id="appendData">
+                                <span class="cursor-pointer" onclick="AppendData()">
+                                    <img class="me-2" alt="..." loading="lazy" src="/assets/icons/icon-openreload.svg">
+                                    <span class="barlow-bold-24 textColor-dimgray-100 opacity-fifty-percent">Xem th&#xEA;m</span>
+                                </span>
+                            </div>
+
+
+                </div>
+            </div>
+        </div>
+            <div class="backgroundMenu">
+                <div class="itemList">
+                    <div class="menuItem">
+                        <div class="row justify-content-center position-relative">
+                                        <div class="col-6">
+                                                <img class="imgIntro" loading="lazy" alt="..." src="https://sasin.vn:8002//Resource/Image/MenuItemGroup/MG00005/Image/MenuItemGroup.webp">
+
+                                        </div>
+                                        <section class="col-6 d-flex text-center align-items-center">
+
+
+                                            <p class="barlow-bold-60 w-100 textColor-firebrick">M&#xEC; Cay</p>
+
+                                        </section>
+
+                            <div class="row mt-5r mt-4">
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4  item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00012/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; Th&#x1EAD;p C&#x1EA9;m No N&#xEA; (Kim Chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, th&#x1ECB;t heo, t&#xF4;m, c&#xE1; vi&#xEA;n, tr&#x1EE9;ng ng&#xE2;m t&#x1B0;&#x1A1;ng, thanh cua, ch&#x1EA3; c&#xE1; H&#xE0;n Qu&#x1ED1;c, kim chi, n&#x1EA5;m, s&#xFA;p l&#x1A1;, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">77,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4 eventItem item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/MI0008/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; Th&#x1EAD;p C&#x1EA9;m (Kim chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, Th&#x1ECB;t b&#xF2;, t&#xF4;m, m&#x1EF1;c, ch&#x1EA3; c&#xE1; H&#xE0;n Qu&#x1ED1;c, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">69,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4  item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00018/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; H&#x1EA3;i S&#x1EA3;n (Kim chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, t&#xF4;m, m&#x1EF1;c, ch&#x1EA3; c&#xE1; H&#xE0;n Qu&#x1ED1;c, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, ng&#xF2; gai, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m.&#xD;&#xA;</p>
+                                        <p class="barlow-bold-21 mb-0">62,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4 eventItem item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/MI0005/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; H&#x1EA3;i S&#x1EA3;n Thanh Cua (Kim chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, T&#xF4;m, thanh cua, ch&#x1EA3; c&#xE1; H&#xE0;n Qu&#x1ED1;c, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">62,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4  item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00021/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; B&#xF2; M&#x1EF9; (Kim chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, th&#x1ECB;t b&#xF2;, x&#xFA;c x&#xED;ch, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">59,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4 eventItem item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00022/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; B&#xF2; Tr&#x1EE9;ng (Kim chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, th&#x1ECB;t b&#xF2;, tr&#x1EE9;ng l&#xF2;ng &#x111;&#xE0;o, x&#xFA;c x&#xED;ch, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">65,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4  item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00109/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; &#x110;&#xF9;i G&#xE0; (Kim chi/ Soyum/ Sincay)</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, &#x111;&#xF9;i g&#xE0;, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai, ch&#x1EA3; c&#xE1; H&#xE0;n Qu&#x1ED1;c</p>
+                                        <p class="barlow-bold-21 mb-0">59,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4 eventItem item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/MI0004/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; Kim Chi C&#xE1;</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, phi l&#xEA; c&#xE1;, n&#x1EA5;m, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">49,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4  item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00027/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; Kim Chi Gogi</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, th&#x1ECB;t heo, x&#xFA;c x&#xED;ch, kim chi, c&#xE1; vi&#xEA;n, kim chi, s&#xFA;p l&#x1A1;, n&#x1EA5;m, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">49,000VN&#x110;</p>
+                                    </div>
+                                    <div class=" col-6 col-md-4 col-lg-3 mb-4 eventItem item">
+                                        <img class="w-100 mt-lg-3" alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/MenuItem/M00011/Image/MenuItem.webp">
+                                        <p class="barlow-bold-24 textColor-firebrick mb-1 mb-lg-2 text-limit-2-line min-height-2-lines">M&#xEC; Kim Chi X&#xFA;c X&#xED;ch C&#xE1; Vi&#xEA;n</p>
+                                        <p class="barlow-regular-21 mb-1 mb-lg-2 text-limit-3-line text-justify min-height-3-lines">M&#xEC; cay Sasin, x&#xFA;c x&#xED;ch, kim chi, n&#x1EA5;m, c&#xE1; vi&#xEA;n, s&#xFA;p l&#x1A1;, b&#x1EAF;p c&#x1EA3;i t&#xED;m, ch&#x1EA3; c&#xE1; H&#xE0;n Qu&#x1ED1;c, ng&#xF2; gai</p>
+                                        <p class="barlow-bold-21 mb-0">39,000VN&#x110;</p>
+                                    </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    </section>
+<script>
+    let pageIndex = 1;
+    let totalPages = 2;
+    function AppendData() {
+        pageIndex++;
+        $.ajax({
+            url: '/Menu/GetCategoryByPageIndex',
+            type: "get",
+            data: { pageIndex },
+            success: function (result, status) {
+                if (status == "success" && result) {
+                    $("#sectionContent").append(result);
+                    $('#appendData').remove();
+                }
+            }
+        });
+    }
+</script>
+        <div class="promotionListContainer">
+        <div id="carouselPromotionDetailIndicators" class="carousel slide" data-bs-ride="carousel">
+            <div class="d-flex justify-content-lg-between justify-content-center mb-4">
+                <h1 class="barlow-bold-60 textColor-firebrick">&#x1AF;u &#x111;&#xE3;i</h1>
+                <div class="carousel-indicators d-none d-lg-flex">
+                    <b class="me-2 textColor-gray-100" id="indexCarouselPromotion">1/0</b>
+                </div>
+
+            </div>
+            <div class="carousel-inner">
+            </div>
+            <button style="left:-12%;" class="carousel-control-prev" type="button" data-bs-target="#carouselPromotionDetailIndicators" data-bs-slide="prev">
+                <img style="transform:rotate(180deg);" loading="lazy" src="/assets/icons/arrowdowncircle.svg" alt="..." />
+            </button>
+            <button style="right:-12%;" class="carousel-control-next" type="button" data-bs-target="#carouselPromotionDetailIndicators" data-bs-slide="next">
+                <img src="/assets/icons/arrowdowncircle.svg" loading="lazy" alt="..." />
+            </button>
+        </div>
+    </div>
+<script>
+    var totalItems = $('.carousel-item').length;
+    var currentIndex = $('.carousel-item.active').index() + 1;
+    var myCarousel = document.getElementById('carouselPromotionDetailIndicators')
+    myCarousel.addEventListener('slid.bs.carousel', function () {
+        currentIndex = $('.carousel-item.active').index() + 1;
+        $('#indexCarouselPromotion').text('' + currentIndex + ' / ' + totalItems + '');
+    });
+</script>
+
+        <section>
+        <div class="newsContainer row p-0">
+            <div class="col-12 col-lg-3 contentBox mb-lg-5">
+                <h1 class="barlow-bold-60 textColor-firebrick">B&#xE0;i vi&#x1EBF;t &amp; th&#xF4;ng tin</h1>
+                <a class="barlow-bold-18 textColor-black d-none d-lg-block" href="/news">Xem to&#xE0;n b&#x1ED9; <img class="ms-2 width-icon-15" loading="lazy" alt="..." src="/assets/icons/arrow-direct.svg" /></a>
+            </div>
+            <div class="col-12 col-lg-9 p-xl-0 row listNews">
+                    <div class="col-4 contentBox">
+                        <a class="text-decoration-none" href="/news/detail/97">
+                            <div class="boxImage">
+                                <img alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/News/NEWS00041/Images/NEWS00041_400_600.webp" />
+                            </div>
+                            <div class="boxContent">
+                                <div class="content">
+                                    <p class="barlow-bold-21 text-limit-3-line mb-0 me-3 textColor-white text-justify">SASIN T&#x1EA0;I H&#xC0; N&#x1ED8;I &amp; MI&#x1EC0;N B&#x1EAE;C: CH&#x1EC8; C&#xD3; 2 C&#x1EEC;A H&#xC0;NG CH&#xCD;NH TH&#x1EE8;C - KH&#xD4;NG GIAN CHU&#x1EA8;N H&#xC0;N, TR&#x1EA2;I NGHI&#x1EC6;M CHU&#x1EA8;N V&#x1ECA;</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-4 contentBox">
+                        <a class="text-decoration-none" href="/news/detail/96">
+                            <div class="boxImage">
+                                <img alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/News/NEWS00040/Images/NEWS00040_400_600.webp" />
+                            </div>
+                            <div class="boxContent">
+                                <div class="content">
+                                    <p class="barlow-bold-21 text-limit-3-line mb-0 me-3 textColor-white text-justify">&#x110;I&#x1EC2;M DANH 3 NH&#xC0; H&#xC0;NG SASIN M&#x1EDA;I NH&#x1EA4;T TH&#xC1;NG 9 N&#xC0;Y: KH&#xD4;NG GIAN M&#x1EDA;I &#x2013; TR&#x1EA2;I NGHI&#x1EC6;M M&#x1EDA;I CHO T&#xCD;N &#x110;&#x1ED2; M&#xCC; CAY</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    <div class="col-4 contentBox">
+                        <a class="text-decoration-none" href="/news/detail/95">
+                            <div class="boxImage">
+                                <img alt="..." loading="lazy" src="https://sasin.vn:8002//Resource/Image/News/NEWS00039/Images/NEWS00039_400_600.webp" />
+                            </div>
+                            <div class="boxContent">
+                                <div class="content">
+                                    <p class="barlow-bold-21 text-limit-3-line mb-0 me-3 textColor-white text-justify">SASIN CH&#xCD;NH TH&#x1EE8;C RA M&#x1EAE;T CH&#x1AF;&#x1A0;NG TR&#xCC;NH MEMBERSHIP - &#x102;N M&#xCC; CAY T&#xCD;CH &#x110;I&#x1EC2;M, NH&#x1EAC;N QU&#xC0; LI&#x1EC0;N TAY!</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+            </div>
+        </div>
+    </section>
+
+</section>
+
+
+    <ul b-9sz6nx3eeh class="social-sticky-buttons position-fixed t list-style-none">
+            <li b-9sz6nx3eeh class="social-sticky-buttons__item position-relative">
+                <a b-9sz6nx3eeh class="position-absolute t" href="https://m.me/Sasin.MicayHanQuoc" title="Facebook" target="_blank" rel="nofollow">
+                    <div b-9sz6nx3eeh class="social-sticky-buttons__item-image img-wrapper-contain">
+                        <img width="28" height="28" src="/assets/icons/icon-messenger.svg" alt="Message" decoding="async" loading="lazy" sizes="(max-width: 28px) 100vw, 28px" title="Message">
+                    </div>
+                    <span b-9sz6nx3eeh class="social-sticky-buttons__item-text ws-nowrap f-primary-700 t">Facebook</span>
+                </a>
+            </li>
+
+            <li b-9sz6nx3eeh class="social-sticky-buttons__item position-relative">
+                <a b-9sz6nx3eeh class="position-absolute t" href="https://zalo.me/sasinmicayhanquoc" title="Zalo" target="_blank" rel="nofollow">
+                    <div b-9sz6nx3eeh class="social-sticky-buttons__item-image img-wrapper-contain">
+                        <img width="32" height="32" src="/assets/icons/icon-zalo.svg" alt="Zalo" decoding="async" loading="lazy" sizes="(max-width: 32px) 100vw, 32px" title="Zalo">
+                    </div>
+                    <span b-9sz6nx3eeh class="social-sticky-buttons__item-text ws-nowrap f-primary-700 t">Zalo</span>
+                </a>
+            </li>
+
+            <li b-9sz6nx3eeh class="social-sticky-buttons__item position-relative">
+                <a b-9sz6nx3eeh class="position-absolute t" href="tel: 19000131" title="Hotline" target="_blank" rel="nofollow">
+                    <div b-9sz6nx3eeh class="social-sticky-buttons__item-image img-wrapper-contain">
+                        <img width="24" height="24" src="/assets/icons/icon-phone.svg" alt="Phone" decoding="async" loading="lazy" sizes="(max-width: 24px) 100vw, 24px" title="Phone">
+                    </div>
+                    <span b-9sz6nx3eeh class="social-sticky-buttons__item-text ws-nowrap f-primary-700 t">Hotline</span>
+                </a>
+            </li>
+
+    </ul>
+
+
+        <section class="backgroundFooter">
+        <div class="footer">
+        <div class="logo">
+            <img class="logoIcon" loading="lazy" alt="..." src="/assets/icons/group-4235.svg" />
+            <span class="copyRight barlow-bold-21">2023 &#xA9; sasin.vn</span>
+        </div>
+        <div class="footerContent">
+            <input type="hidden" id="CTUET1800092" name="CTUET1800092" />
+            <div class="contentBox d-flex flex-column">
+                <span class="barlow-bold-24 textColor-firebrick mb-2 mb-lg-4">Ch&#x103;m s&#xF3;c kh&#xE1;ch h&#xE0;ng</span>
+                <a href="mailto:phananh.kh@sasin.vn" class="barlow-bold-21 margin-bottom-16"><img class="mailIcon" alt="..." src="/assets/icons/iconlyboldmessage.svg" /> phananh.kh@sasin.vn</a>
+                <a href="tel:1900 0131" class="barlow-bold-21 margin-bottom-16"><img class="callIcon" alt="..." src="/assets/icons/iconlyboldcalling.svg" />1900 0131</a>
+                <a class="barlow-bold-24 textColor-firebrick" href="/aboutus">V&#x1EC1; ch&#xFA;ng t&#xF4;i</a>
+            </div>
+            <div class="contentBox d-flex flex-column">
+                <span class="barlow-bold-24 textColor-firebrick text-bold mb-2 mb-lg-4">Ch&#xED;nh s&#xE1;ch &amp; &#x111;i&#x1EC1;u kho&#x1EA3;n</span>
+                    <a class="barlow-regular-21 textColor-gray-100 margin-bottom-16" href="/TermsOfService">&#x110;i&#x1EC1;u kho&#x1EA3;n d&#x1ECB;ch v&#x1EE5;</a>
+                    <a class="barlow-regular-21 textColor-gray-100 margin-bottom-16" href="/PrivacyPolicy">Ch&#xED;nh s&#xE1;ch b&#x1EA3;o m&#x1EAD;t</a>
+            </div>
+            <div class="contentBox d-flex flex-column">
+                <span class="barlow-bold-24 textColor-firebrick text-bold mb-2 mb-lg-4">C&#xD4;NG TY TNHH TH&#x1AF;&#x1A0;NG M&#x1EA0;I SASIN</span>
+                <b class="barlow-bold-21 margin-bottom-16">V&#x103;n ph&#xF2;ng:</b>
+                <span class="barlow-regular-21 textColor-gray-100 margin-bottom-16">172Bis - 174 Tr&#x1EA7;n H&#x1B0;ng &#x110;&#x1EA1;o, Ph&#x1B0;&#x1EDD;ng Nguy&#x1EC5;n C&#x1B0; Trinh, Qu&#x1EAD;n 1, Th&#xE0;nh ph&#x1ED1; H&#x1ED3; Ch&#xED; Minh, Vi&#x1EC7;t Nam.</span>
+            </div>
+        </div>
+        <div class="mobileFooterConent">
+            <div class="contentBox d-flex col-6 pe-1 flex-column">
+                <span class="barlow-bold-24 textColor-firebrick text-bold mb-2 mb-lg-4">Ch&#xED;nh s&#xE1;ch &amp; &#x111;i&#x1EC1;u kho&#x1EA3;n</span>
+                    <a class="barlow-regular-21 textColor-gray-100 margin-bottom-16" href="/TermsOfService">&#x110;i&#x1EC1;u kho&#x1EA3;n d&#x1ECB;ch v&#x1EE5;</a>
+                    <a class="barlow-regular-21 textColor-gray-100 margin-bottom-16" href="/PrivacyPolicy">Ch&#xED;nh s&#xE1;ch b&#x1EA3;o m&#x1EAD;t</a>
+            </div>
+            <div class="contentBox d-flex col-6 ps-1 flex-column">
+                <span class="barlow-bold-24 textColor-firebrick mb-2 mb-lg-4">Ch&#x103;m s&#xF3;c kh&#xE1;ch h&#xE0;ng</span>
+                <a href="mailto:phananh.kh@sasin.vn" class="text barlow-bold-18 mb-3"><img class="mailIcon" alt="..." src="/assets/icons/iconlyboldmessage.svg" /> phananh.kh@sasin.vn</a>
+                <a href="tel:1900 0131" class="text barlow-bold-18 mb-3"><img class="callIcon" alt="..." src="/assets/icons/iconlyboldcalling.svg" />1900 0131</a>
+                <a class="barlow-bold-18 textColor-firebrick" href="/aboutus">V&#x1EC1; ch&#xFA;ng t&#xF4;i</a>
+            </div>
+        </div>
+        <div class="mobileFooterConent">
+            <div class="col-6 pe-1 d-flex justify-content-center">
+                <img class="logoIcon" loading="lazy" alt="..." src="/assets/icons/group-4235.svg" />
+            </div>
+            <div class="contentBox d-flex col-6 ps-1 flex-column">
+                <span class="barlow-bold-21 textColor-firebrick text-bold mb-2 mb-lg-4">C&#xD4;NG TY TNHH TH&#x1AF;&#x1A0;NG M&#x1EA0;I SASIN</span>
+                <b class="barlow-bold-18 margin-bottom-16">V&#x103;n ph&#xF2;ng:</b>
+                <span class="barlow-regular-18 textColor-gray-100 margin-bottom-16">172Bis - 174 Tr&#x1EA7;n H&#x1B0;ng &#x110;&#x1EA1;o, Ph&#x1B0;&#x1EDD;ng Nguy&#x1EC5;n C&#x1B0; Trinh, Qu&#x1EAD;n 1, Th&#xE0;nh ph&#x1ED1; H&#x1ED3; Ch&#xED; Minh, Vi&#x1EC7;t Nam.</span>
+            </div>
+            <p class="copyRight barlow-bold-18 col-12 text-center mt-3">2023 &#xA9; sasin.vn</p>
+        </div>
+    </div>
+    </section>
+
+    <script src="/js/Site.es5.min.js"></script>
+    
+
+</body>
+</html>

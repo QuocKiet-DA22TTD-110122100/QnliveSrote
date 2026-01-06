@@ -1,0 +1,1431 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Mỳ Cay Sasin</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" crossorigin="anonymous" referrerpolicy="no-referrer" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <!-- Header - Optimized -->
+    <header class="header" id="mainHeader">
+        <nav class="nav-container">
+            <!-- Logo với icon ớt -->
+            <a href="/" class="logo">
+                <span class="logo-icon">🌶️</span>
+                <span class="logo-text">Mỳ Cay <span class="logo-accent">Sasin</span></span>
+            </a>
+            
+            <!-- Menu chính - Giảm xuống 5 item -->
+            <ul class="nav-menu" id="navMenu">
+                <li><a href="/" class="nav-link">Trang chủ</a></li>
+                <li><a href="/ThucDon" class="nav-link">Thực đơn</a></li>
+                <li><a href="/UuDai" class="nav-link">Ưu đãi</a></li>
+                <li class="nav-dropdown">
+                    <a href="#" class="nav-link dropdown-toggle">Khác <i class="fas fa-chevron-down"></i></a>
+                    <div class="dropdown-menu">
+                        <a href="/TinTuc"><i class="fas fa-newspaper"></i> Tin tức</a>
+                        <a href="/DanhGia"><i class="fas fa-star"></i> Đánh giá</a>
+                        <a href="/LienHe"><i class="fas fa-phone"></i> Liên hệ</a>
+                    </div>
+                </li>
+            </ul>
+            
+            <!-- Right side actions -->
+            <div class="nav-actions">
+                <!-- Search Icon -->
+                <button class="nav-icon-btn search-toggle" id="searchToggle" onclick="toggleSearch()" title="Tìm kiếm (Ctrl+K)">
+                    <i class="fas fa-search"></i>
+                </button>
+                
+                <!-- Đăng nhập - Text link nhỏ -->
+                <a href="/DangNhap" class="nav-login-link" id="loginLink">
+                    <i class="fas fa-user"></i>
+                    <span>Đăng nhập</span>
+                </a>
+                
+                <!-- User Menu (khi đã đăng nhập) -->
+                <div id="userMenu" class="user-menu-item" style="display: none;">
+                    <div class="user-dropdown-nav">
+                        <button class="user-nav-btn" title="Tài khoản">
+                            <i class="fas fa-user-circle user-icon"></i>
+                        </button>
+                        <div class="user-dropdown-content">
+                            <div class="user-dropdown-header">
+                                <span class="user-greeting">Xin chào,</span>
+                                <span class="user-name" id="navUserName">User</span>
+                            </div>
+                            <hr>
+                            <a href="/TaiKhoan"><i class="fas fa-user"></i> Tài khoản</a>
+                            <a href="/DonHangCuaToi"><i class="fas fa-shopping-bag"></i> Đơn hàng của tôi</a>
+                            <a href="/Admin" id="adminLink" style="display: none;"><i class="fas fa-cog"></i> Quản trị</a>
+                            <hr>
+                            <a href="#" onclick="logoutUser()" class="logout-link"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- NÚT ĐẶT MÓN NGAY - CTA chính với badge -->
+                <a href="/ThucDon" class="btn-order-cta" id="orderCTA">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="btn-order-text">Đặt món ngay</span>
+                    <span class="btn-order-badge">-15%</span>
+                    <span class="cart-count" id="cartCount" style="display: none;">0</span>
+                </a>
+            </div>
+            
+            <!-- Mobile Menu Button -->
+            <button class="mobile-menu-btn" id="mobileMenuBtn" onclick="toggleMobileMenu()">
+                <i class="fas fa-bars"></i>
+            </button>
+        </nav>
+        
+        <!-- Search Dropdown -->
+        <div class="search-dropdown" id="searchDropdown">
+            <div class="search-input-wrapper">
+                <i class="fas fa-search"></i>
+                <input type="text" id="globalSearch" placeholder="Tìm kiếm món ăn..." autocomplete="off" />
+                <button class="search-close" onclick="toggleSearch()">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+            <div class="search-results" id="searchResults"></div>
+        </div>
+        
+        <!-- Free ship banner -->
+        <div class="header-promo-bar">
+            <span>🚚 Miễn phí ship đơn từ 200k</span>
+            <span class="promo-divider">|</span>
+            <span>⏰ Giao hàng 30 phút</span>
+        </div>
+    </header>
+    
+    <!-- Mobile Menu Overlay -->
+    <div class="mobile-menu-overlay" id="mobileMenuOverlay" onclick="toggleMobileMenu()"></div>
+    <div class="mobile-menu" id="mobileMenu">
+        <div class="mobile-menu-header">
+            <span class="logo-icon">🌶️</span>
+            <span>Mỳ Cay Sasin</span>
+            <button onclick="toggleMobileMenu()"><i class="fas fa-times"></i></button>
+        </div>
+        <nav class="mobile-nav">
+            <a href="/"><i class="fas fa-home"></i> Trang chủ</a>
+            <a href="/ThucDon"><i class="fas fa-utensils"></i> Thực đơn</a>
+            <a href="/UuDai"><i class="fas fa-gift"></i> Ưu đãi</a>
+            <a href="/TinTuc"><i class="fas fa-newspaper"></i> Tin tức</a>
+            <a href="/DanhGia"><i class="fas fa-star"></i> Đánh giá</a>
+            <a href="/GioHang"><i class="fas fa-shopping-cart"></i> Giỏ hàng <span class="mobile-cart-badge" id="cartCountMobile">0</span></a>
+        </nav>
+        <a href="/ThucDon" class="mobile-order-btn">
+            <i class="fas fa-shopping-cart"></i> Đặt món ngay - Giảm 15%
+        </a>
+        <div class="mobile-login" id="mobileLoginArea">
+            <a href="/DangNhap" class="mobile-login-btn">Đăng nhập / Đăng ký</a>
+        </div>
+    </div>
+
+    <main>
+        @RenderBody()
+    </main>
+
+    <!-- Footer - Enhanced -->
+    <footer class="footer-new">
+        <div class="footer-container">
+            <div class="footer-main">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🌶️</span>
+                        <span class="logo-text">Mỳ Cay <span class="logo-accent">Sasin</span></span>
+                    </div>
+                    <p>Hương vị Hàn Quốc chính hiệu tại Việt Nam. Cay đúng chuẩn, giao hàng nhanh!</p>
+                    <div class="social-links-new">
+                        <a href="#" class="social-btn facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" class="social-btn instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" class="social-btn tiktok" title="TikTok"><i class="fab fa-tiktok"></i></a>
+                        <a href="#" class="social-btn zalo" title="Zalo OA">
+                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 17.703c-.063.063-.188.125-.375.125h-1.5c-.188 0-.313-.063-.375-.125-.063-.063-.125-.188-.125-.375v-4.5h-1.5v4.5c0 .188-.063.313-.125.375-.063.063-.188.125-.375.125h-1.5c-.188 0-.313-.063-.375-.125-.063-.063-.125-.188-.125-.375v-4.5h-1.5v4.5c0 .188-.063.313-.125.375-.063.063-.188.125-.375.125h-1.5c-.188 0-.313-.063-.375-.125-.063-.063-.125-.188-.125-.375V6.672c0-.188.063-.313.125-.375.063-.063.188-.125.375-.125h1.5c.188 0 .313.063.375.125.063.063.125.188.125.375v4.5h1.5v-4.5c0-.188.063-.313.125-.375.063-.063.188-.125.375-.125h1.5c.188 0 .313.063.375.125.063.063.125.188.125.375v4.5h1.5v-4.5c0-.188.063-.313.125-.375.063-.063.188-.125.375-.125h1.5c.188 0 .313.063.375.125.063.063.125.188.125.375v10.656c0 .188-.063.313-.125.375z"/></svg>
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="footer-links">
+                    <h4>Liên kết nhanh</h4>
+                    <ul>
+                        <li><a href="/">Trang chủ</a></li>
+                        <li><a href="/ThucDon">Thực đơn</a></li>
+                        <li><a href="/UuDai">Ưu đãi</a></li>
+                        <li><a href="/TinTuc">Tin tức</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-contact">
+                    <h4>Liên hệ</h4>
+                    <div class="contact-item">
+                        <i class="fas fa-phone-alt"></i>
+                        <div>
+                            <span class="contact-label">Hotline</span>
+                            <a href="tel:19001234" class="contact-value hotline">1900-1234</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-envelope"></i>
+                        <div>
+                            <span class="contact-label">Email</span>
+                            <a href="mailto:info@mycaysasin.vn" class="contact-value">info@mycaysasin.vn</a>
+                        </div>
+                    </div>
+                    <div class="contact-item">
+                        <i class="fas fa-map-marker-alt"></i>
+                        <div>
+                            <span class="contact-label">Địa chỉ</span>
+                            <span class="contact-value">123 Đường ABC, Quận 1, TP.HCM</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="footer-hours">
+                    <h4>Giờ mở cửa</h4>
+                    <div class="hours-info">
+                        <p><strong>Thứ 2 - Chủ nhật</strong></p>
+                        <p class="hours-time">10:00 - 22:00</p>
+                    </div>
+                    <div class="footer-app">
+                        <p>Tải app đặt hàng:</p>
+                        <div class="app-buttons">
+                            <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
+                            <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="footer-bottom-new">
+            <p>&copy; 2024 Mỳ Cay Sasin. All rights reserved.</p>
+            <div class="footer-bottom-links">
+                <a href="#">Chính sách bảo mật</a>
+                <a href="#">Điều khoản sử dụng</a>
+            </div>
+        </div>
+    </footer>
+    
+    <style>
+    /* Footer New Styles */
+    .footer-new {
+        background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
+        color: white;
+        padding-top: 60px;
+    }
+    .footer-container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+    .footer-main {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1.2fr 1fr;
+        gap: 40px;
+        padding-bottom: 40px;
+        border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .footer-brand .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-bottom: 15px;
+    }
+    .footer-brand .logo-text {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+    }
+    .footer-brand .logo-accent { color: #f97316; }
+    .footer-brand p {
+        color: rgba(255,255,255,0.7);
+        line-height: 1.6;
+        margin-bottom: 20px;
+    }
+    .social-links-new {
+        display: flex;
+        gap: 10px;
+    }
+    .social-btn {
+        width: 40px;
+        height: 40px;
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        transition: all 0.3s;
+    }
+    .social-btn.facebook { background: #1877f2; }
+    .social-btn.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
+    .social-btn.tiktok { background: #000; }
+    .social-btn.zalo { background: #0068ff; }
+    .social-btn:hover { transform: translateY(-3px); }
+    
+    .footer-links h4, .footer-contact h4, .footer-hours h4 {
+        font-size: 1rem;
+        font-weight: 600;
+        margin-bottom: 20px;
+        color: white;
+    }
+    .footer-links ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    .footer-links li { margin-bottom: 12px; }
+    .footer-links a {
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        transition: color 0.2s;
+    }
+    .footer-links a:hover { color: #f97316; }
+    
+    .contact-item {
+        display: flex;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+    .contact-item i {
+        width: 36px;
+        height: 36px;
+        background: rgba(249, 115, 22, 0.2);
+        color: #f97316;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .contact-label {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.5);
+        display: block;
+    }
+    .contact-value {
+        color: rgba(255,255,255,0.9);
+        text-decoration: none;
+    }
+    .contact-value.hotline {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #f97316;
+    }
+    
+    .hours-info {
+        background: rgba(255,255,255,0.05);
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 20px;
+    }
+    .hours-time {
+        font-size: 1.2rem;
+        font-weight: 600;
+        color: #f97316;
+    }
+    .footer-app p {
+        font-size: 0.85rem;
+        color: rgba(255,255,255,0.6);
+        margin-bottom: 10px;
+    }
+    .app-buttons {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .app-btn {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 12px;
+        background: rgba(255,255,255,0.1);
+        border-radius: 8px;
+        color: white;
+        text-decoration: none;
+        font-size: 0.85rem;
+        transition: background 0.2s;
+    }
+    .app-btn:hover { background: rgba(255,255,255,0.2); }
+    
+    .footer-bottom-new {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+    .footer-bottom-new p {
+        color: rgba(255,255,255,0.5);
+        font-size: 0.85rem;
+    }
+    .footer-bottom-links {
+        display: flex;
+        gap: 20px;
+    }
+    .footer-bottom-links a {
+        color: rgba(255,255,255,0.5);
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+    .footer-bottom-links a:hover { color: #f97316; }
+    
+    @@media (max-width: 1024px) {
+        .footer-main { grid-template-columns: 1fr 1fr; }
+    }
+    @@media (max-width: 640px) {
+        .footer-main { grid-template-columns: 1fr; gap: 30px; }
+        .footer-bottom-new { flex-direction: column; gap: 10px; text-align: center; }
+    }
+    </style>
+
+    <style>
+    /* ========== NEW HEADER STYLES ========== */
+    .header {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        background: rgba(0, 0, 0, 0.9);
+        backdrop-filter: blur(10px);
+        z-index: 1000;
+        transition: all 0.3s ease;
+    }
+    .header.scrolled {
+        background: rgba(0, 0, 0, 0.95);
+        box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .nav-container {
+        max-width: 1400px;
+        margin: 0 auto;
+        padding: 12px 20px;
+        display: flex;
+        align-items: center;
+        gap: 30px;
+    }
+    
+    /* Logo */
+    .logo {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+        flex-shrink: 0;
+    }
+    .logo-icon { font-size: 1.8rem; }
+    .logo-text {
+        font-size: 1.3rem;
+        font-weight: 700;
+        color: white;
+    }
+    .logo-accent { color: #f97316; }
+    
+    /* Nav Menu */
+    .nav-menu {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        list-style: none;
+        margin: 0;
+        padding: 0;
+    }
+    .nav-link {
+        color: rgba(255,255,255,0.85);
+        text-decoration: none;
+        padding: 10px 16px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+    }
+    .nav-link:hover {
+        color: white;
+        background: rgba(249, 115, 22, 0.2);
+    }
+    
+    /* Dropdown Menu */
+    .nav-dropdown { position: relative; }
+    .dropdown-toggle i { font-size: 0.7rem; margin-left: 4px; }
+    .dropdown-menu {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        min-width: 180px;
+        padding: 8px 0;
+        opacity: 0;
+        visibility: hidden;
+        transform: translateY(10px);
+        transition: all 0.2s;
+    }
+    .nav-dropdown:hover .dropdown-menu {
+        opacity: 1;
+        visibility: visible;
+        transform: translateY(0);
+    }
+    .dropdown-menu a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .dropdown-menu a:hover {
+        background: #fff7ed;
+        color: #f97316;
+    }
+    .dropdown-menu a i { width: 18px; }
+    
+    /* Nav Actions */
+    .nav-actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-left: auto;
+    }
+    .nav-icon-btn {
+        width: 40px;
+        height: 40px;
+        border: none;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .nav-icon-btn:hover {
+        background: rgba(249, 115, 22, 0.3);
+        color: #f97316;
+    }
+    
+    /* Login Link - Nhỏ gọn */
+    .nav-login-link {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        color: rgba(255,255,255,0.7);
+        text-decoration: none;
+        font-size: 0.85rem;
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: all 0.2s;
+    }
+    .nav-login-link:hover {
+        color: white;
+        background: rgba(255,255,255,0.1);
+    }
+    .nav-login-link i { font-size: 0.9rem; }
+    
+    /* CTA Button - Nổi bật */
+    .btn-order-cta {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        background: linear-gradient(135deg, #FF6B35, #E55A2B);
+        color: white;
+        text-decoration: none;
+        padding: 12px 20px;
+        border-radius: 25px;
+        font-weight: 600;
+        font-size: 0.95rem;
+        box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+        transition: all 0.3s;
+        position: relative;
+        animation: pulse-glow 2s infinite;
+    }
+    .btn-order-cta:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 25px rgba(249, 115, 22, 0.5);
+    }
+    .btn-order-badge {
+        background: #fef3c7;
+        color: #d97706;
+        font-size: 0.7rem;
+        font-weight: 700;
+        padding: 2px 6px;
+        border-radius: 10px;
+    }
+    .cart-count {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        background: #ef4444;
+        color: white;
+        font-size: 0.65rem;
+        min-width: 18px;
+        height: 18px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 600;
+    }
+    @@keyframes pulse-glow {
+        0%, 100% { box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4); }
+        50% { box-shadow: 0 4px 25px rgba(249, 115, 22, 0.6); }
+    }
+    
+    /* Promo Bar */
+    .header-promo-bar {
+        background: linear-gradient(90deg, #f97316, #ea580c);
+        color: white;
+        text-align: center;
+        padding: 6px 20px;
+        font-size: 0.8rem;
+        font-weight: 500;
+    }
+    .promo-divider {
+        margin: 0 15px;
+        opacity: 0.5;
+    }
+    
+    /* Search Dropdown */
+    .search-dropdown {
+        position: absolute;
+        top: 100%;
+        left: 0;
+        right: 0;
+        background: white;
+        padding: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        display: none;
+    }
+    .search-dropdown.active { display: block; }
+    .search-input-wrapper {
+        max-width: 600px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        background: #f3f4f6;
+        padding: 12px 20px;
+        border-radius: 30px;
+    }
+    .search-input-wrapper input {
+        flex: 1;
+        border: none;
+        background: none;
+        font-size: 1rem;
+        outline: none;
+    }
+    .search-close {
+        background: none;
+        border: none;
+        cursor: pointer;
+        color: #6b7280;
+    }
+    
+    /* Mobile Menu */
+    .mobile-menu-btn {
+        display: none;
+        width: 44px;
+        height: 44px;
+        border: none;
+        background: rgba(255,255,255,0.1);
+        color: white;
+        border-radius: 10px;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    .mobile-menu-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(0,0,0,0.5);
+        z-index: 1001;
+    }
+    .mobile-menu-overlay.active { display: block; }
+    .mobile-menu {
+        position: fixed;
+        top: 0;
+        right: -300px;
+        width: 300px;
+        height: 100vh;
+        background: white;
+        z-index: 1002;
+        transition: right 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+    .mobile-menu.active { right: 0; }
+    .mobile-menu-header {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 20px;
+        border-bottom: 1px solid #e5e7eb;
+        font-weight: 600;
+    }
+    .mobile-menu-header button {
+        margin-left: auto;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+        cursor: pointer;
+    }
+    .mobile-nav {
+        flex: 1;
+        padding: 20px;
+    }
+    .mobile-nav a {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px 0;
+        color: #374151;
+        text-decoration: none;
+        border-bottom: 1px solid #f3f4f6;
+    }
+    .mobile-nav a i { width: 20px; color: #f97316; }
+    .mobile-cart-badge {
+        background: #ef4444;
+        color: white;
+        font-size: 0.7rem;
+        padding: 2px 8px;
+        border-radius: 10px;
+        margin-left: auto;
+    }
+    .mobile-order-btn {
+        margin: 20px;
+        padding: 15px;
+        background: linear-gradient(135deg, #FF6B35, #E55A2B);
+        color: white;
+        text-align: center;
+        text-decoration: none;
+        border-radius: 12px;
+        font-weight: 600;
+    }
+    .mobile-login {
+        padding: 0 20px 20px;
+    }
+    .mobile-login-btn {
+        display: block;
+        text-align: center;
+        padding: 12px;
+        border: 2px solid #e5e7eb;
+        border-radius: 10px;
+        color: #374151;
+        text-decoration: none;
+    }
+    
+    /* User Menu Styles */
+    .user-menu-item { position: relative; }
+    .user-dropdown-nav { position: relative; }
+    .user-nav-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: none;
+        border: none;
+        cursor: pointer;
+        padding: 8px;
+        border-radius: 50%;
+        transition: all 0.2s;
+        color: white;
+    }
+    .user-nav-btn:hover { 
+        background: rgba(249, 115, 22, 0.2);
+    }
+    .user-icon {
+        font-size: 1.5rem;
+        color: #f97316;
+    }
+    .user-dropdown-content {
+        position: absolute;
+        top: 100%;
+        right: 0;
+        background: white;
+        min-width: 220px;
+        border-radius: 12px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        padding: 0;
+        display: none;
+        z-index: 1000;
+        overflow: hidden;
+    }
+    .user-dropdown-nav:hover .user-dropdown-content,
+    .user-dropdown-content:hover { display: block; }
+    .user-dropdown-header {
+        background: linear-gradient(135deg, #fff7ed, #ffedd5);
+        padding: 15px 20px;
+        display: flex;
+        flex-direction: column;
+    }
+    .user-greeting {
+        font-size: 0.8rem;
+        color: #9ca3af;
+    }
+    .user-name {
+        font-size: 1rem;
+        font-weight: 600;
+        color: #f97316;
+    }
+    .user-dropdown-content a {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        padding: 12px 20px;
+        color: #374151;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+    .user-dropdown-content a:hover {
+        background: #fff7ed;
+        color: #f97316;
+    }
+    .user-dropdown-content a i {
+        width: 18px;
+        text-align: center;
+    }
+    .logout-link:hover {
+        background: #fef2f2 !important;
+        color: #ef4444 !important;
+    }
+    .user-dropdown-content hr {
+        margin: 0;
+        border: none;
+        border-top: 1px solid #e5e7eb;
+    }
+    
+    /* Responsive */
+    @@media (max-width: 1024px) {
+        .nav-menu { display: none; }
+        .nav-login-link span { display: none; }
+        .btn-order-text { display: none; }
+        .btn-order-cta { padding: 12px 16px; }
+        .mobile-menu-btn { display: flex; align-items: center; justify-content: center; }
+    }
+    @@media (max-width: 640px) {
+        .nav-actions { gap: 8px; }
+        .nav-login-link { display: none; }
+        .header-promo-bar { font-size: 0.7rem; }
+        .promo-divider { margin: 0 8px; }
+    }
+    </style>
+
+    <!-- Scroll to Top Button -->
+    <button class="scroll-top" id="scrollTopBtn" onclick="scrollToTop()">
+        <i class="fas fa-arrow-up"></i>
+    </button>
+
+    <script>
+        // Header scroll effect
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const header = document.querySelector('.header');
+            const scrollTop = window.pageYOffset || document.documentElement.scrollTop;
+            
+            if (scrollTop > 100) {
+                header.classList.add('scrolled');
+            } else {
+                header.classList.remove('scrolled');
+            }
+            
+            // Show/hide scroll to top button
+            const scrollBtn = document.getElementById('scrollTopBtn');
+            if (scrollTop > 500) {
+                scrollBtn.classList.add('visible');
+            } else {
+                scrollBtn.classList.remove('visible');
+            }
+            
+            lastScroll = scrollTop;
+        });
+        
+        function scrollToTop() {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Check login status and update UI
+        function updateLoginUI() {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            const loginLink = document.getElementById('loginLink');
+            const userMenu = document.getElementById('userMenu');
+            const adminLink = document.getElementById('adminLink');
+            const navUserName = document.getElementById('navUserName');
+            
+            if (user && user.email) {
+                // Đã đăng nhập - ẩn nút đăng nhập, hiện menu user
+                if (loginLink) loginLink.style.display = 'none';
+                if (userMenu) userMenu.style.display = 'block';
+                if (navUserName) navUserName.textContent = user.name || user.email;
+                
+                // Hiện link Admin nếu là admin/quanly/nhanvien
+                const role = (user.role || '').toLowerCase();
+                if (adminLink && ['admin', 'quanly', 'nhanvien', 'manager', 'staff'].includes(role)) {
+                    adminLink.style.display = 'flex';
+                }
+            } else {
+                // Chưa đăng nhập
+                if (loginLink) loginLink.style.display = 'block';
+                if (userMenu) userMenu.style.display = 'none';
+            }
+        }
+        
+        function logoutUser() {
+            localStorage.removeItem('user');
+            localStorage.removeItem('cart');
+            window.location.href = '/';
+        }
+        
+        // Run on page load
+        updateLoginUI();
+
+        // Mobile Menu Toggle
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobileMenu');
+            const overlay = document.getElementById('mobileMenuOverlay');
+            menu.classList.toggle('active');
+            overlay.classList.toggle('active');
+            document.body.style.overflow = menu.classList.contains('active') ? 'hidden' : '';
+        }
+
+        // Update cart count on page load
+        function updateCartBadge() {
+            const cart = JSON.parse(localStorage.getItem('cart') || '[]');
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const badges = document.querySelectorAll('#cartCount, #cartCountMobile');
+            badges.forEach(badge => {
+                if (badge) badge.textContent = count;
+            });
+        }
+        updateCartBadge();
+
+        // Global Search
+        let searchProducts = [];
+        let searchTimeout;
+
+        function toggleSearch() {
+            const dropdown = document.getElementById('searchDropdown');
+            const toggle = document.getElementById('searchToggle');
+            const input = document.getElementById('globalSearch');
+            
+            dropdown.classList.toggle('active');
+            toggle.classList.toggle('active');
+            
+            if (dropdown.classList.contains('active')) {
+                input.focus();
+                loadSearchProducts();
+            } else {
+                input.value = '';
+                document.getElementById('searchResults').innerHTML = '';
+            }
+        }
+
+        // Close search when clicking outside
+        document.addEventListener('click', function(e) {
+            const searchArea = document.querySelector('.nav-search');
+            const searchDropdown = document.getElementById('searchDropdown');
+            if (searchArea && !searchArea.contains(e.target)) {
+                if (searchDropdown) searchDropdown.classList.remove('active');
+                const searchToggle = document.getElementById('searchToggle');
+                if (searchToggle) searchToggle.classList.remove('active');
+            }
+        });
+
+        // Load products for search
+        async function loadSearchProducts() {
+            if (searchProducts.length > 0) return;
+            try {
+                const response = await fetch('/data/products.json');
+                searchProducts = await response.json();
+            } catch (e) {
+                console.error('Error loading products:', e);
+            }
+        }
+
+        // Search input handler
+        document.getElementById('globalSearch')?.addEventListener('input', function() {
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(() => performSearch(this.value), 300);
+        });
+
+        function performSearch(query) {
+            const resultsContainer = document.getElementById('searchResults');
+            
+            if (!query || query.length < 2) {
+                resultsContainer.innerHTML = '<div class="search-hint">Nhập ít nhất 2 ký tự để tìm kiếm...</div>';
+                return;
+            }
+
+            const q = query.toLowerCase();
+            const results = searchProducts.filter(p => 
+                p.name.toLowerCase().includes(q) || 
+                (p.description && p.description.toLowerCase().includes(q))
+            ).slice(0, 6);
+
+            if (results.length === 0) {
+                resultsContainer.innerHTML = '<div class="search-no-result">Không tìm thấy món ăn phù hợp</div>';
+                return;
+            }
+
+            resultsContainer.innerHTML = results.map(p => `
+                <a href="/ThucDon" class="search-result-item" onclick="goToProduct('${p.code}')">
+                    <img src="/images/products/${p.image}" alt="${p.name}" onerror="this.src='/images/products/MenuItem_M00012.webp'" />
+                    <div class="search-result-info">
+                        <span class="search-result-name">${highlightText(p.name, query)}</span>
+                        <span class="search-result-price">${p.price}</span>
+                    </div>
+                </a>
+            `).join('') + `
+                <a href="/ThucDon?search=${encodeURIComponent(query)}" class="search-view-all">
+                    Xem tất cả kết quả <i class="fas fa-arrow-right"></i>
+                </a>
+            `;
+        }
+
+        function highlightText(text, query) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            return text.replace(regex, '<mark>$1</mark>');
+        }
+
+        function goToProduct(code) {
+            toggleSearch();
+            window.location.href = '/ThucDon?product=' + code;
+        }
+
+        // Keyboard shortcut: Ctrl+K to open search
+        document.addEventListener('keydown', function(e) {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+                e.preventDefault();
+                toggleSearch();
+            }
+            if (e.key === 'Escape') {
+                document.getElementById('searchDropdown').classList.remove('active');
+                document.getElementById('searchToggle').classList.remove('active');
+            }
+        });
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <!-- AI Chatbot Widget -->
+    <div class="chatbot-widget" id="chatbotWidget">
+        <button class="chatbot-toggle" id="chatbotToggle" onclick="toggleChatbot()">
+            <span class="chatbot-icon">🤖</span>
+            <span class="chatbot-close">✕</span>
+        </button>
+        
+        <div class="chatbot-container" id="chatbotContainer">
+            <div class="chatbot-header">
+                <div class="chatbot-avatar">🌶️</div>
+                <div class="chatbot-info">
+                    <h4>Trợ lý Sasin</h4>
+                    <span class="chatbot-status">● Đang hoạt động</span>
+                </div>
+                <button class="chatbot-minimize" onclick="toggleChatbot()">−</button>
+            </div>
+            
+            <div class="chatbot-messages" id="chatbotMessages">
+                <div class="chat-message bot">
+                    <div class="message-avatar">🌶️</div>
+                    <div class="message-content">
+                        <p>Xin chào! 👋 Tôi là trợ lý ảo của Mỳ Cay Sasin. Tôi có thể giúp bạn:</p>
+                        <ul>
+                            <li>🍜 Gợi ý món ăn phù hợp</li>
+                            <li>🌶️ Tư vấn cấp độ cay</li>
+                            <li>🎁 Giới thiệu combo tiết kiệm</li>
+                        </ul>
+                        <p>Bạn muốn tôi giúp gì nào?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="chatbot-suggestions" id="chatbotSuggestions">
+                <button onclick="sendSuggestion('Gợi ý món best seller')">🔥 Best seller</button>
+                <button onclick="sendSuggestion('Tôi muốn ăn cay vừa')">🌶️ Cay vừa</button>
+                <button onclick="sendSuggestion('Combo cho 2 người')">👫 Combo 2 người</button>
+                <button onclick="sendSuggestion('Món nào không cay?')">😊 Không cay</button>
+            </div>
+            
+            <div class="chatbot-input">
+                <input type="text" id="chatbotInput" placeholder="Nhập tin nhắn..." onkeypress="handleChatKeypress(event)" />
+                <button onclick="sendChatMessage()" id="chatSendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+    /* Chatbot Widget Styles */
+    .chatbot-widget {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        z-index: 9999;
+        font-family: 'Be Vietnam Pro', sans-serif;
+    }
+    .chatbot-toggle {
+        width: 60px;
+        height: 60px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #f97316, #ea580c);
+        border: none;
+        cursor: pointer;
+        box-shadow: 0 4px 20px rgba(249, 115, 22, 0.4);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        position: relative;
+    }
+    .chatbot-toggle:hover {
+        transform: scale(1.1);
+        box-shadow: 0 6px 25px rgba(249, 115, 22, 0.5);
+    }
+    .chatbot-icon {
+        font-size: 1.8rem;
+        transition: all 0.3s ease;
+    }
+    .chatbot-close {
+        font-size: 1.5rem;
+        color: white;
+        position: absolute;
+        opacity: 0;
+        transform: rotate(-90deg);
+        transition: all 0.3s ease;
+    }
+    .chatbot-widget.active .chatbot-icon {
+        opacity: 0;
+        transform: rotate(90deg);
+    }
+    .chatbot-widget.active .chatbot-close {
+        opacity: 1;
+        transform: rotate(0);
+    }
+    .chatbot-container {
+        position: absolute;
+        bottom: 75px;
+        right: 0;
+        width: 380px;
+        max-height: 550px;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        animation: chatbotSlideIn 0.3s ease;
+    }
+    .chatbot-widget.active .chatbot-container {
+        display: flex;
+    }
+    @@keyframes chatbotSlideIn {
+        from { opacity: 0; transform: translateY(20px) scale(0.95); }
+        to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .chatbot-header {
+        background: linear-gradient(135deg, #f97316, #ea580c);
+        color: white;
+        padding: 15px 20px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+    }
+    .chatbot-avatar {
+        width: 45px;
+        height: 45px;
+        background: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.5rem;
+    }
+    .chatbot-info h4 {
+        margin: 0;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+    .chatbot-status {
+        font-size: 0.75rem;
+        opacity: 0.9;
+    }
+    .chatbot-minimize {
+        margin-left: auto;
+        background: rgba(255,255,255,0.2);
+        border: none;
+        color: white;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.2rem;
+    }
+    .chatbot-messages {
+        flex: 1;
+        overflow-y: auto;
+        padding: 15px;
+        max-height: 320px;
+        background: #f9fafb;
+    }
+    .chat-message {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+        animation: messageSlide 0.3s ease;
+    }
+    @@keyframes messageSlide {
+        from { opacity: 0; transform: translateY(10px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+    .chat-message.user {
+        flex-direction: row-reverse;
+    }
+    .message-avatar {
+        width: 35px;
+        height: 35px;
+        background: #fff;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.1rem;
+        flex-shrink: 0;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    .chat-message.user .message-avatar {
+        background: #f97316;
+        color: white;
+    }
+    .message-content {
+        background: white;
+        padding: 12px 16px;
+        border-radius: 18px;
+        max-width: 75%;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+    }
+    .chat-message.user .message-content {
+        background: linear-gradient(135deg, #f97316, #ea580c);
+        color: white;
+    }
+    .message-content p {
+        margin: 0 0 8px 0;
+        line-height: 1.5;
+        font-size: 0.9rem;
+    }
+    .message-content p:last-child {
+        margin-bottom: 0;
+    }
+    .message-content ul {
+        margin: 8px 0;
+        padding-left: 20px;
+    }
+    .message-content li {
+        font-size: 0.85rem;
+        margin-bottom: 4px;
+    }
+    .chatbot-suggestions {
+        padding: 10px 15px;
+        display: flex;
+        gap: 8px;
+        flex-wrap: wrap;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+    }
+    .chatbot-suggestions button {
+        padding: 8px 14px;
+        background: #fff7ed;
+        border: 1px solid #fed7aa;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        cursor: pointer;
+        transition: all 0.2s;
+        white-space: nowrap;
+    }
+    .chatbot-suggestions button:hover {
+        background: #f97316;
+        color: white;
+        border-color: #f97316;
+    }
+    .chatbot-input {
+        padding: 15px;
+        display: flex;
+        gap: 10px;
+        background: white;
+        border-top: 1px solid #e5e7eb;
+    }
+    .chatbot-input input {
+        flex: 1;
+        padding: 12px 16px;
+        border: 2px solid #e5e7eb;
+        border-radius: 25px;
+        font-size: 0.9rem;
+        outline: none;
+        transition: border-color 0.2s;
+    }
+    .chatbot-input input:focus {
+        border-color: #f97316;
+    }
+    .chatbot-input button {
+        width: 45px;
+        height: 45px;
+        background: linear-gradient(135deg, #f97316, #ea580c);
+        border: none;
+        border-radius: 50%;
+        color: white;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+    .chatbot-input button:hover {
+        transform: scale(1.05);
+    }
+    .chatbot-input button:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+    }
+    .typing-indicator {
+        display: flex;
+        gap: 4px;
+        padding: 8px 0;
+    }
+    .typing-indicator span {
+        width: 8px;
+        height: 8px;
+        background: #9ca3af;
+        border-radius: 50%;
+        animation: typing 1.4s infinite;
+    }
+    .typing-indicator span:nth-child(2) { animation-delay: 0.2s; }
+    .typing-indicator span:nth-child(3) { animation-delay: 0.4s; }
+    @@keyframes typing {
+        0%, 60%, 100% { transform: translateY(0); }
+        30% { transform: translateY(-8px); }
+    }
+    
+    /* Mobile responsive */
+    @@media (max-width: 480px) {
+        .chatbot-container {
+            width: calc(100vw - 40px);
+            right: -10px;
+            max-height: 70vh;
+        }
+    }
+    </style>
+
+    <script>
+    // Chatbot Functions
+    function toggleChatbot() {
+        const widget = document.getElementById('chatbotWidget');
+        widget.classList.toggle('active');
+        
+        if (widget.classList.contains('active')) {
+            document.getElementById('chatbotInput').focus();
+        }
+    }
+
+    function handleChatKeypress(e) {
+        if (e.key === 'Enter') {
+            sendChatMessage();
+        }
+    }
+
+    function sendSuggestion(text) {
+        document.getElementById('chatbotInput').value = text;
+        sendChatMessage();
+    }
+
+    async function sendChatMessage() {
+        const input = document.getElementById('chatbotInput');
+        const message = input.value.trim();
+        
+        if (!message) return;
+        
+        // Add user message
+        addMessage(message, 'user');
+        input.value = '';
+        
+        // Hide suggestions after first message
+        document.getElementById('chatbotSuggestions').style.display = 'none';
+        
+        // Show typing indicator
+        const typingId = showTyping();
+        
+        // Disable send button
+        const sendBtn = document.getElementById('chatSendBtn');
+        sendBtn.disabled = true;
+        
+        try {
+            const response = await fetch('/api/chatbot/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: message })
+            });
+            
+            const data = await response.json();
+            
+            // Remove typing indicator
+            removeTyping(typingId);
+            
+            // Add bot response
+            addMessage(data.reply, 'bot');
+        } catch (error) {
+            removeTyping(typingId);
+            addMessage('Xin lỗi, có lỗi xảy ra. Vui lòng thử lại! 🙏', 'bot');
+        }
+        
+        sendBtn.disabled = false;
+    }
+
+    function addMessage(text, sender) {
+        const container = document.getElementById('chatbotMessages');
+        const avatar = sender === 'bot' ? '🌶️' : '👤';
+        
+        // Convert markdown-like formatting
+        let formattedText = text
+            .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+            .replace(/\n/g, '<br>')
+            .replace(/• /g, '• ');
+        
+        const messageHtml = `
+            <div class="chat-message ${sender}">
+                <div class="message-avatar">${avatar}</div>
+                <div class="message-content">
+                    <p>${formattedText}</p>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', messageHtml);
+        container.scrollTop = container.scrollHeight;
+    }
+
+    function showTyping() {
+        const container = document.getElementById('chatbotMessages');
+        const id = 'typing-' + Date.now();
+        
+        const typingHtml = `
+            <div class="chat-message bot" id="${id}">
+                <div class="message-avatar">🌶️</div>
+                <div class="message-content">
+                    <div class="typing-indicator">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        container.insertAdjacentHTML('beforeend', typingHtml);
+        container.scrollTop = container.scrollHeight;
+        
+        return id;
+    }
+
+    function removeTyping(id) {
+        const typing = document.getElementById(id);
+        if (typing) typing.remove();
+    }
+    </script>
+</body>
+</html>

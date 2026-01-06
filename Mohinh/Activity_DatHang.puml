@@ -1,0 +1,79 @@
+@startuml Activity_DatHang
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - QUY TRÌNH ĐẶT HÀNG**\nHệ thống Mỳ Cay Sasin
+
+|Khách hàng|
+start
+:Truy cập trang web;
+:Xem thực đơn;
+
+|Hệ thống|
+:Hiển thị danh sách sản phẩm;
+
+|Khách hàng|
+:Chọn sản phẩm;
+:Thêm vào giỏ hàng;
+
+if (Tiếp tục mua?) then (Có)
+  :Quay lại xem thực đơn;
+  backward :Chọn thêm sản phẩm;
+else (Không)
+endif
+
+:Xem giỏ hàng;
+
+if (Điều chỉnh số lượng?) then (Có)
+  :Cập nhật số lượng/Xóa sản phẩm;
+else (Không)
+endif
+
+:Nhấn "Thanh toán";
+
+|Hệ thống|
+if (Đã đăng nhập?) then (Có)
+  :Lấy thông tin khách hàng;
+else (Không)
+  |Khách hàng|
+  :Đăng nhập / Đăng ký;
+  |Hệ thống|
+  :Xác thực tài khoản;
+endif
+
+|Khách hàng|
+:Nhập địa chỉ giao hàng;
+:Chọn phương thức thanh toán;
+
+if (Có mã giảm giá?) then (Có)
+  :Nhập mã giảm giá;
+  |Hệ thống|
+  if (Mã hợp lệ?) then (Có)
+    :Áp dụng giảm giá;
+  else (Không)
+    :Thông báo mã không hợp lệ;
+  endif
+else (Không)
+endif
+
+|Khách hàng|
+:Xác nhận đơn hàng;
+
+|Hệ thống|
+:Tạo đơn hàng mới;
+:Lưu vào database;
+:Gửi email xác nhận;
+:Thông báo cho Admin;
+
+|Khách hàng|
+:Nhận thông báo đặt hàng thành công;
+:Theo dõi trạng thái đơn hàng;
+
+stop
+
+@enduml

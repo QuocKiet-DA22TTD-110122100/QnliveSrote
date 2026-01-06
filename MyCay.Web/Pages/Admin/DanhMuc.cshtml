@@ -1,0 +1,227 @@
+@page
+@model AdminDanhMucModel
+@{
+    ViewData["Title"] = "Quản lý danh mục";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Quản lý danh mục</h1>
+    <div class="page-actions">
+        <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Thêm danh mục
+        </button>
+    </div>
+</div>
+
+<!-- Categories Grid -->
+<div class="categories-admin-grid" id="categoriesGrid">
+    <!-- Categories will be loaded here -->
+</div>
+
+<!-- Category Modal -->
+<div class="modal-overlay" id="categoryModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Thêm danh mục</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="categoryForm">
+                <input type="hidden" id="categoryId" />
+                <div class="form-group">
+                    <label>Tên danh mục *</label>
+                    <input type="text" id="categoryName" required />
+                </div>
+                <div class="form-group">
+                    <label>Mô tả</label>
+                    <textarea id="categoryDesc"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Thứ tự hiển thị</label>
+                    <input type="number" id="categoryOrder" value="0" />
+                </div>
+                <div class="form-group">
+                    <label>Hình ảnh</label>
+                    <input type="text" id="categoryImage" placeholder="Tên file ảnh" />
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="saveCategory()">Lưu</button>
+        </div>
+    </div>
+</div>
+
+<style>
+.categories-admin-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 20px;
+}
+.category-admin-card {
+    background: var(--admin-white);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+}
+.category-admin-card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+.category-image {
+    height: 120px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 3rem;
+}
+.category-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.category-content {
+    padding: 20px;
+}
+.category-content h3 {
+    font-size: 1.1rem;
+    margin-bottom: 5px;
+}
+.category-content p {
+    color: var(--admin-gray);
+    font-size: 0.9rem;
+    margin-bottom: 15px;
+}
+.category-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 15px;
+    border-top: 1px solid var(--admin-gray-light);
+}
+.category-count {
+    font-size: 0.85rem;
+    color: var(--admin-gray);
+}
+.category-actions {
+    display: flex;
+    gap: 8px;
+}
+</style>
+
+@section Scripts {
+<script>
+const categories = [
+    { id: 1, name: 'Mì Cay', desc: 'Các loại mì cay đặc trưng Hàn Quốc', image: 'MenuItemGroup_MG00005.webp', order: 1, products: 10, icon: '🍜' },
+    { id: 2, name: 'Mì Tương Đen', desc: 'Mì trộn tương đen Hàn Quốc', image: 'MenuItemGroup_MG00006.webp', order: 2, products: 4, icon: '🥢' },
+    { id: 3, name: 'Mì Xào', desc: 'Các loại mì xào', image: null, order: 3, products: 3, icon: '🍝' },
+    { id: 4, name: 'Món Khác', desc: 'Cơm, tokbokki và các món khác', image: 'MenuItemGroup_MG00007.webp', order: 4, products: 7, icon: '🍚' },
+    { id: 5, name: 'Món Thêm Mì', desc: 'Topping thêm cho mì', image: null, order: 5, products: 13, icon: '🥚' },
+    { id: 6, name: 'Combo', desc: 'Các combo tiết kiệm', image: 'MenuItemGroup_MG00003.webp', order: 6, products: 6, icon: '🎁' },
+    { id: 7, name: 'Lẩu Hàn Quốc', desc: 'Các loại lẩu Hàn Quốc', image: null, order: 7, products: 6, icon: '🍲' },
+    { id: 8, name: 'Món Thêm Lẩu', desc: 'Topping thêm cho lẩu', image: null, order: 8, products: 17, icon: '🥬' },
+    { id: 9, name: 'Khai Vị', desc: 'Món khai vị, ăn vặt', image: 'MenuItemGroup_MG00010.webp', order: 9, products: 17, icon: '🍟' },
+    { id: 10, name: 'Giải Khát', desc: 'Đồ uống, nước giải khát', image: 'MenuItemGroup_MG00018.webp', order: 10, products: 17, icon: '🥤' }
+];
+
+function renderCategories() {
+    const grid = document.getElementById('categoriesGrid');
+    grid.innerHTML = categories.map(c => `
+        <div class="category-admin-card">
+            <div class="category-image">
+                ${c.image ? `<img src="/images/products/${c.image}" onerror="this.parentElement.innerHTML='${c.icon}'" />` : c.icon}
+            </div>
+            <div class="category-content">
+                <h3>${c.name}</h3>
+                <p>${c.desc || 'Chưa có mô tả'}</p>
+                <div class="category-meta">
+                    <span class="category-count"><i class="fas fa-utensils"></i> ${c.products} sản phẩm</span>
+                    <div class="category-actions">
+                        <button class="action-btn edit" onclick="editCategory(${c.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                        <button class="action-btn delete" onclick="deleteCategory(${c.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    `).join('');
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm danh mục';
+    document.getElementById('categoryForm').reset();
+    document.getElementById('categoryId').value = '';
+    document.getElementById('categoryModal').classList.add('show');
+}
+
+function editCategory(id) {
+    const cat = categories.find(c => c.id === id);
+    if (!cat) return;
+    
+    document.getElementById('modalTitle').textContent = 'Sửa danh mục';
+    document.getElementById('categoryId').value = cat.id;
+    document.getElementById('categoryName').value = cat.name;
+    document.getElementById('categoryDesc').value = cat.desc || '';
+    document.getElementById('categoryOrder').value = cat.order;
+    document.getElementById('categoryImage').value = cat.image || '';
+    
+    document.getElementById('categoryModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('categoryModal').classList.remove('show');
+}
+
+function saveCategory() {
+    const id = document.getElementById('categoryId').value;
+    const data = {
+        name: document.getElementById('categoryName').value,
+        desc: document.getElementById('categoryDesc').value,
+        order: parseInt(document.getElementById('categoryOrder').value) || 0,
+        image: document.getElementById('categoryImage').value
+    };
+    
+    if (!data.name) {
+        showToast('Vui lòng nhập tên danh mục!', 'error');
+        return;
+    }
+    
+    if (id) {
+        const index = categories.findIndex(c => c.id == id);
+        if (index > -1) categories[index] = { ...categories[index], ...data };
+        showToast('Cập nhật thành công!', 'success');
+    } else {
+        data.id = categories.length + 1;
+        data.products = 0;
+        data.icon = '📦';
+        categories.push(data);
+        showToast('Thêm danh mục thành công!', 'success');
+    }
+    
+    closeModal();
+    renderCategories();
+}
+
+function deleteCategory(id) {
+    if (confirm('Bạn có chắc muốn xóa danh mục này?')) {
+        const index = categories.findIndex(c => c.id === id);
+        if (index > -1) categories.splice(index, 1);
+        renderCategories();
+        showToast('Đã xóa danh mục!', 'warning');
+    }
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+renderCategories();
+</script>
+}

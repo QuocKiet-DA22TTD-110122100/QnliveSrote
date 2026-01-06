@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Admin Mỳ Cay Sasin</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🌶️</text></svg>">
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+</head>
+<body>
+    <div class="admin-wrapper">
+        <!-- Sidebar -->
+        <aside class="admin-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <a href="/Admin" class="admin-logo">
+                    <span class="logo-icon">🌶️</span>
+                    <span class="logo-text">Mỳ Cay Sasin</span>
+                </a>
+            </div>
+            
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <span class="nav-section-title">TỔNG QUAN</span>
+                    <a href="/Admin" class="nav-item active">
+                        <i class="fas fa-home"></i>
+                        <span>Dashboard</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">QUẢN LÝ</span>
+                    <a href="/Admin/DonHang" class="nav-item">
+                        <i class="fas fa-shopping-bag"></i>
+                        <span>Đơn hàng</span>
+                        <span class="badge">3</span>
+                    </a>
+                    <a href="/Admin/SanPham" class="nav-item">
+                        <i class="fas fa-utensils"></i>
+                        <span>Sản phẩm</span>
+                    </a>
+                    <a href="/Admin/DanhMuc" class="nav-item">
+                        <i class="fas fa-tags"></i>
+                        <span>Danh mục</span>
+                    </a>
+                    <a href="/Admin/KhachHang" class="nav-item">
+                        <i class="fas fa-users"></i>
+                        <span>Khách hàng</span>
+                    </a>
+                    <a href="/Admin/MaGiamGia" class="nav-item">
+                        <i class="fas fa-ticket-alt"></i>
+                        <span>Mã giảm giá</span>
+                    </a>
+                    <a href="/Admin/DanhGia" class="nav-item">
+                        <i class="fas fa-star"></i>
+                        <span>Đánh giá</span>
+                    </a>
+                </div>
+                
+                <div class="nav-section">
+                    <span class="nav-section-title">VẬN HÀNH</span>
+                    <a href="/Admin/ChiNhanh" class="nav-item">
+                        <i class="fas fa-store-alt"></i>
+                        <span>Chi nhánh</span>
+                    </a>
+                    <a href="/Admin/Kho" class="nav-item">
+                        <i class="fas fa-warehouse"></i>
+                        <span>Kho & NVL</span>
+                    </a>
+                </div>
+
+                <div class="nav-section admin-only">
+                    <span class="nav-section-title">HỆ THỐNG</span>
+                    <a href="/Admin/NhanVien" class="nav-item">
+                        <i class="fas fa-user-tie"></i>
+                        <span>Nhân viên</span>
+                    </a>
+                    <a href="/Admin/CuaHang" class="nav-item">
+                        <i class="fas fa-store"></i>
+                        <span>Cửa hàng</span>
+                    </a>
+                    <a href="/Admin/TaiKhoan" class="nav-item">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Tài khoản</span>
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <span class="nav-section-title">BÁO CÁO</span>
+                    <a href="/Admin/BaoCao" class="nav-item">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>Báo cáo doanh thu</span>
+                    </a>
+                    <a href="/Admin/ThongKe" class="nav-item">
+                        <i class="fas fa-chart-pie"></i>
+                        <span>Thống kê</span>
+                    </a>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                <a href="/" class="nav-item">
+                    <i class="fas fa-globe"></i>
+                    <span>Xem website</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <div class="admin-main">
+            <!-- Top Header -->
+            <header class="admin-header">
+                <button class="sidebar-toggle" id="sidebarToggle">
+                    <i class="fas fa-bars"></i>
+                </button>
+                
+                <div class="header-search">
+                    <i class="fas fa-search"></i>
+                    <input type="text" placeholder="Tìm kiếm..." />
+                </div>
+
+                <div class="header-actions">
+                    <button class="header-btn notification-btn">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-badge">5</span>
+                    </button>
+                    
+                    <div class="user-dropdown">
+                        <button class="user-btn">
+                            <div class="user-avatar">
+                                <i class="fas fa-user"></i>
+                            </div>
+                            <span class="user-name" id="headerUserName">Admin</span>
+                            <i class="fas fa-chevron-down"></i>
+                        </button>
+                        <div class="dropdown-menu">
+                            <a href="/Admin/Profile"><i class="fas fa-user-circle"></i> Hồ sơ</a>
+                            <a href="/Admin/CaiDat"><i class="fas fa-cog"></i> Cài đặt</a>
+                            <hr />
+                            <a href="#" onclick="logout()"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Page Content -->
+            <main class="admin-content">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script>
+        // =====================================================
+        // HỆ THỐNG PHÂN QUYỀN
+        // =====================================================
+        
+        // Chuẩn hóa role mapping (Database -> Frontend)
+        const ROLE_MAP = {
+            'quantrivien': 'admin',
+            'quanly': 'manager', 
+            'nhanvien': 'staff',
+            'khachhang': 'customer',
+            // Fallback cho các role đã chuẩn hóa
+            'admin': 'admin',
+            'manager': 'manager',
+            'staff': 'staff',
+            'customer': 'customer'
+        };
+        
+        // Quyền truy cập theo role
+        const PERMISSIONS = {
+            admin: {
+                pages: ['*'], // Tất cả trang
+                canManageStaff: true,
+                canManageStore: true,
+                canViewReports: true,
+                canManageProducts: true,
+                canManageOrders: true,
+                canManageCustomers: true,
+                canManageCoupons: true,
+                canManageInventory: true
+            },
+            manager: {
+                pages: ['/Admin', '/Admin/DonHang', '/Admin/SanPham', '/Admin/DanhMuc', '/Admin/KhachHang', 
+                        '/Admin/MaGiamGia', '/Admin/ChiNhanh', '/Admin/Kho', '/Admin/BaoCao', '/Admin/ThongKe'],
+                canManageStaff: false,
+                canManageStore: false,
+                canViewReports: true,
+                canManageProducts: true,
+                canManageOrders: true,
+                canManageCustomers: true,
+                canManageCoupons: true,
+                canManageInventory: true
+            },
+            staff: {
+                pages: ['/Admin', '/Admin/DonHang', '/Admin/SanPham', '/Admin/KhachHang'],
+                canManageStaff: false,
+                canManageStore: false,
+                canViewReports: false,
+                canManageProducts: false, // Chỉ xem
+                canManageOrders: true,    // Cập nhật trạng thái
+                canManageCustomers: false,
+                canManageCoupons: false,
+                canManageInventory: false
+            }
+        };
+        
+        // Lấy thông tin user
+        const user = JSON.parse(localStorage.getItem('user') || '{}');
+        const rawRole = (user.role || '').toLowerCase();
+        const normalizedRole = ROLE_MAP[rawRole] || 'customer';
+        
+        // Cập nhật role đã chuẩn hóa vào localStorage
+        if (user.email && rawRole !== normalizedRole) {
+            user.role = normalizedRole;
+            localStorage.setItem('user', JSON.stringify(user));
+        }
+        
+        // Kiểm tra đăng nhập và quyền truy cập
+        const allowedRoles = ['admin', 'manager', 'staff'];
+        if (!user.email || !allowedRoles.includes(normalizedRole)) {
+            alert('Bạn không có quyền truy cập trang quản trị!');
+            window.location.href = '/DangNhap?returnUrl=' + encodeURIComponent(window.location.pathname);
+        }
+        
+        // Kiểm tra quyền truy cập trang hiện tại
+        const currentPath = window.location.pathname;
+        const userPermissions = PERMISSIONS[normalizedRole];
+        
+        if (userPermissions && !userPermissions.pages.includes('*')) {
+            const hasAccess = userPermissions.pages.some(p => 
+                currentPath === p || currentPath.startsWith(p + '/')
+            );
+            if (!hasAccess) {
+                alert('Bạn không có quyền truy cập trang này!');
+                window.location.href = '/Admin';
+            }
+        }
+        
+        // Lưu permissions vào window để các trang con sử dụng
+        window.userPermissions = userPermissions;
+        window.userRole = normalizedRole;
+
+        // Update user name và role badge
+        if (user.name) {
+            document.getElementById('headerUserName').textContent = user.name;
+        }
+        
+        // Thêm role badge
+        const roleBadges = {
+            admin: '<span class="role-badge admin">Quản trị viên</span>',
+            manager: '<span class="role-badge manager">Quản lý</span>',
+            staff: '<span class="role-badge staff">Nhân viên</span>'
+        };
+        const userNameEl = document.getElementById('headerUserName');
+        if (userNameEl && roleBadges[normalizedRole]) {
+            userNameEl.insertAdjacentHTML('afterend', roleBadges[normalizedRole]);
+        }
+
+        // Ẩn menu theo quyền
+        document.querySelectorAll('.admin-only').forEach(el => {
+            if (normalizedRole !== 'admin') el.style.display = 'none';
+        });
+        
+        // Ẩn menu báo cáo nếu không có quyền
+        if (!userPermissions?.canViewReports) {
+            document.querySelectorAll('a[href*="BaoCao"], a[href*="ThongKe"]').forEach(el => {
+                el.closest('.nav-item')?.remove();
+            });
+        }
+
+        // Sidebar toggle
+        document.getElementById('sidebarToggle').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('collapsed');
+        });
+
+        // User dropdown
+        document.querySelector('.user-btn').addEventListener('click', function() {
+            document.querySelector('.dropdown-menu').classList.toggle('show');
+        });
+
+        // Active nav item
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (item.getAttribute('href') === currentPath) {
+                item.classList.add('active');
+            } else if (currentPath !== '/Admin' && item.getAttribute('href') !== '/Admin') {
+                item.classList.remove('active');
+            }
+        });
+
+        function logout() {
+            localStorage.removeItem('user');
+            window.location.href = '/DangNhap';
+        }
+        
+        // Helper function để kiểm tra quyền (dùng trong các trang con)
+        window.checkPermission = function(permission) {
+            return window.userPermissions?.[permission] === true;
+        };
+    </script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

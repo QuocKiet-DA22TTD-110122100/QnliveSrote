@@ -1,0 +1,24 @@
+@startuml AD_SuaSanPham
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - SỬA SẢN PHẨM (ADMIN)**
+
+start
+:Chọn sản phẩm;
+:Nhấn "Sửa";
+:Hiển thị form với dữ liệu;
+:Chỉnh sửa thông tin;
+:Nhấn "Cập nhật";
+
+if (Dữ liệu hợp lệ?) then (Có)
+  :Cập nhật database;
+  :Thông báo thành công;
+else (Không)
+  :Hiển thị lỗi;
+endif
+stop
+
+@enduml

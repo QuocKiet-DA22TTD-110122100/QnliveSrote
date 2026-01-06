@@ -1,0 +1,293 @@
+@page
+@model TraCuuDonHangModel
+@{
+    ViewData["Title"] = "Tra cứu đơn hàng";
+}
+
+<section class="tracking-page">
+    <div class="container">
+        <div class="tracking-card">
+            <h1>🔍 Tra cứu đơn hàng</h1>
+            <p class="subtitle">Nhập mã đơn hàng để xem trạng thái</p>
+            
+            <div class="search-box">
+                <input type="text" id="orderCodeInput" placeholder="Nhập mã đơn hàng (VD: DH20251222...)" />
+                <button onclick="searchOrder()">
+                    <i class="fas fa-search"></i> Tra cứu
+                </button>
+            </div>
+            
+            <div class="order-result" id="orderResult" style="display:none;">
+                <!-- Order info will be loaded here -->
+            </div>
+            
+            <div class="not-found" id="notFound" style="display:none;">
+                <div class="icon">😕</div>
+                <h3>Không tìm thấy đơn hàng</h3>
+                <p>Vui lòng kiểm tra lại mã đơn hàng</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.tracking-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #fff7ed 0%, #ffedd5 100%);
+    padding: 60px 20px;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+}
+.tracking-card {
+    background: white;
+    border-radius: 24px;
+    padding: 50px 40px;
+    max-width: 650px;
+    width: 100%;
+    text-align: center;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+}
+.tracking-card h1 {
+    font-size: 2rem;
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+.subtitle {
+    color: #6b7280;
+    margin-bottom: 30px;
+}
+.search-box {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 30px;
+}
+.search-box input {
+    flex: 1;
+    padding: 15px 20px;
+    border: 2px solid #e5e7eb;
+    border-radius: 12px;
+    font-size: 1rem;
+    transition: all 0.2s;
+}
+.search-box input:focus {
+    outline: none;
+    border-color: #f97316;
+}
+.search-box button {
+    padding: 15px 25px;
+    background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+.search-box button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(249,115,22,0.4);
+}
+
+.order-result {
+    text-align: left;
+    background: #f9fafb;
+    border-radius: 16px;
+    padding: 25px;
+}
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: 20px;
+    border-bottom: 2px dashed #e5e7eb;
+    margin-bottom: 20px;
+}
+.result-code {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #f97316;
+    font-family: monospace;
+}
+.result-status {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+}
+.status-pending { background: #fef3c7; color: #d97706; }
+.status-preparing { background: #dbeafe; color: #2563eb; }
+.status-shipping { background: #e0e7ff; color: #4f46e5; }
+.status-completed { background: #d1fae5; color: #059669; }
+.status-cancelled { background: #fee2e2; color: #dc2626; }
+
+.result-info {
+    display: grid;
+    gap: 12px;
+    margin-bottom: 20px;
+}
+.info-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e5e7eb;
+}
+.info-row:last-child { border-bottom: none; }
+.info-label { color: #6b7280; }
+.info-value { font-weight: 600; color: #1f2937; }
+
+.result-items h4 {
+    margin-bottom: 15px;
+    color: #1f2937;
+}
+.item-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f3f4f6;
+}
+.item-name { color: #374151; }
+.item-price { font-weight: 600; color: #f97316; }
+
+.result-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px 0 0;
+    margin-top: 15px;
+    border-top: 2px solid #e5e7eb;
+    font-size: 1.2rem;
+    font-weight: 700;
+}
+.result-total .value { color: #f97316; }
+
+.not-found {
+    padding: 40px;
+}
+.not-found .icon {
+    font-size: 4rem;
+    margin-bottom: 15px;
+}
+.not-found h3 {
+    color: #1f2937;
+    margin-bottom: 10px;
+}
+.not-found p {
+    color: #6b7280;
+}
+</style>
+
+@section Scripts {
+<script>
+// Check URL params on load
+document.addEventListener('DOMContentLoaded', function() {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('code');
+    if (code) {
+        document.getElementById('orderCodeInput').value = code;
+        searchOrder();
+    }
+});
+
+async function searchOrder() {
+    const code = document.getElementById('orderCodeInput').value.trim();
+    if (!code) {
+        alert('Vui lòng nhập mã đơn hàng!');
+        return;
+    }
+    
+    document.getElementById('orderResult').style.display = 'none';
+    document.getElementById('notFound').style.display = 'none';
+    
+    try {
+        // Search by order code
+        const res = await fetch(`/api/orders/search?code=${encodeURIComponent(code)}`);
+        const data = await res.json();
+        
+        if (data.success && data.data) {
+            displayOrder(data.data);
+        } else {
+            document.getElementById('notFound').style.display = 'block';
+        }
+    } catch (err) {
+        console.error('Search error:', err);
+        document.getElementById('notFound').style.display = 'block';
+    }
+}
+
+function displayOrder(order) {
+    const statusClass = getStatusClass(order.status);
+    const items = order.items || [];
+    
+    const html = `
+        <div class="result-header">
+            <span class="result-code">${order.code}</span>
+            <span class="result-status ${statusClass}">${order.status}</span>
+        </div>
+        <div class="result-info">
+            <div class="info-row">
+                <span class="info-label">👤 Khách hàng</span>
+                <span class="info-value">${order.customerName}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📱 Điện thoại</span>
+                <span class="info-value">${order.phone}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📍 Địa chỉ</span>
+                <span class="info-value">${order.address || 'N/A'}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">💳 Thanh toán</span>
+                <span class="info-value">${order.paymentMethod}</span>
+            </div>
+            <div class="info-row">
+                <span class="info-label">📅 Ngày đặt</span>
+                <span class="info-value">${formatDate(order.createdAt)}</span>
+            </div>
+        </div>
+        ${items.length > 0 ? `
+        <div class="result-items">
+            <h4>🍜 Chi tiết đơn hàng</h4>
+            ${items.map(i => `
+                <div class="item-row">
+                    <span class="item-name">${i.name} x${i.quantity}</span>
+                    <span class="item-price">${formatPrice(i.price * i.quantity)}đ</span>
+                </div>
+            `).join('')}
+        </div>
+        ` : ''}
+        <div class="result-total">
+            <span>Tổng cộng</span>
+            <span class="value">${formatPrice(order.total)}đ</span>
+        </div>
+    `;
+    
+    document.getElementById('orderResult').innerHTML = html;
+    document.getElementById('orderResult').style.display = 'block';
+}
+
+function getStatusClass(status) {
+    const map = {
+        'Chờ xác nhận': 'status-pending',
+        'Đang chuẩn bị': 'status-preparing',
+        'Đang giao': 'status-shipping',
+        'Hoàn thành': 'status-completed',
+        'Đã hủy': 'status-cancelled'
+    };
+    return map[status] || 'status-pending';
+}
+
+function formatPrice(n) {
+    return Math.round(n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+function formatDate(d) {
+    if (!d) return '';
+    const date = new Date(d);
+    return date.toLocaleDateString('vi-VN') + ' ' + date.toLocaleTimeString('vi-VN', {hour:'2-digit', minute:'2-digit'});
+}
+</script>
+}

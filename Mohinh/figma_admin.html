@@ -1,0 +1,258 @@
+<!-- TRANG ADMIN - MỲ CAY SASIN -->
+<!-- Paste vào html.to.design để import Figma -->
+
+<div style="display: flex; min-height: 100vh; background: #f3f4f6;">
+  
+  <!-- SIDEBAR -->
+  <aside style="width: 260px; background: #1f2937; padding: 24px 16px; display: flex; flex-direction: column;">
+    <!-- Logo -->
+    <div style="display: flex; align-items: center; gap: 8px; padding: 0 8px 24px; border-bottom: 1px solid #374151; margin-bottom: 24px;">
+      <span style="font-size: 28px;">🌶️</span>
+      <div>
+        <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 18px; font-weight: 800; color: #f97316;">MỲ CAY SASIN</div>
+        <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #9ca3af;">ADMIN PANEL</div>
+      </div>
+    </div>
+    
+    <!-- Navigation -->
+    <nav style="flex: 1;">
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: #f97316; border-radius: 8px; margin-bottom: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">📊</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: white;">Dashboard</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">📦</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Sản phẩm</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">📁</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Danh mục</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; text-decoration: none; position: relative;">
+        <span style="font-size: 18px;">🛒</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Đơn hàng</span>
+        <span style="position: absolute; right: 16px; background: #ef4444; color: white; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 10px;">5</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">👥</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Khách hàng</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">🎫</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Mã giảm giá</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">📈</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Thống kê</span>
+      </a>
+      <a style="display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 8px; text-decoration: none;">
+        <span style="font-size: 18px;">⚙️</span>
+        <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #9ca3af;">Cài đặt</span>
+      </a>
+    </nav>
+    
+    <!-- User -->
+    <div style="border-top: 1px solid #374151; padding-top: 16px;">
+      <div style="display: flex; align-items: center; gap: 12px; padding: 8px;">
+        <div style="width: 40px; height: 40px; background: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+          <span style="font-size: 18px;">👤</span>
+        </div>
+        <div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: white;">Admin</div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #9ca3af;">admin@sasin.vn</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN CONTENT -->
+  <main style="flex: 1; display: flex; flex-direction: column;">
+    
+    <!-- HEADER -->
+    <header style="background: white; padding: 16px 32px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="display: flex; align-items: center; gap: 16px;">
+        <span style="font-size: 24px; cursor: pointer;">☰</span>
+        <h1 style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 20px; font-weight: 600; color: #1f2937;">Dashboard</h1>
+      </div>
+      <div style="display: flex; align-items: center; gap: 24px;">
+        <div style="position: relative;">
+          <span style="font-size: 20px; cursor: pointer;">🔔</span>
+          <span style="position: absolute; top: -4px; right: -4px; background: #ef4444; color: white; font-size: 10px; font-weight: 600; padding: 2px 5px; border-radius: 8px;">3</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+          <div style="width: 36px; height: 36px; background: #f97316; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 16px;">👤</span>
+          </div>
+          <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; color: #374151;">Admin ▼</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- DASHBOARD CONTENT -->
+    <div style="padding: 32px; overflow-y: auto;">
+      
+      <!-- Stats Cards -->
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px; margin-bottom: 32px;">
+        <!-- Revenue -->
+        <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+            <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; color: #6b7280;">Doanh thu hôm nay</span>
+            <span style="font-size: 24px;">💰</span>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 28px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">12,500,000đ</div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; color: #10b981;">↑ 12% so với hôm qua</div>
+        </div>
+        
+        <!-- Orders -->
+        <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+            <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; color: #6b7280;">Đơn hàng</span>
+            <span style="font-size: 24px;">🛒</span>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 28px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">45</div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; color: #10b981;">↑ 8% so với hôm qua</div>
+        </div>
+        
+        <!-- Customers -->
+        <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+            <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; color: #6b7280;">Khách hàng mới</span>
+            <span style="font-size: 24px;">👥</span>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 28px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">12</div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; color: #10b981;">↑ 25% so với hôm qua</div>
+        </div>
+        
+        <!-- Products -->
+        <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;">
+            <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; color: #6b7280;">Sản phẩm</span>
+            <span style="font-size: 24px;">📦</span>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 28px; font-weight: 700; color: #1f2937; margin-bottom: 8px;">99</div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 13px; color: #6b7280;">Đang hoạt động</div>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 24px; margin-bottom: 32px;">
+        <!-- Revenue Chart -->
+        <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <h3 style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">📈 Biểu đồ doanh thu tuần</h3>
+          <div style="height: 200px; display: flex; align-items: end; justify-content: space-around; padding: 0 20px;">
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 80px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">T2</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 120px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">T3</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 100px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">T4</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 140px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">T5</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 180px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">T6</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 200px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">T7</span>
+            </div>
+            <div style="display: flex; flex-direction: column; align-items: center; gap: 8px;">
+              <div style="width: 40px; height: 160px; background: linear-gradient(180deg, #f97316, #fdba74); border-radius: 4px;"></div>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">CN</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Recent Orders -->
+        <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+          <h3 style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">🛒 Đơn hàng gần đây</h3>
+          
+          <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #1f2937;">#DH001234</span>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #f97316;">125,000đ</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">Nguyễn Văn A</span>
+              <span style="background: #fef3c7; color: #d97706; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px;">Chờ xác nhận</span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #1f2937;">#DH001233</span>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #f97316;">89,000đ</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">Trần Thị B</span>
+              <span style="background: #d1fae5; color: #059669; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px;">Đã giao</span>
+            </div>
+          </div>
+          
+          <div style="margin-bottom: 16px; padding-bottom: 16px; border-bottom: 1px solid #e5e7eb;">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #1f2937;">#DH001232</span>
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #f97316;">156,000đ</span>
+            </div>
+            <div style="display: flex; justify-content: space-between;">
+              <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">Lê Văn C</span>
+              <span style="background: #dbeafe; color: #2563eb; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 12px;">Đang giao</span>
+            </div>
+          </div>
+          
+          <button style="width: 100%; background: #f3f4f6; color: #374151; border: none; padding: 10px; border-radius: 8px; font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer;">Xem tất cả →</button>
+        </div>
+      </div>
+
+      <!-- Top Products -->
+      <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.08);">
+        <h3 style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 16px; font-weight: 600; color: #1f2937; margin-bottom: 24px;">🏆 Sản phẩm bán chạy</h3>
+        
+        <div style="display: flex; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+          <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 18px; font-weight: 700; color: #f97316; width: 30px;">#1</span>
+          <div style="width: 48px; height: 48px; background: #fef3c7; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 24px;">🍜</span>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #1f2937;">Mì Thập Cẩm No Nê</div>
+            <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">45 đơn hàng</div>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #10b981;">3,465,000đ</div>
+        </div>
+        
+        <div style="display: flex; gap: 16px; align-items: center; padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+          <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 18px; font-weight: 700; color: #6b7280; width: 30px;">#2</span>
+          <div style="width: 48px; height: 48px; background: #fce7f3; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 24px;">🍢</span>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #1f2937;">Tokbokki Phô Mai Sasin</div>
+            <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">38 đơn hàng</div>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #10b981;">2,242,000đ</div>
+        </div>
+        
+        <div style="display: flex; gap: 16px; align-items: center; padding: 12px 0;">
+          <span style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 18px; font-weight: 700; color: #6b7280; width: 30px;">#3</span>
+          <div style="width: 48px; height: 48px; background: #d1fae5; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+            <span style="font-size: 24px;">🍱</span>
+          </div>
+          <div style="flex: 1;">
+            <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #1f2937;">Combo Vui Vẻ (1 người)</div>
+            <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 12px; color: #6b7280;">32 đơn hàng</div>
+          </div>
+          <div style="font-family: 'Be Vietnam Pro', sans-serif; font-size: 14px; font-weight: 600; color: #10b981;">2,208,000đ</div>
+        </div>
+      </div>
+      
+    </div>
+  </main>
+</div>

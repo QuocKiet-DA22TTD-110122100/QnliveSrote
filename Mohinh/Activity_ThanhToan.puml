@@ -1,0 +1,137 @@
+@startuml Activity_ThanhToan
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - QUY TRÌNH THANH TOÁN**\nHệ thống Mỳ Cay Sasin
+
+|Khách hàng|
+start
+:Xem giỏ hàng;
+:Kiểm tra sản phẩm;
+:Nhấn "Tiến hành thanh toán";
+
+|Hệ thống|
+:Kiểm tra đăng nhập;
+
+if (Đã đăng nhập?) then (Có)
+  :Lấy thông tin khách hàng;
+else (Không)
+  |Khách hàng|
+  :Đăng nhập / Đăng ký;
+endif
+
+|Hệ thống|
+:Hiển thị trang thanh toán;
+
+|Khách hàng|
+:Kiểm tra/Cập nhật thông tin giao hàng;
+:Nhập địa chỉ giao hàng;
+:Nhập ghi chú (nếu có);
+
+|Hệ thống|
+:Tính phí giao hàng;
+:Hiển thị tổng tiền;
+
+|Khách hàng|
+if (Có mã giảm giá?) then (Có)
+  :Nhập mã giảm giá;
+  
+  |Hệ thống|
+  :Kiểm tra mã giảm giá;
+  
+  if (Mã hợp lệ?) then (Hợp lệ)
+    :Áp dụng giảm giá;
+    :Cập nhật tổng tiền;
+  else (Không hợp lệ)
+    :Thông báo mã không hợp lệ;
+  endif
+else (Không)
+endif
+
+|Khách hàng|
+:Chọn phương thức thanh toán;
+
+switch (Phương thức?)
+case (COD - Tiền mặt)
+  :Chọn thanh toán khi nhận hàng;
+  
+  |Hệ thống|
+  :Tạo đơn hàng;
+  :Trạng thái: "Chờ xác nhận";
+  :Gửi email xác nhận;
+  
+case (Chuyển khoản)
+  :Chọn chuyển khoản ngân hàng;
+  
+  |Hệ thống|
+  :Hiển thị thông tin tài khoản;
+  :Tạo mã đơn hàng;
+  
+  |Khách hàng|
+  :Chuyển khoản với nội dung mã đơn;
+  
+  |Hệ thống|
+  :Tạo đơn hàng;
+  :Trạng thái: "Chờ thanh toán";
+  
+  fork
+    :Chờ xác nhận thanh toán;
+  fork again
+    |Admin|
+    :Kiểm tra giao dịch;
+    :Xác nhận đã nhận tiền;
+  end fork
+  
+  |Hệ thống|
+  :Cập nhật trạng thái: "Đã thanh toán";
+
+case (Ví điện tử)
+  :Chọn MoMo/ZaloPay/VNPay;
+  
+  |Hệ thống|
+  :Chuyển đến cổng thanh toán;
+  
+  |Cổng thanh toán|
+  :Xử lý giao dịch;
+  
+  |Khách hàng|
+  :Xác nhận thanh toán;
+  
+  |Cổng thanh toán|
+  if (Thanh toán thành công?) then (Thành công)
+    :Gửi callback về hệ thống;
+    
+    |Hệ thống|
+    :Xác nhận giao dịch;
+    :Tạo đơn hàng;
+    :Trạng thái: "Đã thanh toán";
+    
+  else (Thất bại)
+    :Thông báo lỗi;
+    
+    |Hệ thống|
+    :Hủy giao dịch;
+    
+    |Khách hàng|
+    :Thử lại hoặc chọn phương thức khác;
+  endif
+
+endswitch
+
+|Hệ thống|
+:Lưu đơn hàng vào database;
+:Gửi email xác nhận đơn hàng;
+:Thông báo cho Admin;
+
+|Khách hàng|
+:Nhận thông báo đặt hàng thành công;
+:Xem chi tiết đơn hàng;
+
+stop
+
+@enduml

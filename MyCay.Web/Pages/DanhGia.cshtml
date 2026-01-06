@@ -1,0 +1,391 @@
+@page
+@{
+    ViewData["Title"] = "Đánh giá khách hàng";
+}
+
+<section class="reviews-page">
+    <div class="container">
+        <div class="reviews-header">
+            <h1>⭐ Đánh giá từ khách hàng</h1>
+            <p>Xem những trải nghiệm thực tế từ khách hàng của Mỳ Cay Sasin</p>
+        </div>
+
+        <!-- Stats Overview -->
+        <div class="reviews-stats" id="reviewStats">
+            <div class="stats-main">
+                <div class="avg-rating">
+                    <span class="rating-number" id="avgRating">5.0</span>
+                    <div class="rating-stars" id="avgStars">⭐⭐⭐⭐⭐</div>
+                    <span class="rating-count">(<span id="totalReviews">0</span> đánh giá)</span>
+                </div>
+            </div>
+            <div class="stats-bars">
+                <div class="stat-bar"><span>5 ⭐</span><div class="bar"><div class="fill" id="bar5"></div></div><span id="count5">0</span></div>
+                <div class="stat-bar"><span>4 ⭐</span><div class="bar"><div class="fill" id="bar4"></div></div><span id="count4">0</span></div>
+                <div class="stat-bar"><span>3 ⭐</span><div class="bar"><div class="fill" id="bar3"></div></div><span id="count3">0</span></div>
+                <div class="stat-bar"><span>2 ⭐</span><div class="bar"><div class="fill" id="bar2"></div></div><span id="count2">0</span></div>
+                <div class="stat-bar"><span>1 ⭐</span><div class="bar"><div class="fill" id="bar1"></div></div><span id="count1">0</span></div>
+            </div>
+        </div>
+
+        <!-- Write Review Button -->
+        <div class="write-review-section">
+            <button class="btn-write-review" onclick="openReviewModal()">
+                ✍️ Viết đánh giá của bạn
+            </button>
+        </div>
+
+        <!-- Reviews List -->
+        <div class="reviews-list" id="reviewsList">
+            <div class="loading">Đang tải đánh giá...</div>
+        </div>
+
+        <!-- Load More -->
+        <div class="load-more" id="loadMore" style="display:none;">
+            <button onclick="loadMoreReviews()">Xem thêm đánh giá</button>
+        </div>
+    </div>
+</section>
+
+<!-- Write Review Modal -->
+<div class="modal-overlay" id="reviewModal">
+    <div class="review-modal">
+        <button class="modal-close" onclick="closeReviewModal()">×</button>
+        <h2>✍️ Viết đánh giá</h2>
+        <p>Chia sẻ trải nghiệm của bạn với Mỳ Cay Sasin</p>
+        
+        <form id="reviewForm" onsubmit="submitReview(event)">
+            <div class="form-group">
+                <label>Họ tên *</label>
+                <input type="text" id="reviewName" required placeholder="Nguyễn Văn A" />
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label>Số điện thoại</label>
+                    <input type="tel" id="reviewPhone" placeholder="0901234567" />
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="reviewEmail" placeholder="email@example.com" />
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Đánh giá của bạn *</label>
+                <div class="star-rating" id="starRating">
+                    <span class="star" data-value="1">☆</span>
+                    <span class="star" data-value="2">☆</span>
+                    <span class="star" data-value="3">☆</span>
+                    <span class="star" data-value="4">☆</span>
+                    <span class="star" data-value="5">☆</span>
+                </div>
+                <input type="hidden" id="reviewRating" value="5" />
+            </div>
+            
+            <div class="form-group">
+                <label>Nội dung đánh giá *</label>
+                <textarea id="reviewContent" required rows="4" placeholder="Chia sẻ trải nghiệm của bạn..."></textarea>
+            </div>
+            
+            <button type="submit" class="btn-submit">Gửi đánh giá</button>
+        </form>
+    </div>
+</div>
+
+<style>
+.reviews-page { padding: 40px 0; background: #f8f9fa; min-height: 100vh; }
+.reviews-header { text-align: center; margin-bottom: 40px; padding-top: 20px; }
+.reviews-header h1 { font-size: 2rem; color: #1f2937; margin-bottom: 10px; }
+.reviews-header p { color: #6b7280; }
+
+/* Stats */
+.reviews-stats {
+    display: flex; gap: 40px; background: white; padding: 30px;
+    border-radius: 16px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); margin-bottom: 30px;
+    flex-wrap: wrap; justify-content: center;
+}
+.stats-main { text-align: center; }
+.avg-rating .rating-number { font-size: 4rem; font-weight: 800; color: #f97316; }
+.rating-stars { font-size: 1.5rem; margin: 10px 0; }
+.rating-count { color: #6b7280; }
+.stats-bars { flex: 1; min-width: 250px; }
+.stat-bar { display: flex; align-items: center; gap: 10px; margin: 8px 0; }
+.stat-bar .bar { flex: 1; height: 10px; background: #e5e7eb; border-radius: 5px; overflow: hidden; }
+.stat-bar .fill { height: 100%; background: linear-gradient(90deg, #fbbf24, #f97316); border-radius: 5px; transition: width 0.5s; }
+
+/* Write Review */
+.write-review-section { text-align: center; margin-bottom: 30px; }
+.btn-write-review {
+    padding: 15px 40px; background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white; border: none; border-radius: 30px; font-size: 1.1rem;
+    font-weight: 600; cursor: pointer; transition: all 0.3s;
+}
+.btn-write-review:hover { transform: translateY(-2px); box-shadow: 0 8px 25px rgba(249,115,22,0.4); }
+
+/* Reviews List */
+.reviews-list { display: flex; flex-direction: column; gap: 20px; }
+.review-card {
+    background: white; padding: 25px; border-radius: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}
+.review-header { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+.reviewer-info { display: flex; align-items: center; gap: 15px; }
+.reviewer-avatar {
+    width: 50px; height: 50px; background: linear-gradient(135deg, #f97316, #ea580c);
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    color: white; font-weight: 700; font-size: 1.2rem;
+}
+.reviewer-name { font-weight: 600; color: #1f2937; }
+.review-date { font-size: 0.85rem; color: #9ca3af; }
+.review-stars { color: #fbbf24; font-size: 1.1rem; }
+.review-content { color: #4b5563; line-height: 1.7; margin-bottom: 15px; }
+.admin-reply {
+    background: #fff7ed; border-left: 4px solid #f97316;
+    padding: 15px; border-radius: 0 12px 12px 0; margin-top: 15px;
+}
+.admin-reply-header { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.admin-badge { background: #f97316; color: white; padding: 3px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600; }
+.admin-reply-content { color: #92400e; }
+.admin-reply-date { font-size: 0.8rem; color: #b45309; margin-top: 8px; }
+
+/* Modal */
+.modal-overlay {
+    position: fixed; inset: 0; background: rgba(0,0,0,0.6);
+    display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.review-modal {
+    background: white; border-radius: 20px; padding: 30px;
+    width: 100%; max-width: 500px; max-height: 90vh; overflow-y: auto;
+    position: relative; animation: slideUp 0.3s ease;
+}
+@@keyframes slideUp { from { transform: translateY(30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+.modal-close {
+    position: absolute; top: 15px; right: 15px; width: 36px; height: 36px;
+    border: none; background: #f3f4f6; border-radius: 50%; font-size: 1.5rem; cursor: pointer;
+}
+.modal-close:hover { background: #ef4444; color: white; }
+.review-modal h2 { margin-bottom: 5px; }
+.review-modal > p { color: #6b7280; margin-bottom: 25px; }
+.form-group { margin-bottom: 20px; }
+.form-group label { display: block; font-weight: 600; margin-bottom: 8px; color: #374151; }
+.form-group input, .form-group textarea {
+    width: 100%; padding: 12px 15px; border: 2px solid #e5e7eb;
+    border-radius: 10px; font-size: 1rem; transition: all 0.2s;
+}
+.form-group input:focus, .form-group textarea:focus { border-color: #f97316; outline: none; }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
+
+/* Star Rating Input */
+.star-rating { display: flex; gap: 8px; font-size: 2rem; cursor: pointer; }
+.star-rating .star { color: #d1d5db; transition: all 0.2s; }
+.star-rating .star:hover, .star-rating .star.active { color: #fbbf24; transform: scale(1.1); }
+
+.btn-submit {
+    width: 100%; padding: 15px; background: linear-gradient(135deg, #f97316, #ea580c);
+    color: white; border: none; border-radius: 12px; font-size: 1.1rem;
+    font-weight: 600; cursor: pointer; transition: all 0.2s;
+}
+.btn-submit:hover { transform: translateY(-2px); }
+
+.load-more { text-align: center; margin-top: 30px; }
+.load-more button {
+    padding: 12px 30px; background: white; border: 2px solid #e5e7eb;
+    border-radius: 25px; cursor: pointer; font-weight: 600; transition: all 0.2s;
+}
+.load-more button:hover { border-color: #f97316; color: #f97316; }
+.loading { text-align: center; padding: 40px; color: #6b7280; }
+
+@@media (max-width: 768px) {
+    .reviews-stats { flex-direction: column; }
+    .form-row { grid-template-columns: 1fr; }
+}
+</style>
+
+@section Scripts {
+<script>
+let currentPage = 1;
+let totalPages = 1;
+let selectedRating = 5;
+
+// Load reviews on page load
+document.addEventListener('DOMContentLoaded', loadReviews);
+
+async function loadReviews() {
+    try {
+        const res = await fetch(`/api/reviews?page=${currentPage}&pageSize=10`);
+        const data = await res.json();
+        
+        if (data.success) {
+            renderStats(data.stats);
+            renderReviews(data.data, currentPage === 1);
+            totalPages = Math.ceil(data.pagination.total / data.pagination.pageSize);
+            document.getElementById('loadMore').style.display = currentPage < totalPages ? 'block' : 'none';
+        }
+    } catch (err) {
+        document.getElementById('reviewsList').innerHTML = '<p class="loading">Không thể tải đánh giá</p>';
+    }
+}
+
+function renderStats(stats) {
+    if (!stats) return;
+    document.getElementById('avgRating').textContent = (stats.average || 0).toFixed(1);
+    document.getElementById('totalReviews').textContent = stats.total || 0;
+    
+    const total = stats.total || 1;
+    document.getElementById('bar5').style.width = ((stats.star5 / total) * 100) + '%';
+    document.getElementById('bar4').style.width = ((stats.star4 / total) * 100) + '%';
+    document.getElementById('bar3').style.width = ((stats.star3 / total) * 100) + '%';
+    document.getElementById('bar2').style.width = ((stats.star2 / total) * 100) + '%';
+    document.getElementById('bar1').style.width = ((stats.star1 / total) * 100) + '%';
+    
+    document.getElementById('count5').textContent = stats.star5 || 0;
+    document.getElementById('count4').textContent = stats.star4 || 0;
+    document.getElementById('count3').textContent = stats.star3 || 0;
+    document.getElementById('count2').textContent = stats.star2 || 0;
+    document.getElementById('count1').textContent = stats.star1 || 0;
+    
+    // Update stars display
+    const avg = Math.round(stats.average || 5);
+    document.getElementById('avgStars').textContent = '⭐'.repeat(avg) + '☆'.repeat(5 - avg);
+}
+
+function renderReviews(reviews, replace = true) {
+    const container = document.getElementById('reviewsList');
+    
+    if (reviews.length === 0 && replace) {
+        container.innerHTML = '<p class="loading">Chưa có đánh giá nào</p>';
+        return;
+    }
+    
+    const html = reviews.map(r => `
+        <div class="review-card">
+            <div class="review-header">
+                <div class="reviewer-info">
+                    <div class="reviewer-avatar">${r.customerName.charAt(0).toUpperCase()}</div>
+                    <div>
+                        <div class="reviewer-name">${r.customerName}</div>
+                        <div class="review-date">${formatDate(r.createdAt)}</div>
+                    </div>
+                </div>
+                <div class="review-stars">${'⭐'.repeat(r.rating)}</div>
+            </div>
+            <div class="review-content">${r.content}</div>
+            ${r.productName ? `<div style="font-size:0.85rem;color:#f97316;">🍜 ${r.productName}</div>` : ''}
+            ${r.adminReply ? `
+                <div class="admin-reply">
+                    <div class="admin-reply-header">
+                        <span class="admin-badge">Mỳ Cay Sasin</span>
+                        <span>đã phản hồi</span>
+                    </div>
+                    <div class="admin-reply-content">${r.adminReply}</div>
+                    <div class="admin-reply-date">${formatDate(r.replyAt)}</div>
+                </div>
+            ` : ''}
+        </div>
+    `).join('');
+    
+    if (replace) {
+        container.innerHTML = html;
+    } else {
+        container.innerHTML += html;
+    }
+}
+
+function loadMoreReviews() {
+    currentPage++;
+    loadReviews();
+}
+
+function formatDate(dateStr) {
+    if (!dateStr) return '';
+    const d = new Date(dateStr);
+    return d.toLocaleDateString('vi-VN', { day: '2-digit', month: '2-digit', year: 'numeric' });
+}
+
+// Modal functions
+function openReviewModal() {
+    document.getElementById('reviewModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
+    
+    // Pre-fill from user data if logged in
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.name) document.getElementById('reviewName').value = user.name;
+    if (user.phone) document.getElementById('reviewPhone').value = user.phone;
+    if (user.email) document.getElementById('reviewEmail').value = user.email;
+    
+    initStarRating();
+}
+
+function closeReviewModal() {
+    document.getElementById('reviewModal').classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function initStarRating() {
+    const stars = document.querySelectorAll('#starRating .star');
+    stars.forEach(star => {
+        star.addEventListener('click', function() {
+            selectedRating = parseInt(this.dataset.value);
+            document.getElementById('reviewRating').value = selectedRating;
+            updateStars(selectedRating);
+        });
+        star.addEventListener('mouseenter', function() {
+            updateStars(parseInt(this.dataset.value));
+        });
+    });
+    document.getElementById('starRating').addEventListener('mouseleave', function() {
+        updateStars(selectedRating);
+    });
+    updateStars(5);
+}
+
+function updateStars(rating) {
+    document.querySelectorAll('#starRating .star').forEach((star, i) => {
+        star.textContent = i < rating ? '★' : '☆';
+        star.classList.toggle('active', i < rating);
+    });
+}
+
+async function submitReview(e) {
+    e.preventDefault();
+    
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    
+    const data = {
+        customerId: user.id || null,
+        customerName: document.getElementById('reviewName').value,
+        phone: document.getElementById('reviewPhone').value,
+        email: document.getElementById('reviewEmail').value,
+        rating: selectedRating,
+        content: document.getElementById('reviewContent').value
+    };
+    
+    try {
+        const res = await fetch('/api/reviews', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+        });
+        const result = await res.json();
+        
+        if (result.success) {
+            alert('🎉 ' + result.message);
+            closeReviewModal();
+            document.getElementById('reviewForm').reset();
+            selectedRating = 5;
+        } else {
+            alert('❌ ' + result.message);
+        }
+    } catch (err) {
+        alert('❌ Có lỗi xảy ra, vui lòng thử lại!');
+    }
+}
+
+// Close modal on overlay click
+document.getElementById('reviewModal').addEventListener('click', function(e) {
+    if (e.target === this) closeReviewModal();
+});
+</script>
+}

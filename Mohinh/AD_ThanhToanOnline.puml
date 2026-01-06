@@ -1,0 +1,25 @@
+@startuml AD_ThanhToanOnline
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - THANH TOÁN ONLINE**
+
+start
+:Chọn ví điện tử;
+:Chuyển đến cổng thanh toán;
+:Xác nhận thanh toán;
+
+if (Thành công?) then (Có)
+  :Tạo đơn hàng;
+  :Trạng thái: Đã thanh toán;
+  :Gửi email xác nhận;
+  stop
+else (Không)
+  :Thông báo lỗi;
+  :Thử lại;
+  stop
+endif
+
+@enduml

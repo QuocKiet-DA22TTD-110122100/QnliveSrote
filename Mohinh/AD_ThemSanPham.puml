@@ -1,0 +1,27 @@
+@startuml AD_ThemSanPham
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - THÊM SẢN PHẨM (ADMIN)**
+
+start
+:Nhấn "Thêm sản phẩm";
+:Nhập mã sản phẩm;
+:Chọn danh mục;
+:Nhập tên sản phẩm;
+:Nhập giá bán;
+:Chọn cấp độ cay;
+:Upload hình ảnh;
+:Nhấn "Lưu";
+
+if (Dữ liệu hợp lệ?) then (Có)
+  :Lưu vào database;
+  :Thông báo thành công;
+else (Không)
+  :Hiển thị lỗi;
+endif
+stop
+
+@enduml

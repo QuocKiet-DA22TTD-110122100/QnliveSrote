@@ -1,0 +1,22 @@
+@startuml AD_XoaSanPham
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - XÓA SẢN PHẨM (ADMIN)**
+
+start
+:Chọn sản phẩm;
+:Nhấn "Xóa";
+:Hiển thị xác nhận;
+
+if (Xác nhận xóa?) then (Có)
+  :Soft delete sản phẩm;
+  :Thông báo đã xóa;
+else (Không)
+  :Hủy thao tác;
+endif
+stop
+
+@enduml

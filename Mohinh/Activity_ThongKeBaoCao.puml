@@ -1,0 +1,97 @@
+@startuml Activity_ThongKeBaoCao
+!theme plain
+skinparam backgroundColor #FEFEFE
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+skinparam activityDiamondBackgroundColor #FFEDD5
+skinparam activityDiamondBorderColor #EA580C
+skinparam arrowColor #374151
+
+title **SƠ ĐỒ HOẠT ĐỘNG - THỐNG KÊ BÁO CÁO (ADMIN)**\nHệ thống Mỳ Cay Sasin
+
+|Admin|
+start
+:Đăng nhập Admin Panel;
+:Chọn menu "Thống kê";
+
+|Hệ thống|
+:Hiển thị trang thống kê;
+:Load dữ liệu mặc định (tháng hiện tại);
+
+|Admin|
+:Chọn khoảng thời gian;
+
+switch (Loại báo cáo?)
+case (Doanh thu)
+  |Hệ thống|
+  :Truy vấn dữ liệu doanh thu;
+  :Tính tổng doanh thu;
+  :Tính doanh thu theo ngày/tuần/tháng;
+  :Vẽ biểu đồ doanh thu;
+  :Hiển thị so sánh với kỳ trước;
+
+case (Đơn hàng)
+  |Hệ thống|
+  :Truy vấn dữ liệu đơn hàng;
+  :Thống kê theo trạng thái;
+  :Tính tỷ lệ hoàn thành;
+  :Tính giá trị trung bình/đơn;
+  :Vẽ biểu đồ đơn hàng;
+
+case (Sản phẩm bán chạy)
+  |Hệ thống|
+  :Truy vấn chi tiết đơn hàng;
+  :Tổng hợp số lượng bán;
+  :Sắp xếp theo số lượng;
+  :Hiển thị Top sản phẩm;
+  :Vẽ biểu đồ tỷ lệ;
+
+case (Khách hàng)
+  |Hệ thống|
+  :Truy vấn dữ liệu khách hàng;
+  :Thống kê khách hàng mới;
+  :Phân tích khách hàng thân thiết;
+  :Tính giá trị vòng đời khách hàng;
+
+case (Danh mục)
+  |Hệ thống|
+  :Truy vấn doanh thu theo danh mục;
+  :Tính tỷ lệ phần trăm;
+  :Vẽ biểu đồ tròn;
+
+endswitch
+
+|Hệ thống|
+:Hiển thị kết quả thống kê;
+:Hiển thị biểu đồ trực quan;
+
+|Admin|
+if (Xuất báo cáo?) then (Có)
+  :Chọn định dạng (Excel/PDF);
+  :Nhấn "Xuất báo cáo";
+  
+  |Hệ thống|
+  :Tạo file báo cáo;
+  :Tải xuống file;
+  
+else (Không)
+endif
+
+|Admin|
+if (Xem chi tiết?) then (Có)
+  :Click vào mục cần xem;
+  
+  |Hệ thống|
+  :Hiển thị chi tiết;
+  :Cho phép drill-down dữ liệu;
+  
+else (Không)
+endif
+
+|Admin|
+:Phân tích dữ liệu;
+:Đưa ra quyết định kinh doanh;
+
+stop
+
+@enduml

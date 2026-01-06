@@ -1,0 +1,25 @@
+@startuml AD_DanhGia
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - ĐÁNH GIÁ SẢN PHẨM**
+
+start
+:Xem đơn hàng đã hoàn thành;
+:Nhấn "Đánh giá";
+:Chọn số sao (1-5);
+:Nhập nhận xét;
+:Nhấn "Gửi";
+
+if (Nội dung hợp lệ?) then (Có)
+  :Lưu đánh giá;
+  :Cập nhật điểm TB;
+  :Thông báo thành công;
+else (Không)
+  :Hiển thị lỗi;
+endif
+stop
+
+@enduml

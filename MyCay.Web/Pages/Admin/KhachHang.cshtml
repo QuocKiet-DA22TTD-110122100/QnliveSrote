@@ -1,0 +1,256 @@
+@page
+@model AdminKhachHangModel
+@{
+    ViewData["Title"] = "Quản lý khách hàng";
+    Layout = "_AdminLayout";
+}
+
+<div class="page-header">
+    <h1 class="page-title">Quản lý khách hàng</h1>
+    <div class="page-actions">
+        <button class="btn btn-secondary" onclick="exportCustomers()">
+            <i class="fas fa-download"></i> Xuất Excel
+        </button>
+        <button class="btn btn-primary" onclick="openAddModal()">
+            <i class="fas fa-plus"></i> Thêm khách hàng
+        </button>
+    </div>
+</div>
+
+<!-- Stats -->
+<div class="stats-grid" style="margin-bottom: 25px;">
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-users"></i></div>
+        <div class="stat-info">
+            <h3>Tổng khách hàng</h3>
+            <p class="stat-number">156</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-user-plus"></i></div>
+        <div class="stat-info">
+            <h3>Khách mới tháng này</h3>
+            <p class="stat-number">23</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #f97316, #ea580c);"><i class="fas fa-star"></i></div>
+        <div class="stat-info">
+            <h3>Khách VIP</h3>
+            <p class="stat-number">12</p>
+        </div>
+    </div>
+</div>
+
+<!-- Customers Table -->
+<div class="data-table-wrapper">
+    <div class="table-header">
+        <div class="table-search">
+            <i class="fas fa-search"></i>
+            <input type="text" id="searchInput" placeholder="Tìm tên, SĐT, email..." onkeyup="filterCustomers()" />
+        </div>
+        <div class="table-filters">
+            <select id="statusFilter" onchange="filterCustomers()">
+                <option value="">Tất cả</option>
+                <option value="1">Hoạt động</option>
+                <option value="0">Đã khóa</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="data-table">
+        <thead>
+            <tr>
+                <th>Khách hàng</th>
+                <th>Số điện thoại</th>
+                <th>Email</th>
+                <th>Điểm tích lũy</th>
+                <th>Đơn hàng</th>
+                <th>Trạng thái</th>
+                <th>Thao tác</th>
+            </tr>
+        </thead>
+        <tbody id="customersTableBody"></tbody>
+    </table>
+
+    <div class="table-footer">
+        <div class="table-info">Hiển thị <span id="showingCount">0</span> / <span id="totalCount">0</span> khách hàng</div>
+        <div class="pagination" id="pagination"></div>
+    </div>
+</div>
+
+<!-- Customer Modal -->
+<div class="modal-overlay" id="customerModal">
+    <div class="modal">
+        <div class="modal-header">
+            <h3 id="modalTitle">Thêm khách hàng</h3>
+            <button class="modal-close" onclick="closeModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+            <form id="customerForm">
+                <input type="hidden" id="customerId" />
+                <div class="form-group">
+                    <label>Họ và tên *</label>
+                    <input type="text" id="customerName" required />
+                </div>
+                <div class="form-group">
+                    <label>Số điện thoại *</label>
+                    <input type="tel" id="customerPhone" required />
+                </div>
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="customerEmail" />
+                </div>
+                <div class="form-group">
+                    <label>Địa chỉ</label>
+                    <textarea id="customerAddress"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ngày sinh</label>
+                    <input type="date" id="customerBirthday" />
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal()">Hủy</button>
+            <button class="btn btn-primary" onclick="saveCustomer()">Lưu</button>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+<script>
+const customers = [
+    { id: 1, name: 'Nguyễn Thị Mai', phone: '0988888881', email: 'khach1@gmail.com', address: '123 Lê Lợi, Quận 1', birthday: '1995-06-15', points: 150, orders: 8, status: 1 },
+    { id: 2, name: 'Trần Văn Hùng', phone: '0988888882', email: 'hung.tran@gmail.com', address: '456 Hai Bà Trưng, Quận 3', birthday: '1990-12-20', points: 280, orders: 15, status: 1 },
+    { id: 3, name: 'Lê Thị Hương', phone: '0988888883', email: 'huong.le@gmail.com', address: '789 Nguyễn Trãi, Quận 5', birthday: '1998-03-08', points: 50, orders: 3, status: 1 },
+    { id: 4, name: 'Phạm Minh Tuấn', phone: '0977777771', email: 'tuan.pm@gmail.com', address: '321 Điện Biên Phủ, Quận 10', birthday: '1992-08-25', points: 420, orders: 22, status: 1 },
+    { id: 5, name: 'Võ Thị Lan', phone: '0966666661', email: 'lan.vo@gmail.com', address: '654 Cách Mạng Tháng 8, Quận Tân Bình', birthday: '2000-01-10', points: 85, orders: 5, status: 1 }
+];
+
+function renderCustomers(data) {
+    const tbody = document.getElementById('customersTableBody');
+    tbody.innerHTML = data.map(c => `
+        <tr>
+            <td>
+                <div class="product-cell">
+                    <div class="user-avatar" style="width:40px;height:40px;background:var(--admin-primary);color:#fff;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:600;">
+                        ${c.name.charAt(0)}
+                    </div>
+                    <div>
+                        <div class="product-name">${c.name}</div>
+                        <div class="product-code">Ngày tham gia: ${c.birthday || '-'}</div>
+                    </div>
+                </div>
+            </td>
+            <td>${c.phone}</td>
+            <td>${c.email || '-'}</td>
+            <td><span style="color:var(--admin-primary);font-weight:600;">⭐ ${c.points}</span></td>
+            <td>${c.orders} đơn</td>
+            <td><span class="status-badge ${c.status ? 'active' : 'inactive'}">${c.status ? 'Hoạt động' : 'Đã khóa'}</span></td>
+            <td class="actions">
+                <button class="action-btn edit" onclick="editCustomer(${c.id})" title="Sửa"><i class="fas fa-edit"></i></button>
+                <button class="action-btn delete" onclick="deleteCustomer(${c.id})" title="Xóa"><i class="fas fa-trash"></i></button>
+            </td>
+        </tr>
+    `).join('');
+    
+    document.getElementById('showingCount').textContent = data.length;
+    document.getElementById('totalCount').textContent = customers.length;
+}
+
+function filterCustomers() {
+    const search = document.getElementById('searchInput').value.toLowerCase();
+    const status = document.getElementById('statusFilter').value;
+    
+    let filtered = customers.filter(c => {
+        const matchSearch = c.name.toLowerCase().includes(search) || c.phone.includes(search) || (c.email && c.email.toLowerCase().includes(search));
+        const matchStatus = status === '' || c.status == status;
+        return matchSearch && matchStatus;
+    });
+    
+    renderCustomers(filtered);
+}
+
+function openAddModal() {
+    document.getElementById('modalTitle').textContent = 'Thêm khách hàng';
+    document.getElementById('customerForm').reset();
+    document.getElementById('customerId').value = '';
+    document.getElementById('customerModal').classList.add('show');
+}
+
+function editCustomer(id) {
+    const customer = customers.find(c => c.id === id);
+    if (!customer) return;
+    
+    document.getElementById('modalTitle').textContent = 'Sửa thông tin khách hàng';
+    document.getElementById('customerId').value = customer.id;
+    document.getElementById('customerName').value = customer.name;
+    document.getElementById('customerPhone').value = customer.phone;
+    document.getElementById('customerEmail').value = customer.email || '';
+    document.getElementById('customerAddress').value = customer.address || '';
+    document.getElementById('customerBirthday').value = customer.birthday || '';
+    
+    document.getElementById('customerModal').classList.add('show');
+}
+
+function closeModal() {
+    document.getElementById('customerModal').classList.remove('show');
+}
+
+function saveCustomer() {
+    const id = document.getElementById('customerId').value;
+    const data = {
+        name: document.getElementById('customerName').value,
+        phone: document.getElementById('customerPhone').value,
+        email: document.getElementById('customerEmail').value,
+        address: document.getElementById('customerAddress').value,
+        birthday: document.getElementById('customerBirthday').value
+    };
+    
+    if (!data.name || !data.phone) {
+        showToast('Vui lòng điền đầy đủ thông tin!', 'error');
+        return;
+    }
+    
+    if (id) {
+        const index = customers.findIndex(c => c.id == id);
+        if (index > -1) customers[index] = { ...customers[index], ...data };
+        showToast('Cập nhật thành công!', 'success');
+    } else {
+        data.id = customers.length + 1;
+        data.points = 0;
+        data.orders = 0;
+        data.status = 1;
+        customers.unshift(data);
+        showToast('Thêm khách hàng thành công!', 'success');
+    }
+    
+    closeModal();
+    renderCustomers(customers);
+}
+
+function deleteCustomer(id) {
+    if (confirm('Bạn có chắc muốn xóa khách hàng này?')) {
+        const index = customers.findIndex(c => c.id === id);
+        if (index > -1) customers.splice(index, 1);
+        renderCustomers(customers);
+        showToast('Đã xóa khách hàng!', 'warning');
+    }
+}
+
+function exportCustomers() {
+    showToast('Đang xuất file Excel...', 'success');
+}
+
+function showToast(message, type) {
+    const toast = document.createElement('div');
+    toast.className = 'toast ' + type;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3000);
+}
+
+renderCustomers(customers);
+</script>
+}

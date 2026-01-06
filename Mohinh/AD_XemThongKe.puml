@@ -1,0 +1,24 @@
+@startuml AD_XemThongKe
+!theme plain
+skinparam backgroundColor white
+skinparam activityBackgroundColor #FFF7ED
+skinparam activityBorderColor #F97316
+
+title **SƠ ĐỒ HOẠT ĐỘNG - XEM THỐNG KÊ (ADMIN)**
+
+start
+:Chọn menu "Thống kê";
+:Chọn khoảng thời gian;
+:Chọn loại báo cáo;
+:Hiển thị biểu đồ;
+
+if (Xuất báo cáo?) then (Có)
+  :Chọn định dạng;
+  :Tải file xuống;
+else (Không)
+endif
+
+:Phân tích dữ liệu;
+stop
+
+@enduml
