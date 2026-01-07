@@ -14,6 +14,7 @@
         </div>
         <div class="date-time">
             <span id="currentDate"></span>
+            <strong id="currentTime"></strong>
         </div>
     </div>
 
@@ -23,32 +24,32 @@
             <div class="stat-icon"><i class="fas fa-shopping-bag"></i></div>
             <div class="stat-info">
                 <h3>Đơn hàng hôm nay</h3>
-                <p class="stat-number">24</p>
-                <span class="stat-change positive">+12% so với hôm qua</span>
+                <p class="stat-number" id="todayOrders">--</p>
+                <span class="stat-change" id="ordersChange">Đang tải...</span>
             </div>
         </div>
         <div class="stat-card stat-revenue">
             <div class="stat-icon"><i class="fas fa-dollar-sign"></i></div>
             <div class="stat-info">
                 <h3>Doanh thu hôm nay</h3>
-                <p class="stat-number">3,450,000đ</p>
-                <span class="stat-change positive">+8% so với hôm qua</span>
+                <p class="stat-number" id="todayRevenue">--</p>
+                <span class="stat-change" id="revenueChange">Đang tải...</span>
             </div>
         </div>
         <div class="stat-card stat-products">
             <div class="stat-icon"><i class="fas fa-utensils"></i></div>
             <div class="stat-info">
                 <h3>Sản phẩm</h3>
-                <p class="stat-number">100</p>
-                <span class="stat-change">10 danh mục</span>
+                <p class="stat-number" id="totalProducts">--</p>
+                <span class="stat-change" id="categoriesCount">-- danh mục</span>
             </div>
         </div>
         <div class="stat-card stat-customers">
             <div class="stat-icon"><i class="fas fa-users"></i></div>
             <div class="stat-info">
                 <h3>Khách hàng</h3>
-                <p class="stat-number">156</p>
-                <span class="stat-change positive">+5 mới hôm nay</span>
+                <p class="stat-number" id="totalCustomers">--</p>
+                <span class="stat-change" id="newCustomers">-- mới hôm nay</span>
             </div>
         </div>
     </div>
@@ -60,19 +61,20 @@
             <h2><i class="fas fa-bolt"></i> Thao tác nhanh</h2>
             <div class="actions-grid">
                 <a href="/Admin/DonHang" class="action-btn">
-                    <i class="fas fa-plus-circle"></i>
-                    <span>Đơn hàng mới</span>
+                    <i class="fas fa-shopping-bag"></i>
+                    <span>Đơn hàng</span>
+                    <span class="action-badge" id="pendingBadge">0</span>
                 </a>
-                <a href="/Admin/SanPham/Them" class="action-btn">
+                <a href="/Admin/SanPham" class="action-btn">
                     <i class="fas fa-hamburger"></i>
-                    <span>Thêm sản phẩm</span>
+                    <span>Sản phẩm</span>
                 </a>
-                <a href="/Admin/BaoCao" class="action-btn">
+                <a href="/Admin/ThongKe" class="action-btn">
                     <i class="fas fa-chart-bar"></i>
-                    <span>Xem báo cáo</span>
+                    <span>Thống kê</span>
                 </a>
                 <a href="/Admin/KhachHang" class="action-btn">
-                    <i class="fas fa-user-plus"></i>
+                    <i class="fas fa-users"></i>
                     <span>Khách hàng</span>
                 </a>
             </div>
@@ -82,28 +84,12 @@
         <div class="dashboard-card pending-orders">
             <div class="card-header">
                 <h2><i class="fas fa-clock"></i> Đơn hàng chờ xử lý</h2>
-                <a href="/Admin/DonHang" class="view-all">Xem tất cả →</a>
+                <a href="/Admin/DonHang" class="view-all">Xem tất cả <i class="fas fa-arrow-right"></i></a>
             </div>
-            <div class="orders-list">
-                <div class="order-item">
-                    <div class="order-info">
-                        <span class="order-id">#DH20241216003</span>
-                        <span class="order-customer">Khách vãng lai</span>
-                    </div>
-                    <div class="order-details">
-                        <span class="order-total">74,000đ</span>
-                        <span class="order-status pending">Chờ xác nhận</span>
-                    </div>
-                </div>
-                <div class="order-item">
-                    <div class="order-info">
-                        <span class="order-id">#DH20241216002</span>
-                        <span class="order-customer">Trần Văn Hùng</span>
-                    </div>
-                    <div class="order-details">
-                        <span class="order-total">253,000đ</span>
-                        <span class="order-status shipping">Đang giao</span>
-                    </div>
+            <div class="orders-list" id="pendingOrdersList">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Đang tải...</span>
                 </div>
             </div>
         </div>
@@ -112,78 +98,568 @@
     <!-- Charts Row -->
     <div class="charts-grid">
         <div class="dashboard-card chart-card">
-            <h2><i class="fas fa-chart-line"></i> Doanh thu 7 ngày qua</h2>
-            <div class="chart-placeholder">
+            <div class="card-header">
+                <h2><i class="fas fa-chart-line"></i> Doanh thu 7 ngày qua</h2>
+                <div class="chart-summary">
+                    <span class="summary-value" id="weekRevenue">0đ</span>
+                    <span class="summary-label">Tổng tuần</span>
+                </div>
+            </div>
+            <div class="chart-container">
                 <canvas id="revenueChart"></canvas>
             </div>
         </div>
         <div class="dashboard-card chart-card">
-            <h2><i class="fas fa-chart-pie"></i> Sản phẩm bán chạy</h2>
-            <div class="top-products">
-                <div class="product-item">
-                    <span class="rank">1</span>
-                    <span class="name">Mì Thập Cẩm No Nê</span>
-                    <span class="sold">45 phần</span>
+            <div class="card-header">
+                <h2><i class="fas fa-fire"></i> Top sản phẩm bán chạy</h2>
+            </div>
+            <div class="top-products" id="topProductsList">
+                <div class="loading-state">
+                    <i class="fas fa-spinner fa-spin"></i>
+                    <span>Đang tải...</span>
                 </div>
-                <div class="product-item">
-                    <span class="rank">2</span>
-                    <span class="name">Mì Thập Cẩm</span>
-                    <span class="sold">38 phần</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Order Status Overview -->
+    <div class="charts-grid">
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-tasks"></i> Trạng thái đơn hàng</h2>
+            </div>
+            <div class="status-overview" id="statusOverview">
+                <div class="status-item pending">
+                    <div class="status-icon"><i class="fas fa-clock"></i></div>
+                    <div class="status-info">
+                        <span class="status-count" id="statusPending">0</span>
+                        <span class="status-label">Chờ xác nhận</span>
+                    </div>
                 </div>
-                <div class="product-item">
-                    <span class="rank">3</span>
-                    <span class="name">Combo Vui Vẻ</span>
-                    <span class="sold">32 phần</span>
+                <div class="status-item preparing">
+                    <div class="status-icon"><i class="fas fa-utensils"></i></div>
+                    <div class="status-info">
+                        <span class="status-count" id="statusPreparing">0</span>
+                        <span class="status-label">Đang chuẩn bị</span>
+                    </div>
                 </div>
-                <div class="product-item">
-                    <span class="rank">4</span>
-                    <span class="name">Tokbokki Phô Mai</span>
-                    <span class="sold">28 phần</span>
+                <div class="status-item shipping">
+                    <div class="status-icon"><i class="fas fa-truck"></i></div>
+                    <div class="status-info">
+                        <span class="status-count" id="statusShipping">0</span>
+                        <span class="status-label">Đang giao</span>
+                    </div>
                 </div>
-                <div class="product-item">
-                    <span class="rank">5</span>
-                    <span class="name">Mì Hải Sản</span>
-                    <span class="sold">25 phần</span>
+                <div class="status-item completed">
+                    <div class="status-icon"><i class="fas fa-check-circle"></i></div>
+                    <div class="status-info">
+                        <span class="status-count" id="statusCompleted">0</span>
+                        <span class="status-label">Hoàn thành</span>
+                    </div>
                 </div>
+            </div>
+        </div>
+        <div class="dashboard-card">
+            <div class="card-header">
+                <h2><i class="fas fa-chart-pie"></i> Phân bố đơn hàng</h2>
+            </div>
+            <div class="chart-container small">
+                <canvas id="statusChart"></canvas>
             </div>
         </div>
     </div>
 </div>
 
+<style>
+/* Dashboard Specific Styles */
+.loading-state {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 40px;
+    color: var(--admin-gray);
+}
+
+.action-btn {
+    position: relative;
+}
+
+.action-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    background: var(--admin-danger);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: pulse 2s infinite;
+}
+
+.action-badge:empty, .action-badge:contains('0') {
+    display: none;
+}
+
+.chart-summary {
+    text-align: right;
+}
+
+.summary-value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: var(--admin-primary);
+}
+
+.summary-label {
+    font-size: 0.8rem;
+    color: var(--admin-gray);
+}
+
+.chart-container {
+    height: 280px;
+    position: relative;
+}
+
+.chart-container.small {
+    height: 220px;
+}
+
+/* Status Overview */
+.status-overview {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 15px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 20px;
+    border-radius: var(--radius-lg);
+    transition: var(--transition);
+}
+
+.status-item:hover {
+    transform: translateY(-3px);
+}
+
+.status-item.pending {
+    background: linear-gradient(135deg, #fef3c7, #fde68a);
+}
+
+.status-item.preparing {
+    background: linear-gradient(135deg, #ede9fe, #ddd6fe);
+}
+
+.status-item.shipping {
+    background: linear-gradient(135deg, #dbeafe, #bfdbfe);
+}
+
+.status-item.completed {
+    background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+}
+
+.status-icon {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+
+.status-item.pending .status-icon {
+    background: #f59e0b;
+    color: white;
+}
+
+.status-item.preparing .status-icon {
+    background: #8b5cf6;
+    color: white;
+}
+
+.status-item.shipping .status-icon {
+    background: #3b82f6;
+    color: white;
+}
+
+.status-item.completed .status-icon {
+    background: #10b981;
+    color: white;
+}
+
+.status-count {
+    display: block;
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--admin-dark);
+}
+
+.status-label {
+    font-size: 0.85rem;
+    color: var(--admin-gray-dark);
+    font-weight: 500;
+}
+
+/* Top Products Enhanced */
+.top-products .product-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: var(--admin-light);
+    border-radius: var(--radius);
+    margin-bottom: 10px;
+    transition: var(--transition);
+}
+
+.top-products .product-item:hover {
+    background: var(--admin-primary-light);
+    transform: translateX(5px);
+}
+
+.top-products .product-item:last-child {
+    margin-bottom: 0;
+}
+
+.top-products .rank {
+    width: 32px;
+    height: 32px;
+    background: var(--admin-primary-gradient);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 0.9rem;
+    flex-shrink: 0;
+}
+
+.top-products .product-item:nth-child(1) .rank { background: linear-gradient(135deg, #fbbf24, #f59e0b); }
+.top-products .product-item:nth-child(2) .rank { background: linear-gradient(135deg, #9ca3af, #6b7280); }
+.top-products .product-item:nth-child(3) .rank { background: linear-gradient(135deg, #d97706, #b45309); }
+
+.top-products .product-info {
+    flex: 1;
+}
+
+.top-products .product-name {
+    font-weight: 600;
+    color: var(--admin-dark);
+    margin-bottom: 3px;
+}
+
+.top-products .product-stats {
+    font-size: 0.8rem;
+    color: var(--admin-gray);
+}
+
+.top-products .product-revenue {
+    font-weight: 700;
+    color: var(--admin-primary);
+}
+
+/* Responsive */
+@@media (max-width: 1024px) {
+    .status-overview {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@@media (max-width: 768px) {
+    .status-overview {
+        grid-template-columns: 1fr;
+    }
+}
+</style>
+
 @section Scripts {
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Update date
+// Update date & time
+function updateDateTime() {
     document.getElementById('currentDate').textContent = new Date().toLocaleDateString('vi-VN', {
         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
     });
+    document.getElementById('currentTime').textContent = new Date().toLocaleTimeString('vi-VN');
+}
+updateDateTime();
+setInterval(updateDateTime, 1000);
 
-    // Update admin name from localStorage
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
-    if (user.name) {
-        document.getElementById('adminName').textContent = user.name;
+// Update admin name from localStorage
+const user = JSON.parse(localStorage.getItem('user') || '{}');
+if (user.name) {
+    document.getElementById('adminName').textContent = user.name;
+}
+
+// Format price
+function formatPrice(n) {
+    return Math.round(n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+// Load Dashboard Stats
+async function loadDashboardStats() {
+    try {
+        // Load order stats
+        const statsRes = await fetch('/api/orders/stats');
+        const statsData = await statsRes.json();
+        
+        if (statsData.success) {
+            const s = statsData.data;
+            document.getElementById('statusPending').textContent = s.pending || 0;
+            document.getElementById('statusPreparing').textContent = s.preparing || 0;
+            document.getElementById('statusShipping').textContent = s.shipping || 0;
+            document.getElementById('statusCompleted').textContent = s.completed || 0;
+            
+            // Update pending badge
+            const pendingBadge = document.getElementById('pendingBadge');
+            const pendingCount = (s.pending || 0) + (s.preparing || 0);
+            pendingBadge.textContent = pendingCount;
+            pendingBadge.style.display = pendingCount > 0 ? 'flex' : 'none';
+            
+            // Update status chart
+            updateStatusChart([s.pending || 0, s.preparing || 0, s.shipping || 0, s.completed || 0]);
+        }
+        
+        // Load today stats
+        const todayRes = await fetch('/api/reports/stats?period=today');
+        const todayData = await todayRes.json();
+        
+        if (todayData.success) {
+            const t = todayData.data;
+            document.getElementById('todayOrders').textContent = t.totalOrders || 0;
+            document.getElementById('todayRevenue').textContent = formatPrice(t.totalRevenue) + 'đ';
+            
+            // Update change indicators
+            if (t.ordersChange !== undefined) {
+                const ordersEl = document.getElementById('ordersChange');
+                ordersEl.textContent = (t.ordersChange >= 0 ? '+' : '') + t.ordersChange.toFixed(0) + '% so với hôm qua';
+                ordersEl.className = 'stat-change ' + (t.ordersChange >= 0 ? 'positive' : 'negative');
+            }
+            
+            if (t.revenueChange !== undefined) {
+                const revenueEl = document.getElementById('revenueChange');
+                revenueEl.textContent = (t.revenueChange >= 0 ? '+' : '') + t.revenueChange.toFixed(0) + '% so với hôm qua';
+                revenueEl.className = 'stat-change ' + (t.revenueChange >= 0 ? 'positive' : 'negative');
+            }
+        }
+        
+        // Load products count
+        const productsRes = await fetch('/api/products?pageSize=1');
+        const productsData = await productsRes.json();
+        if (productsData.success) {
+            document.getElementById('totalProducts').textContent = productsData.pagination?.total || productsData.data?.length || 0;
+        }
+        
+        // Load categories count
+        const categoriesRes = await fetch('/api/products/categories');
+        const categoriesData = await categoriesRes.json();
+        if (categoriesData.success || Array.isArray(categoriesData.data)) {
+            document.getElementById('categoriesCount').textContent = (categoriesData.data?.length || 0) + ' danh mục';
+        }
+        
+        // Load customers count
+        const customersRes = await fetch('/api/customers/stats');
+        const customersData = await customersRes.json();
+        if (customersData.success) {
+            document.getElementById('totalCustomers').textContent = customersData.data?.total || 0;
+            document.getElementById('newCustomers').textContent = '+' + (customersData.data?.newToday || 0) + ' mới hôm nay';
+        }
+        
+    } catch (e) {
+        console.error('Error loading dashboard stats:', e);
     }
+}
 
-    // Revenue Chart
-    const ctx = document.getElementById('revenueChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'line',
+// Load Pending Orders
+async function loadPendingOrders() {
+    try {
+        const res = await fetch('/api/orders?status=Chờ xác nhận&pageSize=5');
+        const data = await res.json();
+        
+        const container = document.getElementById('pendingOrdersList');
+        
+        if (data.success && data.data.length > 0) {
+            container.innerHTML = data.data.map(o => `
+                <div class="order-item" onclick="window.location='/Admin/DonHang'">
+                    <div class="order-info">
+                        <span class="order-id">${o.code}</span>
+                        <span class="order-customer">${o.customerName || 'Khách vãng lai'}</span>
+                    </div>
+                    <div class="order-details">
+                        <span class="order-total">${formatPrice(o.total)}đ</span>
+                        <span class="order-status pending">${o.status}</span>
+                    </div>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-check-circle" style="font-size: 2rem; color: var(--admin-success); margin-bottom: 10px;"></i>
+                    <p>Không có đơn hàng chờ xử lý</p>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.error('Error loading pending orders:', e);
+        document.getElementById('pendingOrdersList').innerHTML = '<div class="empty-state">Không thể tải dữ liệu</div>';
+    }
+}
+
+// Load Top Products
+async function loadTopProducts() {
+    try {
+        const res = await fetch('/api/reports/top-products?limit=5');
+        const data = await res.json();
+        
+        const container = document.getElementById('topProductsList');
+        
+        if (data.success && data.data.length > 0) {
+            container.innerHTML = data.data.map((p, i) => `
+                <div class="product-item">
+                    <span class="rank">${i + 1}</span>
+                    <div class="product-info">
+                        <div class="product-name">${p.name}</div>
+                        <div class="product-stats">${p.quantity} đã bán</div>
+                    </div>
+                    <span class="product-revenue">${formatPrice(p.revenue)}đ</span>
+                </div>
+            `).join('');
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-chart-bar" style="font-size: 2rem; color: var(--admin-gray); margin-bottom: 10px;"></i>
+                    <p>Chưa có dữ liệu bán hàng</p>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.error('Error loading top products:', e);
+        document.getElementById('topProductsList').innerHTML = '<div class="empty-state">Không thể tải dữ liệu</div>';
+    }
+}
+
+// Revenue Chart
+let revenueChart;
+async function loadRevenueChart() {
+    try {
+        const res = await fetch('/api/reports/revenue-chart?period=week');
+        const data = await res.json();
+        
+        const ctx = document.getElementById('revenueChart').getContext('2d');
+        
+        if (revenueChart) revenueChart.destroy();
+        
+        const labels = data.labels || ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'];
+        const revenue = data.revenue || [0, 0, 0, 0, 0, 0, 0];
+        
+        // Update week total
+        const weekTotal = revenue.reduce((a, b) => a + b, 0);
+        document.getElementById('weekRevenue').textContent = formatPrice(weekTotal) + 'đ';
+        
+        revenueChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu',
+                    data: revenue,
+                    borderColor: '#f97316',
+                    backgroundColor: 'rgba(249, 115, 22, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    borderWidth: 3,
+                    pointBackgroundColor: '#f97316',
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                return formatPrice(context.raw) + 'đ';
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function(value) {
+                                return formatPrice(value) + 'đ';
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    } catch (e) {
+        console.error('Error loading revenue chart:', e);
+    }
+}
+
+// Status Chart
+let statusChart;
+function updateStatusChart(data) {
+    const ctx = document.getElementById('statusChart').getContext('2d');
+    
+    if (statusChart) statusChart.destroy();
+    
+    statusChart = new Chart(ctx, {
+        type: 'doughnut',
         data: {
-            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+            labels: ['Chờ xác nhận', 'Đang chuẩn bị', 'Đang giao', 'Hoàn thành'],
             datasets: [{
-                label: 'Doanh thu (triệu đồng)',
-                data: [2.8, 3.2, 2.9, 3.5, 4.1, 5.2, 3.4],
-                borderColor: '#f97316',
-                backgroundColor: 'rgba(249, 115, 22, 0.1)',
-                fill: true,
-                tension: 0.4
+                data: data,
+                backgroundColor: ['#f59e0b', '#8b5cf6', '#3b82f6', '#10b981'],
+                borderWidth: 0
             }]
         },
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                    labels: {
+                        padding: 15,
+                        usePointStyle: true
+                    }
+                }
+            },
+            cutout: '65%'
         }
     });
+}
+
+// Initialize
+loadDashboardStats();
+loadPendingOrders();
+loadTopProducts();
+loadRevenueChart();
+
+// Auto refresh every 30 seconds
+setInterval(() => {
+    loadDashboardStats();
+    loadPendingOrders();
+}, 30000);
 </script>
 }

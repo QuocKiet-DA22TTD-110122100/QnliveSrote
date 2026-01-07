@@ -54,12 +54,14 @@ public class DonHang
     public int? MaCH { get; set; }
     public int? MaNV { get; set; }
     public int? MaCN { get; set; } // Chi nhánh xử lý đơn
+    public int? MaNVXuLy { get; set; } // Nhân viên được phân công xử lý đơn
     public int? MaMGG { get; set; } // Mã giảm giá đã áp dụng
     
     [MaxLength(50)]
     public string? MaGiamGiaCode { get; set; } // Lưu mã code để hiển thị
     
     public DateTime? NgayCapNhat { get; set; }
+    public DateTime? NgayPhanCong { get; set; } // Thời điểm phân công
     
     // Navigation
     [ForeignKey("MaKH")]
@@ -67,6 +69,9 @@ public class DonHang
     
     [ForeignKey("MaCN")]
     public virtual ChiNhanh? ChiNhanh { get; set; }
+    
+    [ForeignKey("MaNVXuLy")]
+    public virtual NhanVien? NhanVienXuLy { get; set; }
     
     public virtual ICollection<ChiTietDonHang> ChiTietDonHangs { get; set; } = new List<ChiTietDonHang>();
 }

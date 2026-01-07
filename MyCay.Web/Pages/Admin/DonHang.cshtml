@@ -8,9 +8,21 @@
 <div class="page-header">
     <h1 class="page-title">Quản lý đơn hàng</h1>
     <div class="page-actions">
+        <!-- Nút phân công đơn - chỉ Admin/StoreManager -->
+        <button class="btn btn-secondary btn-assign-order" onclick="openAssignModal()" style="display:none;">
+            <i class="fas fa-user-plus"></i> Phân công đơn
+        </button>
         <button class="btn btn-secondary" onclick="exportOrders()">
             <i class="fas fa-download"></i> Xuất Excel
         </button>
+    </div>
+</div>
+
+<!-- Thông báo cho Staff -->
+<div class="staff-notice" id="staffNotice" style="display:none;">
+    <div class="alert alert-info" style="margin-bottom: 20px; padding: 15px 20px; background: #dbeafe; border-left: 4px solid #3b82f6; border-radius: 8px;">
+        <i class="fas fa-info-circle" style="color: #3b82f6; margin-right: 10px;"></i>
+        <strong>Lưu ý:</strong> Bạn chỉ xem được các đơn hàng được phân công cho mình. Liên hệ Quản lý nếu cần hỗ trợ.
     </div>
 </div>
 
@@ -20,28 +32,28 @@
         <div class="stat-icon" style="background: linear-gradient(135deg, #f59e0b, #d97706);"><i class="fas fa-clock"></i></div>
         <div class="stat-info">
             <h3>Chờ xác nhận</h3>
-            <p class="stat-number" id="pendingCount">1</p>
+            <p class="stat-number" id="pendingCount">0</p>
+        </div>
+    </div>
+    <div class="stat-card">
+        <div class="stat-icon" style="background: linear-gradient(135deg, #8b5cf6, #7c3aed);"><i class="fas fa-utensils"></i></div>
+        <div class="stat-info">
+            <h3>Đang chuẩn bị</h3>
+            <p class="stat-number" id="preparingCount">0</p>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background: linear-gradient(135deg, #3b82f6, #1d4ed8);"><i class="fas fa-truck"></i></div>
         <div class="stat-info">
             <h3>Đang giao</h3>
-            <p class="stat-number" id="shippingCount">1</p>
+            <p class="stat-number" id="shippingCount">0</p>
         </div>
     </div>
     <div class="stat-card">
         <div class="stat-icon" style="background: linear-gradient(135deg, #10b981, #059669);"><i class="fas fa-check-circle"></i></div>
         <div class="stat-info">
             <h3>Hoàn thành</h3>
-            <p class="stat-number" id="completedCount">1</p>
-        </div>
-    </div>
-    <div class="stat-card">
-        <div class="stat-icon" style="background: linear-gradient(135deg, #ef4444, #dc2626);"><i class="fas fa-times-circle"></i></div>
-        <div class="stat-info">
-            <h3>Đã hủy</h3>
-            <p class="stat-number" id="cancelledCount">0</p>
+            <p class="stat-number" id="completedCount">0</p>
         </div>
     </div>
 </div>
@@ -68,6 +80,10 @@
                 <option value="week">Tuần này</option>
                 <option value="month">Tháng này</option>
             </select>
+            <!-- Filter nhân viên - chỉ Admin/StoreManager -->
+            <select id="staffFilter" onchange="filterOrders()" class="staff-filter-select" style="display:none;">
+                <option value="">Tất cả nhân viên</option>
+            </select>
         </div>
     </div>
 
@@ -79,6 +95,7 @@
                 <th>Địa chỉ giao</th>
                 <th>Tổng tiền</th>
                 <th>Trạng thái</th>
+                <th class="staff-column" style="display:none;">Nhân viên</th>
                 <th>Ngày đặt</th>
                 <th>Thao tác</th>
             </tr>
@@ -114,6 +131,8 @@
                     <p><strong>Ngày đặt:</strong> <span id="modalDate"></span></p>
                     <p><strong>Thanh toán:</strong> <span id="modalPayment"></span></p>
                     <p><strong>Ghi chú:</strong> <span id="modalNote"></span></p>
+                    <p class="assign-info" style="display:none;"><strong>Nhân viên xử lý:</strong> <span id="modalAssignedTo"></span></p>
+                    <p class="assign-info" style="display:none;"><strong>Cửa hàng:</strong> <span id="modalStore"></span></p>
                 </div>
             </div>
             <h4 style="margin: 20px 0 10px;">Sản phẩm</h4>
@@ -191,12 +210,116 @@ let orders = [];
 let currentOrder = null;
 let currentPage = 1;
 let totalOrders = 0;
+let staffList = [];
 
-// Load đơn hàng từ API
+// =====================================================
+// KHỞI TẠO PHÂN QUYỀN
+// =====================================================
+function initPermissions() {
+    const role = window.userRole;
+    
+    // Hiển thị thông báo cho Staff
+    if (role === 'staff') {
+        document.getElementById('staffNotice').style.display = 'block';
+    }
+    
+    // Hiển thị nút phân công và cột nhân viên cho Admin/StoreManager
+    if (role === 'admin' || role === 'storemanager') {
+        document.querySelector('.btn-assign-order')?.style.setProperty('display', 'inline-flex');
+        document.querySelector('.staff-filter-select')?.style.setProperty('display', 'block');
+        document.querySelectorAll('.staff-column').forEach(el => el.style.display = 'table-cell');
+        loadStaffList();
+    }
+    
+    // Ẩn nút hủy đơn nếu Staff không có quyền
+    if (!checkPermission('canCancelOrder')) {
+        // Sẽ xử lý trong renderOrders
+    }
+}
+
+// Load danh sách nhân viên (cho Admin/StoreManager)
+async function loadStaffList() {
+    try {
+        let url = '/api/orders/staff';
+        // StoreManager chỉ xem nhân viên cửa hàng mình
+        if (window.userRole === 'storemanager' && window.userStoreId) {
+            url += `?storeId=${window.userStoreId}`;
+        }
+        
+        const res = await fetch(url);
+        const data = await res.json();
+        if (data.success) {
+            staffList = data.data;
+            const select = document.getElementById('staffFilter');
+            select.innerHTML = '<option value="">Tất cả nhân viên</option><option value="unassigned">Chưa phân công</option>';
+            staffList.forEach(s => {
+                select.innerHTML += `<option value="${s.id}">${s.name} (${s.position})</option>`;
+            });
+        }
+    } catch (e) {
+        console.error('Error loading staff:', e);
+    }
+}
+
+// Load danh sách cửa hàng (cho Admin)
+async function loadStoreList() {
+    if (window.userRole !== 'admin') return;
+    
+    try {
+        const res = await fetch('/api/orders/stores');
+        const data = await res.json();
+        if (data.success && data.data.length > 0) {
+            // Thêm filter cửa hàng
+            const filterContainer = document.querySelector('.table-filters');
+            const storeSelect = document.createElement('select');
+            storeSelect.id = 'storeFilter';
+            storeSelect.onchange = filterOrders;
+            storeSelect.innerHTML = '<option value="">Tất cả cửa hàng</option>';
+            data.data.forEach(s => {
+                storeSelect.innerHTML += `<option value="${s.id}">${s.name}</option>`;
+            });
+            filterContainer.appendChild(storeSelect);
+        }
+    } catch (e) {
+        console.error('Error loading stores:', e);
+    }
+}
+
+// Load đơn hàng từ API (có phân quyền)
 async function loadOrders(page = 1) {
     const status = document.getElementById('statusFilter').value;
+    const staffId = document.getElementById('staffFilter')?.value || '';
+    const storeId = document.getElementById('storeFilter')?.value || '';
+    const role = window.userRole;
+    
     try {
-        const url = `/api/orders?page=${page}&pageSize=20${status ? '&status=' + encodeURIComponent(status) : ''}`;
+        let url = `/api/orders?page=${page}&pageSize=20`;
+        if (status) url += `&status=${encodeURIComponent(status)}`;
+        
+        // Staff chỉ xem đơn được phân công
+        if (role === 'staff') {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.staffId) {
+                url += `&assignedTo=${user.staffId}`;
+            }
+        }
+        
+        // Filter theo nhân viên (Admin/StoreManager)
+        if (staffId && (role === 'admin' || role === 'storemanager')) {
+            if (staffId === 'unassigned') {
+                url += `&unassigned=true`;
+            } else {
+                url += `&assignedTo=${staffId}`;
+            }
+        }
+        
+        // Filter theo cửa hàng
+        if (storeId && role === 'admin') {
+            url += `&storeId=${storeId}`;
+        } else if (role === 'storemanager' && window.userStoreId) {
+            url += `&storeId=${window.userStoreId}`;
+        }
+        
         const res = await fetch(url);
         const data = await res.json();
         
@@ -215,9 +338,14 @@ async function loadOrders(page = 1) {
                 date: formatDate(o.createdAt),
                 payment: o.paymentMethod,
                 paymentStatus: o.paymentStatus,
-                note: o.note
+                note: o.note,
+                assignedToId: o.assignedToId,
+                assignedToName: o.assignedToName,
+                storeId: o.storeId,
+                storeName: o.storeName,
+                assignedAt: o.assignedAt
             }));
-            totalOrders = data.pagination.total;
+            totalOrders = data.pagination?.total || data.data.length;
             currentPage = page;
             renderOrders(orders);
             loadStats();
@@ -231,13 +359,27 @@ async function loadOrders(page = 1) {
 // Load thống kê
 async function loadStats() {
     try {
-        const res = await fetch('/api/orders/stats');
+        let url = '/api/orders/stats';
+        const role = window.userRole;
+        
+        // Staff chỉ xem stats đơn của mình
+        if (role === 'staff') {
+            const user = JSON.parse(localStorage.getItem('user') || '{}');
+            if (user.staffId) url += `?assignedTo=${user.staffId}`;
+        }
+        
+        // StoreManager xem stats cửa hàng
+        if (role === 'storemanager' && window.userStoreId) {
+            url += `?storeId=${window.userStoreId}`;
+        }
+        
+        const res = await fetch(url);
         const data = await res.json();
         if (data.success) {
-            document.getElementById('pendingCount').textContent = data.data.pending;
-            document.getElementById('shippingCount').textContent = data.data.shipping;
-            document.getElementById('completedCount').textContent = data.data.completed;
-            document.getElementById('cancelledCount').textContent = data.data.cancelled;
+            document.getElementById('pendingCount').textContent = data.data.pending || 0;
+            document.getElementById('preparingCount').textContent = data.data.preparing || 0;
+            document.getElementById('shippingCount').textContent = data.data.shipping || 0;
+            document.getElementById('completedCount').textContent = data.data.completed || 0;
         }
     } catch (err) {
         console.error('Lỗi load stats:', err);
@@ -252,31 +394,46 @@ function formatDate(dateStr) {
 
 function renderOrders(data) {
     const tbody = document.getElementById('ordersTableBody');
+    const role = window.userRole;
+    const showStaffColumn = role === 'admin' || role === 'storemanager';
+    const canCancel = checkPermission('canCancelOrder');
+    const canAssign = checkPermission('canAssignOrderToStaff');
     
     if (data.length === 0) {
-        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:40px;color:#6b7280;">Chưa có đơn hàng nào</td></tr>';
+        const colspan = showStaffColumn ? 8 : 7;
+        tbody.innerHTML = `<tr><td colspan="${colspan}" style="text-align:center;padding:40px;color:#6b7280;">Chưa có đơn hàng nào</td></tr>`;
         document.getElementById('showingCount').textContent = 0;
         document.getElementById('totalCount').textContent = 0;
         return;
     }
     
-    tbody.innerHTML = data.map(order => `
-        <tr>
-            <td><strong>${order.code}</strong></td>
-            <td>
-                <div>${order.customer}</div>
-                <small style="color: var(--admin-gray);">${order.phone}</small>
-            </td>
-            <td style="max-width: 200px;">${order.address || 'N/A'}</td>
-            <td class="price">${Math.round(order.total).toLocaleString()}đ</td>
-            <td><span class="order-status ${getStatusClass(order.status)}">${order.status}</span></td>
-            <td>${order.date}</td>
-            <td class="actions">
-                <button class="action-btn edit" onclick="viewOrder(${order.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
-                <button class="action-btn delete" onclick="cancelOrder(${order.id})" title="Hủy đơn"><i class="fas fa-times"></i></button>
-            </td>
-        </tr>
-    `).join('');
+    tbody.innerHTML = data.map(order => {
+        const assignedInfo = order.assignedToName 
+            ? `<span style="color:#059669;font-weight:500;">${order.assignedToName}</span>` 
+            : '<span style="color:#9ca3af;font-style:italic;">Chưa phân công</span>';
+        
+        const assignedTime = order.assignedAt ? `<br><small style="color:#6b7280;">${formatDate(order.assignedAt)}</small>` : '';
+        
+        return `
+            <tr>
+                <td><strong>${order.code}</strong></td>
+                <td>
+                    <div>${order.customer}</div>
+                    <small style="color: var(--admin-gray);">${order.phone}</small>
+                </td>
+                <td style="max-width: 200px;">${order.address || 'N/A'}</td>
+                <td class="price">${Math.round(order.total).toLocaleString()}đ</td>
+                <td><span class="order-status ${getStatusClass(order.status)}">${order.status}</span></td>
+                ${showStaffColumn ? `<td>${assignedInfo}${assignedTime}</td>` : ''}
+                <td>${order.date}</td>
+                <td class="actions">
+                    <button class="action-btn edit" onclick="viewOrder(${order.id})" title="Xem chi tiết"><i class="fas fa-eye"></i></button>
+                    ${canAssign ? `<button class="action-btn warning" onclick="assignOrder(${order.id}, '${order.assignedToName || ''}')" title="Phân công"><i class="fas fa-user-plus"></i></button>` : ''}
+                    ${canCancel && order.status !== 'Hoàn thành' && order.status !== 'Đã hủy' ? `<button class="action-btn delete" onclick="cancelOrder(${order.id})" title="Hủy đơn"><i class="fas fa-times"></i></button>` : ''}
+                </td>
+            </tr>
+        `;
+    }).join('');
     
     document.getElementById('showingCount').textContent = data.length;
     document.getElementById('totalCount').textContent = totalOrders;
@@ -285,7 +442,7 @@ function renderOrders(data) {
 function getStatusClass(status) {
     const classes = {
         'Chờ xác nhận': 'pending',
-        'Đang chuẩn bị': 'pending',
+        'Đang chuẩn bị': 'preparing',
         'Đang giao': 'shipping',
         'Hoàn thành': 'completed',
         'Đã hủy': 'cancelled'
@@ -294,22 +451,7 @@ function getStatusClass(status) {
 }
 
 function filterOrders() {
-    const search = document.getElementById('searchInput').value.toLowerCase();
-    const status = document.getElementById('statusFilter').value;
-    
-    // Nếu có filter status, gọi lại API
-    if (status) {
-        loadOrders(1);
-        return;
-    }
-    
-    // Filter local nếu chỉ search
-    let filtered = orders.filter(o => {
-        const matchSearch = !search || o.code.toLowerCase().includes(search) || o.customer.toLowerCase().includes(search);
-        return matchSearch;
-    });
-    
-    renderOrders(filtered);
+    loadOrders(1);
 }
 
 async function viewOrder(id) {
@@ -332,6 +474,23 @@ async function viewOrder(id) {
         document.getElementById('modalPayment').textContent = currentOrder.paymentMethod;
         document.getElementById('modalNote').textContent = currentOrder.note || 'Không có';
         document.getElementById('modalStatus').value = currentOrder.status;
+        
+        // Hiển thị thông tin phân công (Admin/StoreManager)
+        const role = window.userRole;
+        if (role === 'admin' || role === 'storemanager') {
+            document.querySelectorAll('.assign-info').forEach(el => el.style.display = 'block');
+            document.getElementById('modalAssignedTo').textContent = currentOrder.assignedToName || 'Chưa phân công';
+            document.getElementById('modalStore').textContent = currentOrder.storeName || 'Chưa xác định';
+        }
+        
+        // Giới hạn trạng thái cho Staff
+        const statusSelect = document.getElementById('modalStatus');
+        if (window.userRole === 'staff') {
+            // Staff chỉ được cập nhật theo flow: Chờ xác nhận -> Đang chuẩn bị -> Đang giao -> Hoàn thành
+            // Không được chọn Đã hủy
+            const cancelOption = statusSelect.querySelector('option[value="Đã hủy"]');
+            if (cancelOption) cancelOption.disabled = true;
+        }
         
         const items = currentOrder.items || [];
         document.getElementById('modalProducts').innerHTML = items.length > 0 ? items.map(p => `
@@ -364,6 +523,12 @@ async function updateOrderStatus() {
     
     const newStatus = document.getElementById('modalStatus').value;
     
+    // Kiểm tra quyền hủy đơn
+    if (newStatus === 'Đã hủy' && !checkPermission('canCancelOrder')) {
+        showToast('Bạn không có quyền hủy đơn hàng!', 'error');
+        return;
+    }
+    
     try {
         const res = await fetch(`/api/orders/${currentOrder.id}/status`, {
             method: 'PUT',
@@ -385,7 +550,88 @@ async function updateOrderStatus() {
     }
 }
 
+// Phân công đơn hàng cho nhân viên (Admin/StoreManager)
+async function assignOrder(orderId, currentStaffName) {
+    if (!checkPermission('canAssignOrderToStaff')) {
+        showToast('Bạn không có quyền phân công đơn hàng!', 'error');
+        return;
+    }
+    
+    // Tạo modal chọn nhân viên
+    const staffOptions = staffList.map(s => `<option value="${s.id}">${s.name} - ${s.position}</option>`).join('');
+    const currentInfo = currentStaffName ? `<p style="margin-bottom:15px;color:#6b7280;">Hiện tại: <strong>${currentStaffName}</strong></p>` : '';
+    
+    const html = `
+        <div class="modal-overlay show" id="assignModal">
+            <div class="modal" style="max-width: 450px;">
+                <div class="modal-header">
+                    <h3><i class="fas fa-user-plus" style="color:#f97316;margin-right:10px;"></i>Phân công đơn hàng</h3>
+                    <button class="modal-close" onclick="closeAssignModal()">&times;</button>
+                </div>
+                <div class="modal-body">
+                    ${currentInfo}
+                    <div class="form-group">
+                        <label style="font-weight:600;margin-bottom:8px;display:block;">Chọn nhân viên xử lý</label>
+                        <select id="assignStaffId" class="form-control" style="width:100%;padding:12px;border:2px solid #e5e7eb;border-radius:8px;font-size:1rem;">
+                            <option value="">-- Chọn nhân viên --</option>
+                            <option value="0">❌ Hủy phân công</option>
+                            ${staffOptions}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" onclick="closeAssignModal()">Hủy</button>
+                    <button class="btn btn-primary" onclick="confirmAssign(${orderId})">
+                        <i class="fas fa-check"></i> Xác nhận
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+    document.body.insertAdjacentHTML('beforeend', html);
+}
+
+function closeAssignModal() {
+    document.getElementById('assignModal')?.remove();
+}
+
+async function confirmAssign(orderId) {
+    const staffIdValue = document.getElementById('assignStaffId').value;
+    
+    if (staffIdValue === '') {
+        showToast('Vui lòng chọn nhân viên!', 'error');
+        return;
+    }
+    
+    // staffId = 0 nghĩa là hủy phân công
+    const staffId = staffIdValue === '0' ? null : parseInt(staffIdValue);
+    
+    try {
+        const res = await fetch(`/api/orders/${orderId}/assign`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ staffId: staffId })
+        });
+        const data = await res.json();
+        
+        if (data.success) {
+            showToast(staffId ? 'Phân công thành công!' : 'Đã hủy phân công!', 'success');
+            closeAssignModal();
+            loadOrders(currentPage);
+        } else {
+            showToast(data.message || 'Lỗi phân công!', 'error');
+        }
+    } catch (err) {
+        showToast('Không thể phân công đơn hàng!', 'error');
+    }
+}
+
 async function cancelOrder(id) {
+    if (!checkPermission('canCancelOrder')) {
+        showToast('Bạn không có quyền hủy đơn hàng!', 'error');
+        return;
+    }
+    
     if (!confirm('Bạn có chắc muốn hủy đơn hàng này?')) return;
     
     try {
@@ -416,7 +662,9 @@ function showToast(message, type) {
     setTimeout(() => toast.remove(), 3000);
 }
 
-// Init - Load đơn hàng từ database
+// Init - Khởi tạo phân quyền và load đơn hàng
+initPermissions();
+loadStoreList();
 loadOrders();
 </script>
 }

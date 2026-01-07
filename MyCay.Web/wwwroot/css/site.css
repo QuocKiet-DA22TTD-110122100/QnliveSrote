@@ -2824,3 +2824,95 @@ main {
 ::-webkit-scrollbar-thumb:hover {
     background: var(--gray);
 }
+
+
+/* ===== Footer Compact Styles ===== */
+.footer-new {
+    padding-top: 35px !important;
+}
+.footer-new .footer-main {
+    gap: 25px !important;
+    padding-bottom: 25px !important;
+}
+.footer-new .footer-brand .logo-icon {
+    font-size: 1.1rem !important;
+}
+.footer-new .footer-brand .logo-text {
+    font-size: 1rem !important;
+}
+.footer-new .footer-brand p {
+    font-size: 0.8rem !important;
+    margin-bottom: 12px !important;
+    line-height: 1.4 !important;
+}
+.footer-new .social-links-new {
+    gap: 6px !important;
+}
+.footer-new .social-btn {
+    width: 28px !important;
+    height: 28px !important;
+    font-size: 0.75rem !important;
+}
+.footer-new h4 {
+    font-size: 0.85rem !important;
+    margin-bottom: 10px !important;
+}
+.footer-new .footer-links li {
+    margin-bottom: 6px !important;
+}
+.footer-new .footer-links a {
+    font-size: 0.8rem !important;
+}
+.footer-new .contact-item {
+    margin-bottom: 8px !important;
+    gap: 8px !important;
+}
+.footer-new .contact-item i {
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 0.7rem !important;
+}
+.footer-new .contact-label {
+    font-size: 0.65rem !important;
+}
+.footer-new .contact-value {
+    font-size: 0.8rem !important;
+}
+.footer-new .contact-value.hotline {
+    font-size: 0.9rem !important;
+}
+.footer-new .hours-info {
+    padding: 8px !important;
+    margin-bottom: 10px !important;
+}
+.footer-new .hours-info p {
+    font-size: 0.8rem !important;
+    margin: 0 !important;
+}
+.footer-new .hours-time {
+    font-size: 0.9rem !important;
+}
+.footer-new .footer-app p {
+    font-size: 0.7rem !important;
+    margin-bottom: 6px !important;
+}
+.footer-new .app-buttons {
+    gap: 4px !important;
+}
+.footer-new .app-btn {
+    padding: 5px 8px !important;
+    font-size: 0.7rem !important;
+    gap: 5px !important;
+}
+.footer-new .footer-bottom-new {
+    padding: 12px 20px !important;
+}
+.footer-new .footer-bottom-new p {
+    font-size: 0.75rem !important;
+}
+.footer-new .footer-bottom-links {
+    gap: 12px !important;
+}
+.footer-new .footer-bottom-links a {
+    font-size: 0.75rem !important;
+}

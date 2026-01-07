@@ -22,12 +22,35 @@ namespace MyCay.Web.Api
 
         // GET: api/orders
         [HttpGet]
-        public async Task<IActionResult> GetOrders([FromQuery] string? status, [FromQuery] int page = 1, [FromQuery] int pageSize = 10)
+        public async Task<IActionResult> GetOrders(
+            [FromQuery] string? status, 
+            [FromQuery] int? assignedTo, // Filter theo nhân viên được phân công
+            [FromQuery] int? storeId, // Filter theo cửa hàng/chi nhánh
+            [FromQuery] bool? unassigned, // Lọc đơn chưa phân công
+            [FromQuery] int page = 1, 
+            [FromQuery] int pageSize = 10)
         {
-            var query = _context.DonHangs.Include(d => d.KhachHang).AsQueryable();
+            var query = _context.DonHangs
+                .Include(d => d.KhachHang)
+                .Include(d => d.NhanVienXuLy)
+                .Include(d => d.ChiNhanh)
+                .AsQueryable();
 
+            // Filter theo trạng thái
             if (!string.IsNullOrEmpty(status))
                 query = query.Where(d => d.TrangThai == status);
+
+            // Filter theo nhân viên được phân công
+            if (assignedTo.HasValue)
+                query = query.Where(d => d.MaNVXuLy == assignedTo.Value);
+
+            // Filter theo cửa hàng/chi nhánh
+            if (storeId.HasValue)
+                query = query.Where(d => d.MaCN == storeId.Value);
+
+            // Filter đơn chưa phân công
+            if (unassigned == true)
+                query = query.Where(d => d.MaNVXuLy == null);
 
             var total = await query.CountAsync();
             var items = await query.OrderByDescending(d => d.NgayDat)
@@ -47,7 +70,12 @@ namespace MyCay.Web.Api
                     PaymentStatus = d.TrangThaiThanhToan ?? "Chưa thanh toán",
                     Note = d.GhiChu,
                     Status = d.TrangThai ?? "Chờ xác nhận",
-                    CreatedAt = d.NgayDat ?? DateTime.Now
+                    CreatedAt = d.NgayDat ?? DateTime.Now,
+                    AssignedToId = d.MaNVXuLy,
+                    AssignedToName = d.NhanVienXuLy != null ? d.NhanVienXuLy.HoTen : null,
+                    StoreId = d.MaCN,
+                    StoreName = d.ChiNhanh != null ? d.ChiNhanh.TenChiNhanh : null,
+                    AssignedAt = d.NgayPhanCong
                 }).ToListAsync();
 
             return Ok(new { success = true, data = items, pagination = new { page, pageSize, total } });
@@ -236,6 +264,86 @@ namespace MyCay.Web.Api
             return Ok(new { success = true, message = "Cập nhật trạng thái thành công" });
         }
 
+        // PUT: api/orders/{id}/assign - Phân công đơn hàng cho nhân viên
+        [HttpPut("{id}/assign")]
+        public async Task<IActionResult> AssignOrder(int id, [FromBody] AssignOrderRequest request)
+        {
+            var order = await _context.DonHangs.FindAsync(id);
+            if (order == null)
+                return NotFound(new { success = false, message = "Không tìm thấy đơn hàng" });
+
+            // Kiểm tra nhân viên tồn tại
+            if (request.StaffId.HasValue)
+            {
+                var staff = await _context.NhanViens.FindAsync(request.StaffId.Value);
+                if (staff == null)
+                    return BadRequest(new { success = false, message = "Không tìm thấy nhân viên" });
+                
+                // Nếu có storeId, kiểm tra nhân viên thuộc cửa hàng đó
+                if (request.StoreId.HasValue && staff.MaCN != request.StoreId.Value)
+                    return BadRequest(new { success = false, message = "Nhân viên không thuộc cửa hàng này" });
+            }
+
+            // Cập nhật phân công
+            order.MaNVXuLy = request.StaffId;
+            order.MaCN = request.StoreId ?? order.MaCN;
+            order.NgayPhanCong = request.StaffId.HasValue ? DateTime.Now : null;
+            order.NgayCapNhat = DateTime.Now;
+
+            await _context.SaveChangesAsync();
+
+            _logger.LogInformation("Đơn hàng {OrderId} được phân công cho nhân viên {StaffId}", id, request.StaffId);
+
+            return Ok(new { 
+                success = true, 
+                message = request.StaffId.HasValue 
+                    ? "Phân công đơn hàng thành công" 
+                    : "Đã hủy phân công đơn hàng"
+            });
+        }
+
+        // GET: api/orders/staff - Lấy danh sách nhân viên có thể phân công
+        [HttpGet("staff")]
+        public async Task<IActionResult> GetAvailableStaff([FromQuery] int? storeId)
+        {
+            var query = _context.NhanViens
+                .Where(nv => nv.TrangThai == true)
+                .AsQueryable();
+
+            if (storeId.HasValue)
+                query = query.Where(nv => nv.MaCN == storeId.Value);
+
+            var staff = await query
+                .Select(nv => new
+                {
+                    id = nv.MaNV,
+                    name = nv.HoTen,
+                    position = nv.ChucVu,
+                    storeId = nv.MaCN,
+                    phone = nv.SDT
+                })
+                .ToListAsync();
+
+            return Ok(new { success = true, data = staff });
+        }
+
+        // GET: api/orders/stores - Lấy danh sách cửa hàng/chi nhánh
+        [HttpGet("stores")]
+        public async Task<IActionResult> GetStores()
+        {
+            var stores = await _context.ChiNhanhs
+                .Select(cn => new
+                {
+                    id = cn.MaCN,
+                    name = cn.TenChiNhanh,
+                    address = cn.DiaChi,
+                    phone = cn.SoDienThoai
+                })
+                .ToListAsync();
+
+            return Ok(new { success = true, data = stores });
+        }
+
         // DELETE: api/orders/{id}
         [HttpDelete("{id}")]
         public async Task<IActionResult> CancelOrder(int id)
@@ -369,6 +477,13 @@ namespace MyCay.Web.Api
         public string Status { get; set; } = "Chờ xác nhận";
         public List<OrderItemDto>? Items { get; set; }
         public DateTime CreatedAt { get; set; }
+        
+        // Thông tin phân công
+        public int? AssignedToId { get; set; }
+        public string? AssignedToName { get; set; }
+        public int? StoreId { get; set; }
+        public string? StoreName { get; set; }
+        public DateTime? AssignedAt { get; set; }
     }
 
     public class OrderItemDto
@@ -401,5 +516,11 @@ namespace MyCay.Web.Api
     public class UpdateStatusRequest
     {
         public string Status { get; set; } = "";
+    }
+
+    public class AssignOrderRequest
+    {
+        public int? StaffId { get; set; } // Null để hủy phân công
+        public int? StoreId { get; set; } // Cửa hàng/chi nhánh
     }
 }

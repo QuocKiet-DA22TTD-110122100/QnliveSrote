@@ -153,57 +153,203 @@
 
     <script>
         // =====================================================
-        // HỆ THỐNG PHÂN QUYỀN
+        // HỆ THỐNG PHÂN QUYỀN - NÂNG CẤP ĐẦY ĐỦ
         // =====================================================
         
         // Chuẩn hóa role mapping (Database -> Frontend)
         const ROLE_MAP = {
             'quantrivien': 'admin',
-            'quanly': 'manager', 
+            'quanlycuahang': 'storemanager',
+            'quanly': 'storemanager', 
             'nhanvien': 'staff',
             'khachhang': 'customer',
             // Fallback cho các role đã chuẩn hóa
             'admin': 'admin',
-            'manager': 'manager',
+            'storemanager': 'storemanager',
+            'manager': 'storemanager',
             'staff': 'staff',
             'customer': 'customer'
         };
         
-        // Quyền truy cập theo role
+        // Tên hiển thị vai trò
+        const ROLE_NAMES = {
+            admin: 'Quản trị hệ thống',
+            storemanager: 'Quản lý cửa hàng',
+            staff: 'Nhân viên xử lý đơn',
+            customer: 'Khách hàng'
+        };
+        
+        // =====================================================
+        // ĐỊNH NGHĨA QUYỀN CHI TIẾT THEO VAI TRÒ
+        // =====================================================
         const PERMISSIONS = {
+            // ===== ADMIN - Toàn quyền hệ thống =====
             admin: {
                 pages: ['*'], // Tất cả trang
+                // Quản lý tài khoản
+                canCreateAccount: true,
+                canEditAccount: true,
+                canDeleteAccount: true,
+                canLockAccount: true,
+                canAssignRole: true,
+                // Quản lý phân quyền
+                canManageRoles: true,
+                canViewActivityLog: true,
+                // Cấu hình hệ thống
+                canConfigSystem: true,
+                canConfigEmail: true,
+                canConfigShipping: true,
+                // Báo cáo tổng hợp
+                canViewAllReports: true,
+                canViewSystemStats: true,
+                // Quản lý cửa hàng
+                canManageAllStores: true,
+                canCreateStore: true,
+                canDeleteStore: true,
+                // Quản lý sản phẩm
+                canManageProducts: true,
+                canCreateProduct: true,
+                canEditProduct: true,
+                canDeleteProduct: true,
+                // Quản lý đơn hàng
+                canManageAllOrders: true,
+                canAssignOrderToStaff: true,
+                canCancelOrder: true,
+                // Quản lý khách hàng
+                canManageCustomers: true,
+                canViewCustomerDetails: true,
+                // Quản lý nhân viên
                 canManageStaff: true,
-                canManageStore: true,
-                canViewReports: true,
-                canManageProducts: true,
-                canManageOrders: true,
-                canManageCustomers: true,
+                canCreateStaff: true,
+                canDeleteStaff: true,
+                // Khác
                 canManageCoupons: true,
-                canManageInventory: true
+                canManageInventory: true,
+                canManageCategories: true,
+                canManageReviews: true
             },
-            manager: {
+            
+            // ===== STORE MANAGER - Quản lý cửa hàng =====
+            storemanager: {
                 pages: ['/Admin', '/Admin/DonHang', '/Admin/SanPham', '/Admin/DanhMuc', '/Admin/KhachHang', 
-                        '/Admin/MaGiamGia', '/Admin/ChiNhanh', '/Admin/Kho', '/Admin/BaoCao', '/Admin/ThongKe'],
-                canManageStaff: false,
-                canManageStore: false,
-                canViewReports: true,
+                        '/Admin/MaGiamGia', '/Admin/DanhGia', '/Admin/ChiNhanh', '/Admin/Kho', 
+                        '/Admin/NhanVien', '/Admin/BaoCao', '/Admin/ThongKe'],
+                // Quản lý tài khoản (chỉ nhân viên cửa hàng mình)
+                canCreateAccount: true,  // Chỉ tạo tài khoản nhân viên
+                canEditAccount: true,    // Chỉ sửa nhân viên cửa hàng mình
+                canDeleteAccount: false,
+                canLockAccount: true,    // Khóa nhân viên cửa hàng mình
+                canAssignRole: false,    // Không được gán role admin
+                // Quản lý phân quyền
+                canManageRoles: false,
+                canViewActivityLog: true, // Xem log cửa hàng mình
+                // Cấu hình hệ thống
+                canConfigSystem: false,
+                canConfigEmail: false,
+                canConfigShipping: false,
+                // Báo cáo
+                canViewAllReports: false,
+                canViewStoreReports: true, // Chỉ xem báo cáo cửa hàng mình
+                canViewSystemStats: false,
+                // Quản lý cửa hàng
+                canManageAllStores: false,
+                canManageOwnStore: true,  // Quản lý cửa hàng được gán
+                canCreateStore: false,
+                canDeleteStore: false,
+                // Quản lý sản phẩm (cửa hàng mình)
                 canManageProducts: true,
-                canManageOrders: true,
+                canCreateProduct: true,
+                canEditProduct: true,
+                canDeleteProduct: true,   // Xóa/ẩn sản phẩm cửa hàng mình
+                // Quản lý đơn hàng (cửa hàng mình)
+                canManageStoreOrders: true,
+                canAssignOrderToStaff: true, // Phân công đơn cho nhân viên
+                canApproveOrder: true,       // Duyệt/xác nhận đơn
+                canCancelOrder: true,        // Hủy đơn có vấn đề
+                canManageAllOrders: false,
+                // Quản lý khách hàng
                 canManageCustomers: true,
+                canViewCustomerDetails: true,
+                // Quản lý nhân viên (cửa hàng mình)
+                canManageStaff: true,
+                canCreateStaff: true,
+                canDeleteStaff: true,
+                canAssignStaffToOrder: true,
+                // Khác
                 canManageCoupons: true,
-                canManageInventory: true
+                canManageInventory: true,
+                canManageCategories: true,  // Danh mục con cửa hàng
+                canManageReviews: true,
+                canViewStaffPerformance: true // Xem hiệu suất nhân viên
             },
+            
+            // ===== STAFF - Nhân viên xử lý đơn =====
             staff: {
                 pages: ['/Admin', '/Admin/DonHang', '/Admin/SanPham', '/Admin/KhachHang'],
-                canManageStaff: false,
-                canManageStore: false,
-                canViewReports: false,
-                canManageProducts: false, // Chỉ xem
-                canManageOrders: true,    // Cập nhật trạng thái
+                // Quản lý tài khoản
+                canCreateAccount: false,
+                canEditAccount: false,
+                canDeleteAccount: false,
+                canLockAccount: false,
+                canAssignRole: false,
+                // Quản lý phân quyền
+                canManageRoles: false,
+                canViewActivityLog: false,
+                // Cấu hình hệ thống
+                canConfigSystem: false,
+                canConfigEmail: false,
+                canConfigShipping: false,
+                // Báo cáo
+                canViewAllReports: false,
+                canViewStoreReports: false,
+                canViewSystemStats: false,
+                // Quản lý cửa hàng
+                canManageAllStores: false,
+                canManageOwnStore: false,
+                canCreateStore: false,
+                canDeleteStore: false,
+                // Quản lý sản phẩm
+                canManageProducts: false,
+                canCreateProduct: false,
+                canEditProduct: false,
+                canDeleteProduct: false,
+                canViewProducts: true,      // Chỉ xem sản phẩm
+                // Quản lý đơn hàng (chỉ đơn được phân công)
+                canManageAssignedOrders: true, // Xử lý đơn được giao
+                canConfirmOrder: true,         // Xác nhận đơn
+                canPrepareOrder: true,         // Chuẩn bị hàng
+                canUpdateOrderStatus: true,    // Cập nhật trạng thái
+                canAddOrderNote: true,         // Ghi chú sự cố
+                canCancelOrder: false,         // Không được hủy đơn
+                canManageAllOrders: false,
+                canAssignOrderToStaff: false,
+                // Quản lý khách hàng
                 canManageCustomers: false,
+                canViewCustomerDetails: true, // Xem thông tin để liên hệ
+                // Quản lý nhân viên
+                canManageStaff: false,
+                canCreateStaff: false,
+                canDeleteStaff: false,
+                // Khác
                 canManageCoupons: false,
-                canManageInventory: false
+                canManageInventory: false,
+                canUpdateInventory: true,     // Trừ tồn kho khi chuẩn bị
+                canManageCategories: false,
+                canManageReviews: false,
+                canPrintPackingSlip: true     // In phiếu gói hàng
+            },
+            
+            // ===== CUSTOMER - Khách hàng (không vào Admin) =====
+            customer: {
+                pages: [], // Không được vào Admin
+                // Tất cả quyền admin đều false
+                canCreateAccount: false,
+                canEditAccount: false,
+                canManageProducts: false,
+                canManageOrders: false,
+                canManageCustomers: false,
+                canManageStaff: false,
+                canViewReports: false
             }
         };
         
@@ -211,6 +357,7 @@
         const user = JSON.parse(localStorage.getItem('user') || '{}');
         const rawRole = (user.role || '').toLowerCase();
         const normalizedRole = ROLE_MAP[rawRole] || 'customer';
+        const userStoreId = user.storeId || null; // ID cửa hàng được gán
         
         // Cập nhật role đã chuẩn hóa vào localStorage
         if (user.email && rawRole !== normalizedRole) {
@@ -219,7 +366,7 @@
         }
         
         // Kiểm tra đăng nhập và quyền truy cập
-        const allowedRoles = ['admin', 'manager', 'staff'];
+        const allowedRoles = ['admin', 'storemanager', 'staff'];
         if (!user.email || !allowedRoles.includes(normalizedRole)) {
             alert('Bạn không có quyền truy cập trang quản trị!');
             window.location.href = '/DangNhap?returnUrl=' + encodeURIComponent(window.location.pathname);
@@ -242,16 +389,18 @@
         // Lưu permissions vào window để các trang con sử dụng
         window.userPermissions = userPermissions;
         window.userRole = normalizedRole;
+        window.userStoreId = userStoreId;
+        window.ROLE_NAMES = ROLE_NAMES;
 
         // Update user name và role badge
         if (user.name) {
             document.getElementById('headerUserName').textContent = user.name;
         }
         
-        // Thêm role badge
+        // Thêm role badge với tên đầy đủ
         const roleBadges = {
             admin: '<span class="role-badge admin">Quản trị viên</span>',
-            manager: '<span class="role-badge manager">Quản lý</span>',
+            storemanager: '<span class="role-badge manager">Quản lý cửa hàng</span>',
             staff: '<span class="role-badge staff">Nhân viên</span>'
         };
         const userNameEl = document.getElementById('headerUserName');
@@ -259,16 +408,37 @@
             userNameEl.insertAdjacentHTML('afterend', roleBadges[normalizedRole]);
         }
 
-        // Ẩn menu theo quyền
+        // Ẩn menu theo quyền chi tiết
+        // Menu HỆ THỐNG - chỉ Admin
         document.querySelectorAll('.admin-only').forEach(el => {
             if (normalizedRole !== 'admin') el.style.display = 'none';
         });
         
         // Ẩn menu báo cáo nếu không có quyền
-        if (!userPermissions?.canViewReports) {
+        if (!userPermissions?.canViewAllReports && !userPermissions?.canViewStoreReports) {
             document.querySelectorAll('a[href*="BaoCao"], a[href*="ThongKe"]').forEach(el => {
-                el.closest('.nav-item')?.remove();
+                el.closest('.nav-item')?.classList.add('permission-hidden');
             });
+        }
+        
+        // Ẩn menu Kho nếu không có quyền
+        if (!userPermissions?.canManageInventory && !userPermissions?.canUpdateInventory) {
+            document.querySelector('a[href*="Kho"]')?.classList.add('permission-hidden');
+        }
+        
+        // Ẩn menu Mã giảm giá nếu không có quyền
+        if (!userPermissions?.canManageCoupons) {
+            document.querySelector('a[href*="MaGiamGia"]')?.classList.add('permission-hidden');
+        }
+        
+        // Ẩn menu Danh mục nếu không có quyền
+        if (!userPermissions?.canManageCategories) {
+            document.querySelector('a[href*="DanhMuc"]')?.classList.add('permission-hidden');
+        }
+        
+        // Ẩn menu Đánh giá nếu không có quyền
+        if (!userPermissions?.canManageReviews) {
+            document.querySelector('a[href*="DanhGia"]')?.classList.add('permission-hidden');
         }
 
         // Sidebar toggle
@@ -292,12 +462,62 @@
 
         function logout() {
             localStorage.removeItem('user');
+            localStorage.removeItem('token');
             window.location.href = '/DangNhap';
         }
         
-        // Helper function để kiểm tra quyền (dùng trong các trang con)
+        // =====================================================
+        // HELPER FUNCTIONS CHO PHÂN QUYỀN
+        // =====================================================
+        
+        // Kiểm tra quyền cụ thể
         window.checkPermission = function(permission) {
             return window.userPermissions?.[permission] === true;
+        };
+        
+        // Kiểm tra có phải Admin không
+        window.isAdmin = function() {
+            return window.userRole === 'admin';
+        };
+        
+        // Kiểm tra có phải Store Manager không
+        window.isStoreManager = function() {
+            return window.userRole === 'storemanager';
+        };
+        
+        // Kiểm tra có phải Staff không
+        window.isStaff = function() {
+            return window.userRole === 'staff';
+        };
+        
+        // Lấy ID cửa hàng của user (dùng để filter dữ liệu)
+        window.getUserStoreId = function() {
+            return window.userStoreId;
+        };
+        
+        // Ẩn element nếu không có quyền
+        window.hideIfNoPermission = function(elementSelector, permission) {
+            if (!checkPermission(permission)) {
+                document.querySelectorAll(elementSelector).forEach(el => {
+                    el.style.display = 'none';
+                });
+            }
+        };
+        
+        // Disable element nếu không có quyền
+        window.disableIfNoPermission = function(elementSelector, permission) {
+            if (!checkPermission(permission)) {
+                document.querySelectorAll(elementSelector).forEach(el => {
+                    el.disabled = true;
+                    el.classList.add('btn-disabled');
+                    el.title = 'Bạn không có quyền thực hiện thao tác này';
+                });
+            }
+        };
+        
+        // Lấy tên vai trò
+        window.getRoleName = function(role) {
+            return ROLE_NAMES[role] || role;
         };
     </script>
     @await RenderSectionAsync("Scripts", required: false)

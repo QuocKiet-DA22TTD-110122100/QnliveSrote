@@ -22,6 +22,8 @@ public class TaiKhoan
     
     public int MaVaiTro { get; set; }
     
+    public int? MaCuaHang { get; set; } // Cửa hàng/chi nhánh mà tài khoản thuộc về
+    
     public DateTime NgayTao { get; set; } = DateTime.Now;
     
     public DateTime? LanDangNhapCuoi { get; set; }
@@ -29,6 +31,9 @@ public class TaiKhoan
     // Navigation
     [ForeignKey("MaVaiTro")]
     public virtual VaiTro? VaiTro { get; set; }
+    
+    [ForeignKey("MaCuaHang")]
+    public virtual ChiNhanh? CuaHang { get; set; }
     
     public virtual KhachHang? KhachHang { get; set; }
     public virtual NhanVien? NhanVien { get; set; }

@@ -147,3 +147,22 @@ quảng cáo và các sản phẩm nổi bật của cửa hàng.
 
 ### API:
 - Swagger: `http://localhost:5267/swagger`
+Trang chủ: http://localhost:5267/
+Thực đơn: http://localhost:5267/ThucDon
+Giỏ hàng: http://localhost:5267/GioHang
+Thanh toán: http://localhost:5267/ThanhToan
+Đăng nhập: http://localhost:5267/Account/Login
+Đăng ký: http://localhost:5267/Account/Register
+Admin:
+
+Dashboard: http://localhost:5267/Admin
+Sản phẩm: http://localhost:5267/Admin/SanPham
+Danh mục: http://localhost:5267/Admin/DanhMuc
+Đơn hàng: http://localhost:5267/Admin/DonHang
+Khách hàng: http://localhost:5267/Admin/KhachHang
+Mã giảm giá: http://localhost:5267/Admin/MaGiamGia
+Thống kê: http://localhost:5267/Admin/ThongKe
+API:
+
+Swagger: http://localhost:5267/swagger
+Chụp xong báo tôi nhé!

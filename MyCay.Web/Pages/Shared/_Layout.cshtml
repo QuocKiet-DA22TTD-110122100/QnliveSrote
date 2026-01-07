@@ -68,12 +68,17 @@
                     </div>
                 </div>
                 
+                <!-- Icon Giỏ hàng riêng -->
+                <a href="/GioHang" class="nav-cart-btn" title="Giỏ hàng">
+                    <i class="fas fa-shopping-cart"></i>
+                    <span class="cart-count" id="cartCount">0</span>
+                </a>
+                
                 <!-- NÚT ĐẶT MÓN NGAY - CTA chính với badge -->
                 <a href="/ThucDon" class="btn-order-cta" id="orderCTA">
-                    <i class="fas fa-shopping-cart"></i>
+                    <i class="fas fa-utensils"></i>
                     <span class="btn-order-text">Đặt món ngay</span>
                     <span class="btn-order-badge">-15%</span>
-                    <span class="cart-count" id="cartCount" style="display: none;">0</span>
                 </a>
             </div>
             
@@ -131,255 +136,63 @@
         @RenderBody()
     </main>
 
-    <!-- Footer - Enhanced -->
-    <footer class="footer-new">
-        <div class="footer-container">
-            <div class="footer-main">
-                <div class="footer-brand">
-                    <div class="logo">
-                        <span class="logo-icon">🌶️</span>
-                        <span class="logo-text">Mỳ Cay <span class="logo-accent">Sasin</span></span>
+    <!-- Footer - Compact Horizontal -->
+    <footer style="background: linear-gradient(180deg, #1f2937 0%, #111827 100%); color: white; padding: 15px 0 0;">
+        <div style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
+            <div style="display: flex !important; flex-direction: row !important; flex-wrap: nowrap !important; justify-content: space-between !important; gap: 30px; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,0.1); font-size: 11px;">
+                <!-- Brand -->
+                <div style="flex: 1.5; min-width: 180px;">
+                    <div style="display: flex; align-items: center; gap: 5px; margin-bottom: 6px;">
+                        <span style="font-size: 14px;">🌶️</span>
+                        <span style="font-size: 13px; font-weight: 700;">Mỳ Cay <span style="color: #f97316;">Sasin</span></span>
                     </div>
-                    <p>Hương vị Hàn Quốc chính hiệu tại Việt Nam. Cay đúng chuẩn, giao hàng nhanh!</p>
-                    <div class="social-links-new">
-                        <a href="#" class="social-btn facebook" title="Facebook"><i class="fab fa-facebook-f"></i></a>
-                        <a href="#" class="social-btn instagram" title="Instagram"><i class="fab fa-instagram"></i></a>
-                        <a href="#" class="social-btn tiktok" title="TikTok"><i class="fab fa-tiktok"></i></a>
-                        <a href="#" class="social-btn zalo" title="Zalo OA">
-                            <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 0C5.373 0 0 5.373 0 12s5.373 12 12 12 12-5.373 12-12S18.627 0 12 0zm5.894 17.703c-.063.063-.188.125-.375.125h-1.5c-.188 0-.313-.063-.375-.125-.063-.063-.125-.188-.125-.375v-4.5h-1.5v4.5c0 .188-.063.313-.125.375-.063.063-.188.125-.375.125h-1.5c-.188 0-.313-.063-.375-.125-.063-.063-.125-.188-.125-.375v-4.5h-1.5v4.5c0 .188-.063.313-.125.375-.063.063-.188.125-.375.125h-1.5c-.188 0-.313-.063-.375-.125-.063-.063-.125-.188-.125-.375V6.672c0-.188.063-.313.125-.375.063-.063.188-.125.375-.125h1.5c.188 0 .313.063.375.125.063.063.125.188.125.375v4.5h1.5v-4.5c0-.188.063-.313.125-.375.063-.063.188-.125.375-.125h1.5c.188 0 .313.063.375.125.063.063.125.188.125.375v4.5h1.5v-4.5c0-.188.063-.313.125-.375.063-.063.188-.125.375-.125h1.5c.188 0 .313.063.375.125.063.063.125.188.125.375v10.656c0 .188-.063.313-.125.375z"/></svg>
-                        </a>
+                    <p style="color: rgba(255,255,255,0.7); line-height: 1.3; margin: 0 0 8px 0; font-size: 10px;">Hương vị Hàn Quốc chính hiệu.</p>
+                    <div style="display: flex; gap: 5px;">
+                        <a href="#" style="width: 22px; height: 22px; background: #1877f2; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 9px;"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" style="width: 22px; height: 22px; background: linear-gradient(45deg, #f09433, #dc2743); border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 9px;"><i class="fab fa-instagram"></i></a>
+                        <a href="#" style="width: 22px; height: 22px; background: #000; border-radius: 5px; display: inline-flex; align-items: center; justify-content: center; color: white; font-size: 9px;"><i class="fab fa-tiktok"></i></a>
                     </div>
                 </div>
-                
-                <div class="footer-links">
-                    <h4>Liên kết nhanh</h4>
-                    <ul>
-                        <li><a href="/">Trang chủ</a></li>
-                        <li><a href="/ThucDon">Thực đơn</a></li>
-                        <li><a href="/UuDai">Ưu đãi</a></li>
-                        <li><a href="/TinTuc">Tin tức</a></li>
-                    </ul>
+                <!-- Links -->
+                <div style="flex: 0.8; min-width: 80px;">
+                    <h4 style="font-size: 11px; font-weight: 600; margin: 0 0 6px 0;">Liên kết</h4>
+                    <div><a href="/" style="color: rgba(255,255,255,0.7); text-decoration: none; display: block; margin-bottom: 3px;">Trang chủ</a></div>
+                    <div><a href="/ThucDon" style="color: rgba(255,255,255,0.7); text-decoration: none; display: block; margin-bottom: 3px;">Thực đơn</a></div>
+                    <div><a href="/UuDai" style="color: rgba(255,255,255,0.7); text-decoration: none; display: block;">Ưu đãi</a></div>
                 </div>
-                
-                <div class="footer-contact">
-                    <h4>Liên hệ</h4>
-                    <div class="contact-item">
-                        <i class="fas fa-phone-alt"></i>
-                        <div>
-                            <span class="contact-label">Hotline</span>
-                            <a href="tel:19001234" class="contact-value hotline">1900-1234</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-envelope"></i>
-                        <div>
-                            <span class="contact-label">Email</span>
-                            <a href="mailto:info@mycaysasin.vn" class="contact-value">info@mycaysasin.vn</a>
-                        </div>
-                    </div>
-                    <div class="contact-item">
-                        <i class="fas fa-map-marker-alt"></i>
-                        <div>
-                            <span class="contact-label">Địa chỉ</span>
-                            <span class="contact-value">123 Đường ABC, Quận 1, TP.HCM</span>
-                        </div>
-                    </div>
+                <!-- Contact -->
+                <div style="flex: 1.2; min-width: 150px;">
+                    <h4 style="font-size: 11px; font-weight: 600; margin: 0 0 6px 0;">Liên hệ</h4>
+                    <p style="color: rgba(255,255,255,0.7); margin: 0 0 3px 0;"><i class="fas fa-phone-alt" style="color: #f97316; margin-right: 5px; font-size: 9px;"></i><a href="tel:19001234" style="color: #f97316; text-decoration: none; font-weight: 600;">1900-1234</a></p>
+                    <p style="color: rgba(255,255,255,0.7); margin: 0 0 3px 0;"><i class="fas fa-envelope" style="color: #f97316; margin-right: 5px; font-size: 9px;"></i>info@mycaysasin.vn</p>
+                    <p style="color: rgba(255,255,255,0.7); margin: 0;"><i class="fas fa-map-marker-alt" style="color: #f97316; margin-right: 5px; font-size: 9px;"></i>Q.1, TP.HCM</p>
                 </div>
-                
-                <div class="footer-hours">
-                    <h4>Giờ mở cửa</h4>
-                    <div class="hours-info">
-                        <p><strong>Thứ 2 - Chủ nhật</strong></p>
-                        <p class="hours-time">10:00 - 22:00</p>
-                    </div>
-                    <div class="footer-app">
-                        <p>Tải app đặt hàng:</p>
-                        <div class="app-buttons">
-                            <a href="#" class="app-btn"><i class="fab fa-apple"></i> App Store</a>
-                            <a href="#" class="app-btn"><i class="fab fa-google-play"></i> Google Play</a>
-                        </div>
-                    </div>
+                <!-- Hours -->
+                <div style="flex: 0.8; min-width: 80px;">
+                    <h4 style="font-size: 11px; font-weight: 600; margin: 0 0 6px 0;">Giờ mở cửa</h4>
+                    <p style="color: rgba(255,255,255,0.7); margin: 0 0 2px 0;">T2 - CN</p>
+                    <p style="color: #f97316; font-weight: 600; margin: 0;">10:00 - 22:00</p>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom-new">
-            <p>&copy; 2024 Mỳ Cay Sasin. All rights reserved.</p>
-            <div class="footer-bottom-links">
-                <a href="#">Chính sách bảo mật</a>
-                <a href="#">Điều khoản sử dụng</a>
+        <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; padding: 8px 20px; max-width: 1200px; margin: 0 auto; font-size: 10px;">
+            <p style="color: rgba(255,255,255,0.5); margin: 0;">&copy; 2024 Mỳ Cay Sasin</p>
+            <div style="display: flex; gap: 12px;">
+                <a href="#" style="color: rgba(255,255,255,0.5); text-decoration: none;">Chính sách</a>
+                <a href="#" style="color: rgba(255,255,255,0.5); text-decoration: none;">Điều khoản</a>
             </div>
         </div>
     </footer>
     
     <style>
-    /* Footer New Styles */
-    .footer-new {
-        background: linear-gradient(180deg, #1f2937 0%, #111827 100%);
-        color: white;
-        padding-top: 60px;
-    }
-    .footer-container {
-        max-width: 1200px;
-        margin: 0 auto;
-        padding: 0 20px;
-    }
-    .footer-main {
-        display: grid;
-        grid-template-columns: 1.5fr 1fr 1.2fr 1fr;
-        gap: 40px;
-        padding-bottom: 40px;
-        border-bottom: 1px solid rgba(255,255,255,0.1);
-    }
-    .footer-brand .logo {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        margin-bottom: 15px;
-    }
-    .footer-brand .logo-text {
-        font-size: 1.3rem;
-        font-weight: 700;
-        color: white;
-    }
-    .footer-brand .logo-accent { color: #f97316; }
-    .footer-brand p {
-        color: rgba(255,255,255,0.7);
-        line-height: 1.6;
-        margin-bottom: 20px;
-    }
-    .social-links-new {
-        display: flex;
-        gap: 10px;
-    }
-    .social-btn {
-        width: 40px;
-        height: 40px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        color: white;
-        transition: all 0.3s;
-    }
-    .social-btn.facebook { background: #1877f2; }
-    .social-btn.instagram { background: linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888); }
-    .social-btn.tiktok { background: #000; }
-    .social-btn.zalo { background: #0068ff; }
-    .social-btn:hover { transform: translateY(-3px); }
-    
-    .footer-links h4, .footer-contact h4, .footer-hours h4 {
-        font-size: 1rem;
-        font-weight: 600;
-        margin-bottom: 20px;
-        color: white;
-    }
-    .footer-links ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .footer-links li { margin-bottom: 12px; }
-    .footer-links a {
-        color: rgba(255,255,255,0.7);
-        text-decoration: none;
-        transition: color 0.2s;
-    }
-    .footer-links a:hover { color: #f97316; }
-    
-    .contact-item {
-        display: flex;
-        gap: 12px;
-        margin-bottom: 15px;
-    }
-    .contact-item i {
-        width: 36px;
-        height: 36px;
-        background: rgba(249, 115, 22, 0.2);
-        color: #f97316;
-        border-radius: 8px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-    }
-    .contact-label {
-        font-size: 0.8rem;
-        color: rgba(255,255,255,0.5);
-        display: block;
-    }
-    .contact-value {
-        color: rgba(255,255,255,0.9);
-        text-decoration: none;
-    }
-    .contact-value.hotline {
-        font-size: 1.1rem;
-        font-weight: 700;
-        color: #f97316;
-    }
-    
-    .hours-info {
-        background: rgba(255,255,255,0.05);
-        padding: 15px;
-        border-radius: 10px;
-        margin-bottom: 20px;
-    }
-    .hours-time {
-        font-size: 1.2rem;
-        font-weight: 600;
-        color: #f97316;
-    }
-    .footer-app p {
-        font-size: 0.85rem;
-        color: rgba(255,255,255,0.6);
-        margin-bottom: 10px;
-    }
-    .app-buttons {
-        display: flex;
-        flex-direction: column;
-        gap: 8px;
-    }
-    .app-btn {
-        display: flex;
-        align-items: center;
-        gap: 8px;
-        padding: 8px 12px;
-        background: rgba(255,255,255,0.1);
-        border-radius: 8px;
-        color: white;
-        text-decoration: none;
-        font-size: 0.85rem;
-        transition: background 0.2s;
-    }
-    .app-btn:hover { background: rgba(255,255,255,0.2); }
-    
-    .footer-bottom-new {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-        max-width: 1200px;
-        margin: 0 auto;
-    }
-    .footer-bottom-new p {
-        color: rgba(255,255,255,0.5);
-        font-size: 0.85rem;
-    }
-    .footer-bottom-links {
-        display: flex;
-        gap: 20px;
-    }
-    .footer-bottom-links a {
-        color: rgba(255,255,255,0.5);
-        text-decoration: none;
-        font-size: 0.85rem;
-    }
-    .footer-bottom-links a:hover { color: #f97316; }
     
     @@media (max-width: 1024px) {
-        .footer-main { grid-template-columns: 1fr 1fr; }
+        .footer-main { grid-template-columns: 1fr 1fr; gap: 25px; }
     }
     @@media (max-width: 640px) {
-        .footer-main { grid-template-columns: 1fr; gap: 30px; }
-        .footer-bottom-new { flex-direction: column; gap: 10px; text-align: center; }
+        .footer-new { padding-top: 30px; }
+        .footer-main { grid-template-columns: 1fr; gap: 20px; }
+        .footer-bottom-new { flex-direction: column; gap: 8px; text-align: center; padding: 12px 20px; }
     }
     </style>
 
@@ -553,10 +366,29 @@
         padding: 2px 6px;
         border-radius: 10px;
     }
+    /* Icon Giỏ hàng riêng */
+    .nav-cart-btn {
+        position: relative !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        width: 42px !important;
+        height: 42px !important;
+        background: rgba(255,255,255,0.15) !important;
+        border-radius: 50% !important;
+        color: white !important;
+        font-size: 1.1rem !important;
+        transition: all 0.3s !important;
+        text-decoration: none !important;
+    }
+    .nav-cart-btn:hover {
+        background: #f97316 !important;
+        transform: scale(1.05) !important;
+    }
     .cart-count {
         position: absolute;
-        top: -5px;
-        right: -5px;
+        top: -2px;
+        right: -2px;
         background: #ef4444;
         color: white;
         font-size: 0.65rem;
